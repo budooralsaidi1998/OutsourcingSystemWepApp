@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="helper\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>
