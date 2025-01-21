@@ -6,112 +6,145 @@
 @inject ITeamService teamService
 @inject IDeveloperServices developerService
 
-@*Switches*@
-<MudSwitch @bind-Value="Basic_Switch1" />
-<MudSwitch @bind-Value="Basic_Switch2" Color="Color.Success" />
-@* @code {
-    public bool Basic_Switch1 { get; set; } = false;
-    public bool Basic_Switch2 { get; set; } = true;
-} *@
+<MudLayout>
+    <!-- Sidebar -->
+    <MudDrawer ClipMode="DrawerClipMode.Always" Open="true" Elevation="4" Width="350px">
+        <MudDrawerContent>
+            <MudPaper Class="pa-4"> <!-- Increased padding around sidebar content for better spacing -->
+                <MudStack Spacing="4">
+                    @* Heading for the sidebar *@
+                    <MudText Typo="Typo.h5" Color="Color.Success">Filters</MudText> <!-- Added heading to indicate that these are filter options -->
 
+                    @* Switches *@
+                    <MudSwitch @bind-Value="Basic_Switch2" Label="Only show currently active" Size="Size.Small" Color="Color.Success" />
 
-@*Developers/teams/both*@
-<MudStack>
-    <MudStack>
-        <MudText>Value: @_value1</MudText>
-        <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="_value1" Color="Color.Primary" CheckMark FixedContent>
-            <MudToggleItem Value="@("Developers")" Text="Developers Only" />
-            <MudToggleItem Value="@("Teams")" Text="Teams Only" />
-            <MudToggleItem Value="@("Both")" Text="Both" />
-        </MudToggleGroup>
-    </MudStack>
-</MudStack>
-@* @code {
-    private string _value1 = "Both";
-} *@
+                    @* Filter By: Developers/Teams/Both *@
+                    <MudStack Spacing="1" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
+                        <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="_value1" Color="Color.Success" CheckMark FixedContent>
+                            <MudToggleItem Value="@("Developers")" Text="Devs only" Typography="Typo.body2" />
+                            <MudToggleItem Value="@("Teams")" Text="Teams Only" Typography="Typo.body2" />
+                            <MudToggleItem Value="@("Both")" Text="Both" Typography="Typo.body2" />
+                        </MudToggleGroup>
+                    </MudStack>
 
+                    @* Input Rating *@
+                    <MudRating @bind-SelectedValue="ratingValue" Max="5" Size="Size.Small" />
+                    <MudText Size="Size.Small">Selected Rating: @ratingValue</MudText>
 
-@*Input rating*@
-<MudRating @bind-SelectedValue="ratingValue" Max="5" />
-<p>Selected Rating: @ratingValue</p>
-@* @code {
-    private int ratingValue = 2; // This will be the initial selected value
-} *@
+                    @* Multi skill selector *@
+                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-Value="_value" @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
+                        @foreach (var state in GetAvailableSkills())
+                        {
+                            <MudSelectItem T="string" Value="@state">@state</MudSelectItem>
+                        }
+                    </MudSelect>
 
-@*multi skill selector*@
-<MudSelect T="string" Label="Filter by skills" MultiSelection="true" @bind-Value="_value" @bind-SelectedValues="_options">
+                    @* Max Price Slider *@
+                    <MudText Typo="Typo.subtitle2">Set Max Price</MudText> <!-- Added a heading -->
+                    <MudSlider @bind-Value="maxPrice" Min="0" Max="500" Step="10" Label="Max Price" TickMarks="true" Color="Color.Success" Size="Size.Small" />
+                    <MudText Size="Size.Small">Selected Max Price: @maxPrice</MudText>
 
-    @foreach (var state in GetAvailableSkills())
-    {
-        <MudSelectItem T="string" Value="@state">@state</MudSelectItem>
-    }
-</MudSelect>
+                    @* Search for developer or team *@
+                    <MudText Typo="Typo.subtitle2">Search</MudText> <!-- Added a heading -->
+                    <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
+                    ResetValueOnEmptyText="@resetValueOnEmptyText"
+                    CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+                    AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
+                </MudStack>
+            </MudPaper>
+        </MudDrawerContent>
+    </MudDrawer>
 
-@*Search for developer or team*@
-<MudGrid Class="mt-6 px-4">
-    <MudItem xs="6">
-        <MudText Typo="Typo.subtitle2">Value:</MudText>
-        <MudText Typo="Typo.subtitle2">"</MudText>
-        <MudText Typo="Typo.body2" Class="pl-4">@_value</MudText>
-        <MudText Typo="Typo.subtitle2">"</MudText>
-    </MudItem>
-    <MudItem xs="6">
-        <MudText Typo="Typo.subtitle2">SelectedValues: HashSet&lt;string&gt;</MudText>
-        <MudText Typo="Typo.subtitle2">{</MudText>
-        <MudText Typo="Typo.body2" Class="pl-4">@(string.Join(", ", _options.Select(x => $"\"{x}\"")))</MudText>
-        <MudText Typo="Typo.subtitle2">}</MudText>
-    </MudItem>
-</MudGrid>
-
-
-<MudItem xs="12" sm="6" md="4">
-    <MudAutocomplete T="string" Label="US States" @bind-Value="value2" SearchFunc="@Search2"
-    ResetValueOnEmptyText="@resetValueOnEmptyText"
-    CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
-    AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
-</MudItem>
-
-
-<h3>Search Results</h3>
-@if (filteredProducts.Any())
-{
-    <ul>
-        @foreach (var product in filteredProducts)
+    <!-- Main Content -->
+    <MudMain>
+        <MudText Typo="Typo.h6" Color="Color.Success">Search Results</MudText>
+        @if (filteredProducts.Any())
         {
-            <li>@product.Name</li>
+            <ul>
+                @foreach (var product in filteredProducts)
+                {
+                    <li>@product.Name</li>
+                }
+            </ul>
         }
-    </ul>
-}
-else
-{
-    <p>No products found.</p>
-}
+        else
+        {
+            <p>No products found.</p>
+        }
+    </MudMain>
+</MudLayout>
 
-@*shared code *@
+@* Custom CSS for focus style *@
+<style>
+    /* Global font */
+    body {
+        font-family: 'Roboto', sans-serif; /* Changed to a more professional and clean font */
+    }
+
+    .custom-focus-style .mud-select-root:focus,
+    .custom-focus-style .mud-autocomplete-root:focus {
+        border-color: #4caf50 !important; /* Green border on focus */
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important; /* Green glow */
+    }
+
+    .custom-focus-style .mud-select-root .mud-input-root:focus-within,
+    .custom-focus-style .mud-autocomplete-root .mud-input-root:focus-within {
+        border-color: #4caf50 !important; /* Green border inside input */
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important; /* Green glow */
+    }
+
+    /* Styling for Slider */
+    .mud-slider .mud-slider-track {
+        background-color: #4caf50 !important;
+    }
+
+    .mud-slider .mud-slider-thumb {
+        background-color: #4caf50 !important;
+    }
+
+    /* Custom style for headings */
+    .mud-text-h5 {
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+
+    .mud-text-subtitle2 {
+        font-family: 'Poppins', sans-serif !important;
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    .mud-text-body2 {
+        font-family: 'Roboto', sans-serif !important;
+        font-size: 0.875rem;
+    }
+
+</style>
+
+@* Shared Code *@
 @code {
-
     public bool Basic_Switch1 { get; set; } = false;
     public bool Basic_Switch2 { get; set; } = true;
 
     private string _value1 = "Both";
-
     private int ratingValue = 2; // This will be the initial selected value
-
     private bool resetValueOnEmptyText;
     private bool coerceText;
     private bool coerceValue;
     private bool selectedOnTab;
     private string value2;
-
     public List<filtrationDeveloperdto> SearchResultDevs = new List<filtrationDeveloperdto>();
     public List<Team> SearchResultTeams = new List<Team>();
 
-    //Filter by category
+    // Filter by category
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
     private string _value = "Nothing selected";
     private IEnumerable<string> _options = new HashSet<string> { "Skills: " };
 
-    //Gets all skills [returns array]
+    private int maxPrice = 500; // Initial max price for the slider
+
+    // Gets all skills [returns array]
     private string[] GetAvailableSkills()
     {
         List<string> SkillNames = new List<string>();
@@ -125,21 +158,20 @@ else
         return SkillNames.ToArray(); //convert to array so it can be used in GetSkillsFunctions
     }
 
-
     private async Task<IEnumerable<string>> Search2(string value, CancellationToken token)
     {
-        // In real life use an asynchronous function for fetching data from an api.
+        // In real life use an asynchronous function for fetching data from an API.
         await Task.Delay(5, token);
 
-        // if text is null or empty, don't return values (drop-down will not open)
+        // If text is null or empty, don't return values (drop-down will not open)
         if (string.IsNullOrEmpty(value))
             return new string[0];
         else
         {
-            //find if search value exists in developer names
+            // Find if search value exists in developer names
             var developers = developerService.GetName(value);
 
-            //find if search value exists in team names (checks if name or description matches)
+            // Find if search value exists in team names (checks if name or description matches)
             var teams = teamService.GetTeamsBasedOnSearchValue(value);
 
             foreach (var dev in developers)
@@ -154,6 +186,5 @@ else
 
             return new string[0];
         }
-        
     }
 }
