@@ -1,4 +1,4 @@
-﻿@page "/ViewTeamsAndDevs"
+﻿@page "/ViewTeamsAnDevs"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -10,10 +10,10 @@
     <!-- Sidebar -->
     <MudDrawer ClipMode="DrawerClipMode.Always" Open="true" Elevation="4" Width="350px">
         <MudDrawerContent>
-            <MudPaper Class="pa-4"> <!-- Increased padding around sidebar content for better spacing -->
+            <MudPaper Class="pa-4">
                 <MudStack Spacing="4">
                     @* Heading for the sidebar *@
-                    <MudText Typo="Typo.h5" Color="Color.Success">Filters</MudText> <!-- Added heading to indicate that these are filter options -->
+                    <MudText Typo="Typo.h5" Color="Color.Success">Filters</MudText>
 
                     @* Switches *@
                     <MudSwitch @bind-Value="Basic_Switch2" Label="Only show currently active" Size="Size.Small" Color="Color.Success" />
@@ -40,39 +40,51 @@
                     </MudSelect>
 
                     @* Max Price Slider *@
-                    <MudText Typo="Typo.subtitle2">Set Max Price</MudText> <!-- Added a heading -->
+                    <MudText Typo="Typo.subtitle2">Set Max Price</MudText>
                     <MudSlider @bind-Value="maxPrice" Min="0" Max="500" Step="10" Label="Max Price" TickMarks="true" Color="Color.Success" Size="Size.Small" />
                     <MudText Size="Size.Small">Selected Max Price: @maxPrice</MudText>
-
-                    @* Search for developer or team *@
-                    <MudText Typo="Typo.subtitle2">Search</MudText> <!-- Added a heading -->
-                    <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
-                    ResetValueOnEmptyText="@resetValueOnEmptyText"
-                    CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
-                    AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
                 </MudStack>
             </MudPaper>
         </MudDrawerContent>
     </MudDrawer>
 
     <!-- Main Content -->
-    <MudMain>
-        <MudText Typo="Typo.h6" Color="Color.Success">Search Results</MudText>
-        @if (filteredProducts.Any())
-        {
-            <ul>
-                @foreach (var product in filteredProducts)
-                {
-                    <li>@product.Name</li>
-                }
-            </ul>
-        }
-        else
-        {
-            <p>No products found.</p>
-        }
+    <MudMain Style="flex-grow: 1; display: flex; flex-direction: column; padding-left: 350px;">
+        <!-- Search Section -->
+        <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
+            <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
+                             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
+        </MudStack>
+
+        <!-- Search Results Section -->
+        <MudStack Spacing="3" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start" FullWidth="true" Style="margin-top: 50px;"> 
+            <MudText Typo="Typo.h6" Color="Color.Success">Search Results</MudText>
+            @if (SearchResultDevs.Any() || SearchResultTeams.Any())
+            {
+                <ul>
+                    @foreach (var dev in SearchResultDevs)
+                    {
+                        <li>@dev.DeveloperName</li>
+                    }
+                    @foreach (var team in SearchResultTeams)
+                    {
+                        <li>@team.</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <MudText>No products found.</MudText>
+            }
+        </MudStack>
     </MudMain>
 </MudLayout>
+
+
+
 
 @* Custom CSS for focus style *@
 <style>
@@ -119,7 +131,6 @@
         font-family: 'Roboto', sans-serif !important;
         font-size: 0.875rem;
     }
-
 </style>
 
 @* Shared Code *@
