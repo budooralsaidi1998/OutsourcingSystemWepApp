@@ -1,4 +1,4 @@
-﻿@page "/ViewTeamsAnDevs"
+﻿@page "/ViewTeamsAndDevs"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -59,50 +59,59 @@
                              Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
         </MudStack>
 
-        <!-- Search Results Section -->
-        <MudStack Spacing="3" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start" FullWidth="true" Style="margin-top: 50px;"> 
+        <!-- Search Results Section with Carousel -->
+        <MudStack Spacing="3" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start" FullWidth="true" Style="margin-top: 50px;">
             <MudText Typo="Typo.h6" Color="Color.Success">Search Results</MudText>
+
             @if (SearchResultDevs.Any() || SearchResultTeams.Any())
             {
-                <ul>
+                <MudCarousel TData="MudCard" AutoPlay="true" AnimationInterval="3000" Indicators="true" Circular="true" VisibleItems="3">
                     @foreach (var dev in SearchResultDevs)
                     {
-                        <li>@dev.DeveloperName</li>
+                        <MudCard>
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                            </MudCardContent>
+                        </MudCard>
                     }
                     @foreach (var team in SearchResultTeams)
                     {
-                        <li>@team.</li>
+                        <MudCard>
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                <MudText Typo="Typo.body2">@team.Description</MudText>
+                            </MudCardContent>
+                        </MudCard>
                     }
-                </ul>
+                </MudCarousel>
+
             }
             else
             {
-                <MudText>No products found.</MudText>
+                <MudText>No results found.</MudText>
             }
         </MudStack>
     </MudMain>
 </MudLayout>
 
-
-
-
 @* Custom CSS for focus style *@
 <style>
     /* Global font */
     body {
-        font-family: 'Roboto', sans-serif; /* Changed to a more professional and clean font */
+        font-family: 'Roboto', sans-serif;
     }
 
     .custom-focus-style .mud-select-root:focus,
     .custom-focus-style .mud-autocomplete-root:focus {
-        border-color: #4caf50 !important; /* Green border on focus */
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important; /* Green glow */
+        border-color: #4caf50 !important;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
     }
 
     .custom-focus-style .mud-select-root .mud-input-root:focus-within,
     .custom-focus-style .mud-autocomplete-root .mud-input-root:focus-within {
-        border-color: #4caf50 !important; /* Green border inside input */
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important; /* Green glow */
+        border-color: #4caf50 !important;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
     }
 
     /* Styling for Slider */
@@ -148,41 +157,34 @@
     public List<filtrationDeveloperdto> SearchResultDevs = new List<filtrationDeveloperdto>();
     public List<Team> SearchResultTeams = new List<Team>();
 
-    // Filter by category
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
     private string _value = "Nothing selected";
     private IEnumerable<string> _options = new HashSet<string> { "Skills: " };
 
-    private int maxPrice = 500; // Initial max price for the slider
+    private int maxPrice = 500;
 
-    // Gets all skills [returns array]
     private string[] GetAvailableSkills()
     {
         List<string> SkillNames = new List<string>();
-        var Skills = skillService.GetAllSkills(0, int.MaxValue, true, null); //only gets available skills
+        var Skills = skillService.GetAllSkills(0, int.MaxValue, true, null);
 
         foreach (var skill in Skills)
         {
             SkillNames.Add(skill.Name);
         }
 
-        return SkillNames.ToArray(); //convert to array so it can be used in GetSkillsFunctions
+        return SkillNames.ToArray();
     }
 
     private async Task<IEnumerable<string>> Search2(string value, CancellationToken token)
     {
-        // In real life use an asynchronous function for fetching data from an API.
         await Task.Delay(5, token);
 
-        // If text is null or empty, don't return values (drop-down will not open)
         if (string.IsNullOrEmpty(value))
             return new string[0];
         else
         {
-            // Find if search value exists in developer names
             var developers = developerService.GetName(value);
-
-            // Find if search value exists in team names (checks if name or description matches)
             var teams = teamService.GetTeamsBasedOnSearchValue(value);
 
             foreach (var dev in developers)
@@ -199,3 +201,4 @@
         }
     }
 }
+
