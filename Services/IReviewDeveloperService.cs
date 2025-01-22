@@ -12,6 +12,8 @@ namespace OutsourcingSystemWepApp.Services
         List<ClientReviewDeveloper> GetAllDevReviews(int Page, int PageSize, int? Rating, int? DevID);
         ClientReviewDeveloper GetByDevIDandTeamID(int ClientID, int DevID);
         ClientReviewDeveloper GetReviewByDevID(int DevID);
+   
         int UpdateDevReview(int ClientID, ClientReviewInDTO review);
+        List<ClientReviewDeveloper> GetAllDevReviews(int Page, int PageSize);
     }
 }

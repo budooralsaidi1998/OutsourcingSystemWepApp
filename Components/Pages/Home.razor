@@ -1,7 +1,302 @@
-﻿@page "/"
+﻿@layout Layout.MainLayout
+@page "/"
+@inject ISkillService SkillService
+@inject IReviewDeveloperService ReviewDeveloperService
+@inject IReviewTeamService ReviewTeamService
+<PageTitle>OutSourcing System</PageTitle>
 
-<PageTitle>Home</PageTitle>
+<MudCarousel Class="mud-width-full" Style="height:400px;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+    <MudCarouselItem Transition="transition">
+        <div class="d-flex" style="height:100%; justify-content: center; align-items: center;">
+            <img src="images/slide4.png" alt="Image 1" style="width: 90%; height: 90%; object-fit: cover;">
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="transition">
+        <div class="d-flex" style="height:100%; justify-content: center; align-items: center;">
+            <img src="images/slid7.png" alt="Image 2" style="width: 95%; height: 95%; object-fit: cover;">
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="transition">
+        <div class="d-flex" style="height:100%; justify-content: center; align-items: center;">
+            <img src="images/slid6.jpg" alt="Image 3" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+    </MudCarouselItem>
+</MudCarousel>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+@code {
+    private bool arrows = true;
+    private bool bullets = true;
+    private bool enableSwipeGesture = true;
+    private bool autocycle = true;
+    private Transition transition = Transition.Slide;
+}
+
+@* ----------------------------------------About -------------------------------------------- *@
+<br />
+<br/>
+<div class="article-container">
+    <div class="text-section">
+        <h2 class="article-title">OutSourcing Company </h2>
+        <p class="article-paragraph">
+            @textToShow
+            @if (!showFullText)
+            {
+                <span class="read-more-link" @onclick="ShowMoreText">... Read More</span>
+            }
+        </p>
+    </div>
+    <div class="image-section">
+        <img src="images/img2.jpg" alt="Article Image" class="article-image" />
+    </div>
+</div>
+
+@code {
+    private bool showFullText = false;
+    private string textToShow = "Work with the largest network of independent professionals and get things done—from quick turnarounds to big transformations.";
+    private string additionalText = " Meet clients you’re excited to work with and take your career or business to new heights and Find high-quality talent or open jobs with the help of AI tools that keep you in control...";
+
+    private void ShowMoreText()
+    {
+        textToShow += additionalText;
+        showFullText = true;
+    }
+}
+
+@* --------------------------------------------------SHow all Skill ------------------------------ *@
+
+@*   <div class="card-container">
+    @if (skillsWithCount != null && skillsWithCount.Count > 0)
+    {
+        <div class="arrow left" @onclick="MoveLeft">&#9664;</div>
+        <div class="card">
+            <h2>@skillsWithCount[currentIndex].Skill.Name</h2>
+            <p>@skillsWithCount[currentIndex].Skill.Description</p>
+            <p><strong>Developers:</strong> @skillsWithCount[currentIndex].DeveloperCount</p>
+            <a href="@($"/developers/{skillsWithCount[currentIndex].Skill.SkillID}")" class="view-developers">
+                View Developers &rarr;
+            </a>
+        </div>
+        <div class="arrow right" @onclick="MoveRight">&#9654;</div>
+    }
+    else
+    {
+        <p>Loading skills...</p>
+    }
+</div>
+
+@code {
+    private List<(Skill Skill, int DeveloperCount)> skillsWithCount;
+    private int currentIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skillsWithCount =  SkillService.GetSkillsWithDeveloperCount();
+    }
+
+    private void MoveLeft()
+    {
+        if (currentIndex > 0)
+        {
+            currentIndex--;
+        }
+    }
+
+    private void MoveRight()
+    {
+        if (currentIndex < skillsWithCount.Count - 1)
+        {
+            currentIndex++;
+        }
+    }
+} 
+<
+*@
+<br />
+<br />
+<h2 class="title">Skill Developer</h2>
+<section>
+    <div class="card-container">
+        @if (skillsWithCount != null && skillsWithCount.Count > 0)
+        {
+            <div class="arrow left" @onclick="MoveLeft">&lt;</div>
+            <div class="card-carousel">
+                @foreach (var skill in visibleSkills)
+                {
+                    <div class="card">
+                        <div class="cover item-a">
+                            <!-- Add dynamic background classes like item-a, item-b -->
+                            <h3>@skill.Skill.Name</h3>
+                            <p class="price">@skill.DeveloperCount Developers</p>
+                            <p class="des">@skill.Skill.Description</p>
+                        </div>
+                        <div class="card-back">
+                            <a href="@($"/developers/{skill.Skill.SkillID}")">
+                                View Developers →
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="arrow right" @onclick="MoveRight">&gt;</div>
+        }
+        else
+        {
+            <p>Loading skills...</p>
+        }
+    </div>
+</section>
+
+@code {
+    private List<(Skill Skill, int DeveloperCount)> skillsWithCount;
+    private List<(Skill Skill, int DeveloperCount)> visibleSkills;
+    private int currentIndex = 0;
+    private const int visibleCardCount = 3;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skillsWithCount = SkillService.GetSkillsWithDeveloperCount();
+        UpdateVisibleSkills();
+    }
+
+    private void UpdateVisibleSkills()
+    {
+        visibleSkills = skillsWithCount.Skip(currentIndex).Take(visibleCardCount).ToList();
+    }
+    private void MoveLeft()
+    {
+        if (currentIndex > 0)
+        {
+            currentIndex--;
+            UpdateVisibleSkills();
+        }
+    }
+
+    private void MoveRight()
+    {
+        if (currentIndex < skillsWithCount.Count - visibleCardCount)
+        {
+            currentIndex++;
+            UpdateVisibleSkills();
+        }
+    }
+} 
+
+
+ @* ---------------------Client worked with Us --------------------- *@
+ <br />
+ <br />
+ <br />
+<div class="moving-bar-container">
+    <div class="moving-bar-title">Clients Worked With</div>
+    <div class="moving-bar">
+        <img src="images/air.jpg" alt="Moving Image" />
+        <img src="images/oil.jpg" alt="Moving Image" />
+        <img src="images/pdo.jpg" alt="Moving Image" />
+        <img src="images/oman tower.png" alt="Moving Image" />
+        <img src="images/omantel.jpg" alt="Moving Image" />
+        <img src="images/orredoo.png" alt="Moving Image" />
+        <img src="images/baih.png" alt="Moving Image" />
+        <img src="images/vodfon.png" alt="Moving Image" />
+        <!-- Duplicate images for continuous scrolling -->
+        <img src="images/air.jpg" alt="Moving Image" />
+        <img src="images/oil.jpg" alt="Moving Image" />
+        <img src="images/pdo.jpg" alt="Moving Image" />
+    </div>
+
+
+</div>
+
+@* ------------------------------------Developer Reviews Carousel-------------------------------------------- *@
+
+
+<h2>Developer Reviews</h2>
+
+<div class="review-container">
+    @if (reviews != null && reviews.Count > 0)
+    {
+        <div class="arrow left" @onclick="MovLeft">&lt;</div>
+        <div class="review-carousel">
+            @foreach (var review in visibleReviews)
+            {
+                <div class="review-card">
+                    <div class="review-card">
+                        <!-- Developer's Name -->
+                        <h3>@review.Developer.DeveloperName</h3>
+                        <!-- Client's Name -->
+                        <p><strong>Client:</strong> @review.Client.CompanyName</p>
+                        <!-- Rating Displayed using MudBlazor's MudRating -->
+                        <MudRating SelectedValue="@review.Rating" Max="5" ReadOnly="true" />
+                        <!-- Comment from the review -->
+                        <p>@review.Comment</p>
+                        <!-- Date of the review -->
+                        <p><em>Reviewed on: @review.Date.ToString("MM/dd/yyyy")</em></p>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="arrow right" @onclick="MovRight">&gt;</div>
+    }
+    else
+    {
+        <p>No reviews available.</p>
+    }
+</div>
+
+@code {
+    private List<ClientReviewDeveloper> reviews = new();
+    private List<ClientReviewDeveloper> visibleReviews = new();
+    private const int VisibleReviewCount = 3;
+    private int currentInde = 0;
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            // Fetching all reviews
+            reviews = ReviewDeveloperService.GetAllDevReviews(0, 50);
+
+            // Initialize the visible reviews
+            if (reviews == null || !reviews.Any())
+            {
+                reviews = new List<ClientReviewDeveloper>();
+            }
+            UpdateVisibleReviews();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching reviews: {ex.Message}");
+            reviews = new List<ClientReviewDeveloper>();
+        }
+    }
+
+    private void UpdateVisibleReviews()
+    {
+        visibleReviews = reviews.Skip(currentInde).Take(VisibleReviewCount).ToList();
+    }
+
+    private void MovLeft()
+    {
+        if (currentInde > 0)
+        {
+            currentInde--;
+            UpdateVisibleReviews();
+        }
+    }
+
+    private void MovRight()
+    {
+        if (currentInde < reviews.Count - VisibleReviewCount)
+        {
+            currentInde++;
+            UpdateVisibleReviews();
+        }
+    }
+}
+
+
+@* --------------------------------GetTeam Review ----------------------- *@
+
+
+
+ 

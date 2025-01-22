@@ -20,7 +20,7 @@ namespace OutsourcingSystemWepApp.Data.Model
         [Required(ErrorMessage = "Active status is required.")]
         public bool Active { get; set; } = true;
 
-        // Navigation Properties
+        // Navigation Properties 
         public virtual ICollection<DeveloperSkill> DeveloperSkills { get; set; }
     }
 }

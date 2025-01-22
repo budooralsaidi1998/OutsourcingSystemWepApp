@@ -111,5 +111,9 @@ namespace OutsourcingSystemWepApp.Services
             int number = PageSize * Page;
             return skills.OrderByDescending(p => p.Name).Skip(number).Take(PageSize).ToList();
         }
+        public List<(Skill skill, int DeveloperCount)> GetSkillsWithDeveloperCount()
+        {
+            return _skillRepository.GetAllSkillsWithDeveloperCount();
+        }
     }
 }

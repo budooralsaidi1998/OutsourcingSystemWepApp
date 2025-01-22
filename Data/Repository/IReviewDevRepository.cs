@@ -10,5 +10,6 @@ namespace OutsourcingSystemWepApp.Data.Repository
         ClientReviewDeveloper GetDevReviewByDevID(int DevID);
         ClientReviewDeveloper GetReviewByClientAndTeamIDs(int ClientID, int DevID);
         void UpdateDevReview(ClientReviewDeveloper DevRev);
+        List<ClientReviewDeveloper> GetAllDevReviewsnames();
     }
 }
