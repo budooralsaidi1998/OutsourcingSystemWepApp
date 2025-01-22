@@ -1,4 +1,4 @@
-﻿@page "/ViewTeamAndDeveloper"
+﻿@page "/ViewTeamsAndDevs"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -43,6 +43,12 @@
                     <MudText Typo="Typo.subtitle2">Set Max Price</MudText>
                     <MudSlider @bind-Value="maxPrice" Min="0" Max="500" Step="10" Label="Max Price" TickMarks="true" Color="Color.Success" Size="Size.Small" />
                     <MudText Size="Size.Small">Selected Max Price: @maxPrice</MudText>
+
+                    @* Buttons to Apply or Clear Filters *@
+                    <MudStack Spacing="2">
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="ApplyFilters">Apply Filters</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" FullWidth="true" OnClick="ClearFilters">Clear Filters</MudButton>
+                    </MudStack>
                 </MudStack>
             </MudPaper>
         </MudDrawerContent>
@@ -53,13 +59,12 @@
         <!-- Search Section -->
         <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
             <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
-                             ResetValueOnEmptyText="@resetValueOnEmptyText"
-                             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
-                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
-                             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style"
-                             OnKeyDown="HandleKeyDown" />
+            ResetValueOnEmptyText="@resetValueOnEmptyText"
+            CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+            AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
+            Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style"
+            OnKeyDown="HandleKeyDown" />
         </MudStack>
-
 
         <!-- Developers Section -->
         <MudPaper Class="pa-4" Style="margin-top: 32px;">
@@ -67,20 +72,20 @@
             <MudGrid Spacing="3">
                 @if (SearchResultDevs.Any())
                 {
-                @foreach (var dev in SearchResultDevs)
-                {
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudCard Elevation="8" Class="pa-4">
-                            <MudCardContent>
-                                <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
-                                <MudText Typo="Typo.body2">@dev.Specialization</MudText>
-                            </MudCardContent>
-                            <MudCardActions>
-                                <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                            </MudCardActions>
-                        </MudCard>
-                    </MudItem>
-                }
+                    @foreach (var dev in SearchResultDevs)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="8" Class="pa-4">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                    <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
                 }
                 else
                 {
@@ -154,22 +159,6 @@
                         <MudText>No developers available.</MudText>
                     }
                 }
-
-
-                @foreach (var team in SearchResultTeams)
-                {
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudCard Elevation="8" Class="pa-4">
-                            <MudCardContent>
-                                <MudText Typo="Typo.h6">@team.TeamName</MudText>
-                                <MudText Typo="Typo.body2">@team.Description</MudText>
-                            </MudCardContent>
-                            <MudCardActions>
-                                <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                            </MudCardActions>
-                        </MudCard>
-                    </MudItem>
-                }
             </MudGrid>
         </MudPaper>
     </MudMain>
@@ -185,6 +174,9 @@
     private bool coerceValue;
     private bool selectedOnTab;
     private string value2;
+    private int maxPrice = 500;
+    private bool _isInitialized = false;
+
 
     // All developers and teams
     public List<Developer> InitialResultDevs = new List<Developer>();
@@ -198,7 +190,6 @@
     private string _value = "Nothing selected";
     private IEnumerable<string> _options = new HashSet<string> { "Skills: " };
 
-    private int maxPrice = 500;
 
     // Initialize the list of available skills
     private string[] GetAvailableSkills()
@@ -213,8 +204,6 @@
 
         return SkillNames.ToArray();
     }
-
-    private bool _isInitialized = false;
 
     // Load all developers and teams on page load
     protected override async Task OnInitializedAsync()
@@ -281,5 +270,54 @@
             await Search2(value2, new CancellationToken());
         }
     }
-}
 
+    private async Task HandleSearchIconClick()
+    {
+        // Trigger the search when the search icon is clicked
+        await Search2(value2, new CancellationToken());
+    }
+
+    // Apply Filters
+    private async Task ApplyFilters()
+    {
+        // Here, you can apply any filtering logic if needed
+        if (ratingValue != null)
+        {
+            InitialResultDevs = InitialResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
+            InitialResultTeams = InitialResultTeams.Where(d => d.Rating >= ratingValue).ToList();
+        }
+
+        if (maxPrice != null)
+        {
+            InitialResultDevs = InitialResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
+            InitialResultTeams = InitialResultTeams.Where(d => d.HourlyRate <= maxPrice).ToList();
+        }
+
+        if (OnlyAvailableSwitch == true)
+        {
+            InitialResultDevs = InitialResultDevs.Where(d => d.IsDelete == false).ToList();
+            InitialResultTeams = InitialResultTeams.Where(d => d.Active == true).ToList();
+        }
+
+        if (OnlyAvailableSwitch == false)
+        {
+            InitialResultDevs = InitialResultDevs.Where(d => d.IsDelete == true).ToList();
+            InitialResultTeams = InitialResultTeams.Where(d => d.Active == false).ToList();
+        }
+
+        // For now, let's just call the search function
+        //await Search2(value2, new CancellationToken());
+    }
+
+    // Clear Filters
+    private void ClearFilters()
+    {
+        // Reset filter values
+        OnlyAvailableSwitch = true;
+        _value1 = "Both";
+        ratingValue = 2;
+        _value = "Nothing selected";
+        _options = new HashSet<string> { "Skills: " };
+        maxPrice = 500;
+    }
+}
