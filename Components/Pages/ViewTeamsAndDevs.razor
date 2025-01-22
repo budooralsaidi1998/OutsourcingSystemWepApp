@@ -49,37 +49,127 @@
     </MudDrawer>
 
     <!-- Main Content -->
-<!-- Main Content -->
     <MudMain Style="flex-grow: 1; display: flex; flex-direction: column; padding-left: 350px;">
         <!-- Search Section -->
         <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
             <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
-                             ResetValueOnEmptyText="@resetValueOnEmptyText"
-                             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
-                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
-                             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
+            ResetValueOnEmptyText="@resetValueOnEmptyText"
+            CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+            AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
+            Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
         </MudStack>
 
-        <!-- MudPaper container for cards -->
+        <!-- Developers Section -->
         <MudPaper Class="pa-4" Style="margin-top: 32px;">
-            <MudGrid>
-                @foreach (var item in GetCardItems())  @* Adjust this to fit your data logic *@
+            <MudText Typo="Typo.h5" Color="Color.Success" Align="Align.Center" Class="mb-4">Developers</MudText>  <!-- Developers Heading -->
+            <MudGrid Spacing="3">
+                @if (SearchResultDevs.Any())
                 {
-                    <MudItem xs="12" sm="6" md="4"> <!-- Create responsive card layout -->
-                        <MudCard Elevation="4" Class="pa-4">
+                @foreach (var dev in SearchResultDevs)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudCard Elevation="8" Class="pa-4">
                             <MudCardContent>
-                                <MudText Typo="Typo.h6">@item.Title</MudText> <!-- Card Title -->
-                                <MudText Typo="Typo.body2">@item.Description</MudText> <!-- Card Description -->
+                                <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                <MudText Typo="Typo.body2">@dev.Specialization</MudText>
                             </MudCardContent>
                             <MudCardActions>
-                                <MudButton Variant="Variant.Filled" Color="Color.Success">View Details</MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+                }
+                else
+                {
+                    @if (InitialResultDevs.Any())
+                    {
+                        @foreach (var dev in InitialResultDevs)
+                        {
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudCard Elevation="8" Class="pa-4">
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                        <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                    else
+                    {
+                        <MudText>No developers available.</MudText>
+                    }
+                }
+            </MudGrid>
+        </MudPaper>
+
+        <!-- Teams Section -->
+        <MudPaper Class="pa-4" Style="margin-top: 32px;">
+            <MudText Typo="Typo.h5" Color="Color.Success" Align="Align.Center" Class="mb-4">Teams</MudText>  <!-- Teams Heading -->
+            <MudGrid Spacing="3">
+                @if (SearchResultTeams.Any())
+                {
+                    @foreach (var team in SearchResultTeams)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="8" Class="pa-4">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                    <MudText Typo="Typo.body2">@team.Description</MudText>
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+                }
+                else
+                {
+                    @if (InitialResultTeams.Any())
+                    {
+                        @foreach (var team in InitialResultTeams)
+                        {
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudCard Elevation="8" Class="pa-4">
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                        <MudText Typo="Typo.body2">@team.Description</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                    else
+                    {
+                        <MudText>No developers available.</MudText>
+                    }
+                }
+
+
+                @foreach (var team in SearchResultTeams)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudCard Elevation="8" Class="pa-4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                <MudText Typo="Typo.body2">@team.Description</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                             </MudCardActions>
                         </MudCard>
                     </MudItem>
                 }
             </MudGrid>
         </MudPaper>
-
     </MudMain>
 </MudLayout>
 
@@ -87,18 +177,18 @@
 @code {
     public bool OnlyAvailableSwitch { get; set; } = true;
     private string _value1 = "Both";
-    private int ratingValue = 2; 
+    private int ratingValue = 2;
     private bool resetValueOnEmptyText;
     private bool coerceText;
     private bool coerceValue;
     private bool selectedOnTab;
     private string value2;
 
-    //All developers and teams
+    // All developers and teams
     public List<Developer> InitialResultDevs = new List<Developer>();
     public List<TeamOutDTO> InitialResultTeams = new List<TeamOutDTO>();
 
-    //Filtered devs and teams
+    // Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
     public List<Team> SearchResultTeams = new List<Team>();
 
@@ -123,6 +213,7 @@
     }
 
     private bool _isInitialized = false;
+
     // Load all developers and teams on page load
     protected override async Task OnInitializedAsync()
     {
@@ -137,7 +228,7 @@
     {
         // Load all developers and teams
         var developers = developerService.GetAll(); 
-        var teams = teamService.GetAllTeams(0,int.MaxValue, null, null, null, null); 
+        var teams = teamService.GetAllTeams(0, int.MaxValue, null, null, null, null); 
 
         // Add developers to the results
         InitialResultDevs = developers.ToList();
@@ -146,26 +237,9 @@
         InitialResultTeams = teams.ToList();
     }
 
-    public class CardItem
-    {
-        public string Title { get; set; }
-        public string Description { get; set; }
-    }
-
-    private List<CardItem> GetCardItems()
-    {
-        return new List<CardItem>
-        {
-            new CardItem { Title = "Card 1", Description = "This is the description for card 1" },
-            new CardItem { Title = "Card 2", Description = "This is the description for card 2" },
-            new CardItem { Title = "Card 3", Description = "This is the description for card 3" }
-        };
-    }
-
-
     private async Task<IEnumerable<string>> Search2(string value, CancellationToken token)
     {
-        //Making sure previous search results removed
+        // Making sure previous search results are removed
         SearchResultDevs.Clear();
         SearchResultTeams.Clear();
 
