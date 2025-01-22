@@ -1,4 +1,4 @@
-﻿@page "/ViewTeamsAndDevs"
+﻿@page "/ViewTeamAndDeveloper"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -53,11 +53,13 @@
         <!-- Search Section -->
         <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
             <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
-            ResetValueOnEmptyText="@resetValueOnEmptyText"
-            CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
-            AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
-            Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
+                             ResetValueOnEmptyText="@resetValueOnEmptyText"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
+                             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style"
+                             OnKeyDown="HandleKeyDown" />
         </MudStack>
+
 
         <!-- Developers Section -->
         <MudPaper Class="pa-4" Style="margin-top: 32px;">
@@ -227,8 +229,8 @@
     private async Task LoadAllResults()
     {
         // Load all developers and teams
-        var developers = developerService.GetAll(); 
-        var teams = teamService.GetAllTeams(0, int.MaxValue, null, null, null, null); 
+        var developers = developerService.GetAll();
+        var teams = teamService.GetAllTeams(0, int.MaxValue, null, null, null, null);
 
         // Add developers to the results
         InitialResultDevs = developers.ToList();
@@ -270,4 +272,14 @@
             return new string[0];
         }
     }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            // Trigger the search when the Enter key is pressed
+            await Search2(value2, new CancellationToken());
+        }
+    }
 }
+
