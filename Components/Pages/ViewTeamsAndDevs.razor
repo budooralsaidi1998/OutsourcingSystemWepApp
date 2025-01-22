@@ -90,21 +90,24 @@
                 }
                 else
                 {
-                    @if (InitialResultDevs.Any())
+                    @if (ResourceFound != true) //ensuring does not show results if results found in team
                     {
-                        @foreach (var dev in InitialResultDevs)
+                        @if(InitialResultDevs.Any())
                         {
-                            <MudItem xs="12" sm="6" md="4">
-                                <MudCard Elevation="8" Class="pa-4">
-                                    <MudCardContent>
-                                        <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
-                                        <MudText Typo="Typo.body2">@dev.Specialization</MudText>
-                                    </MudCardContent>
-                                    <MudCardActions>
-                                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                                    </MudCardActions>
-                                </MudCard>
-                            </MudItem>
+                            @foreach (var dev in InitialResultDevs)
+                            {
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudCard Elevation="8" Class="pa-4">
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                            <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                                        </MudCardContent>
+                                        <MudCardActions>
+                                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                        </MudCardActions>
+                                    </MudCard>
+                                </MudItem>
+                            }
                         }
                     }
                     else
@@ -138,21 +141,24 @@
                 }
                 else
                 {
-                    @if (InitialResultTeams.Any())
+                    @if (ResourceFound != true) //ensuring does not show results if results found in dev
                     {
-                        @foreach (var team in InitialResultTeams)
+                        @if (InitialResultTeams.Any())
                         {
-                            <MudItem xs="12" sm="6" md="4">
-                                <MudCard Elevation="8" Class="pa-4">
-                                    <MudCardContent>
-                                        <MudText Typo="Typo.h6">@team.TeamName</MudText>
-                                        <MudText Typo="Typo.body2">@team.Description</MudText>
-                                    </MudCardContent>
-                                    <MudCardActions>
-                                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                                    </MudCardActions>
-                                </MudCard>
-                            </MudItem>
+                            @foreach (var team in InitialResultTeams)
+                            {
+                                <MudItem xs="12" sm="6" md="4">
+                                    <MudCard Elevation="8" Class="pa-4">
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                            <MudText Typo="Typo.body2">@team.Description</MudText>
+                                        </MudCardContent>
+                                        <MudCardActions>
+                                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                        </MudCardActions>
+                                    </MudCard>
+                                </MudItem>
+                            }
                         }
                     }
                     else
@@ -178,7 +184,7 @@
     private bool coerceValue;
     private bool selectedOnTab;
     private string SearchValue; //value inputted to search by
-
+    private bool ResourceFound = false; 
 
     // All developers and teams
     public List<Developer> InitialResultDevs = new List<Developer>();
@@ -211,6 +217,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadAllResults();
+        ResourceFound = false;
     }
 
     private async Task LoadAllResults()
@@ -254,6 +261,11 @@
             foreach (var team in teams)
             {
                 SearchResultTeams.Add(team);
+            }
+
+            if (SearchResultDevs != null || SearchResultTeams != null) //showing if resource was found 
+            {
+                ResourceFound = true;
             }
 
             return new string[0];
