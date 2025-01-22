@@ -1,3 +1,285 @@
-﻿@page "/ViewTeamsAndDevs"
+﻿@page "/ViewTeamAndDeveloper"
+@using MudBlazor
+@using Data.Model
+@using Data.DTOs
+@inject ISkillService skillService
+@inject ITeamService teamService
+@inject IDeveloperServices developerService
 
-hellooooo
+<MudLayout>
+    <!-- Sidebar -->
+    <MudDrawer ClipMode="DrawerClipMode.Always" Open="true" Elevation="4" Width="350px">
+        <MudDrawerContent>
+            <MudPaper Class="pa-4">
+                <MudStack Spacing="4">
+                    @* Heading for the sidebar *@
+                    <MudText Typo="Typo.h5" Color="Color.Success">Filters</MudText>
+
+                    @* Switches *@
+                    <MudSwitch @bind-Value="OnlyAvailableSwitch" Label="Only show currently available" Size="Size.Small" Color="Color.Success" />
+
+                    @* Filter By: Developers/Teams/Both *@
+                    <MudStack Spacing="1" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
+                        <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="_value1" Color="Color.Success" CheckMark FixedContent>
+                            <MudToggleItem Value="@("Developers")" Text="Devs only" Typography="Typo.body2" />
+                            <MudToggleItem Value="@("Teams")" Text="Teams Only" Typography="Typo.body2" />
+                            <MudToggleItem Value="@("Both")" Text="Both" Typography="Typo.body2" />
+                        </MudToggleGroup>
+                    </MudStack>
+
+                    @* Input Rating *@
+                    <MudRating @bind-SelectedValue="ratingValue" Max="5" Size="Size.Small" />
+                    <MudText Size="Size.Small">Selected Rating: @ratingValue</MudText>
+
+                    @* Multi skill selector *@
+                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-Value="_value" @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
+                        @foreach (var state in GetAvailableSkills())
+                        {
+                            <MudSelectItem T="string" Value="@state">@state</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    @* Max Price Slider *@
+                    <MudText Typo="Typo.subtitle2">Set Max Price</MudText>
+                    <MudSlider @bind-Value="maxPrice" Min="0" Max="500" Step="10" Label="Max Price" TickMarks="true" Color="Color.Success" Size="Size.Small" />
+                    <MudText Size="Size.Small">Selected Max Price: @maxPrice</MudText>
+                </MudStack>
+            </MudPaper>
+        </MudDrawerContent>
+    </MudDrawer>
+
+    <!-- Main Content -->
+    <MudMain Style="flex-grow: 1; display: flex; flex-direction: column; padding-left: 350px;">
+        <!-- Search Section -->
+        <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
+            <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
+                             ResetValueOnEmptyText="@resetValueOnEmptyText"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
+                             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style"
+                             OnKeyDown="HandleKeyDown" />
+        </MudStack>
+
+
+        <!-- Developers Section -->
+        <MudPaper Class="pa-4" Style="margin-top: 32px;">
+            <MudText Typo="Typo.h5" Color="Color.Success" Align="Align.Center" Class="mb-4">Developers</MudText>  <!-- Developers Heading -->
+            <MudGrid Spacing="3">
+                @if (SearchResultDevs.Any())
+                {
+                @foreach (var dev in SearchResultDevs)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudCard Elevation="8" Class="pa-4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+                }
+                else
+                {
+                    @if (InitialResultDevs.Any())
+                    {
+                        @foreach (var dev in InitialResultDevs)
+                        {
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudCard Elevation="8" Class="pa-4">
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                        <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                    else
+                    {
+                        <MudText>No developers available.</MudText>
+                    }
+                }
+            </MudGrid>
+        </MudPaper>
+
+        <!-- Teams Section -->
+        <MudPaper Class="pa-4" Style="margin-top: 32px;">
+            <MudText Typo="Typo.h5" Color="Color.Success" Align="Align.Center" Class="mb-4">Teams</MudText>  <!-- Teams Heading -->
+            <MudGrid Spacing="3">
+                @if (SearchResultTeams.Any())
+                {
+                    @foreach (var team in SearchResultTeams)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="8" Class="pa-4">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                    <MudText Typo="Typo.body2">@team.Description</MudText>
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+                }
+                else
+                {
+                    @if (InitialResultTeams.Any())
+                    {
+                        @foreach (var team in InitialResultTeams)
+                        {
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudCard Elevation="8" Class="pa-4">
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                        <MudText Typo="Typo.body2">@team.Description</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                    else
+                    {
+                        <MudText>No developers available.</MudText>
+                    }
+                }
+
+
+                @foreach (var team in SearchResultTeams)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MudCard Elevation="8" Class="pa-4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h6">@team.TeamName</MudText>
+                                <MudText Typo="Typo.body2">@team.Description</MudText>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
+    </MudMain>
+</MudLayout>
+
+@* Shared Code *@
+@code {
+    public bool OnlyAvailableSwitch { get; set; } = true;
+    private string _value1 = "Both";
+    private int ratingValue = 2;
+    private bool resetValueOnEmptyText;
+    private bool coerceText;
+    private bool coerceValue;
+    private bool selectedOnTab;
+    private string value2;
+
+    // All developers and teams
+    public List<Developer> InitialResultDevs = new List<Developer>();
+    public List<TeamOutDTO> InitialResultTeams = new List<TeamOutDTO>();
+
+    // Filtered devs and teams
+    public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
+    public List<Team> SearchResultTeams = new List<Team>();
+
+    private List<Skill> filteredProducts { get; set; } = new List<Skill>();
+    private string _value = "Nothing selected";
+    private IEnumerable<string> _options = new HashSet<string> { "Skills: " };
+
+    private int maxPrice = 500;
+
+    // Initialize the list of available skills
+    private string[] GetAvailableSkills()
+    {
+        List<string> SkillNames = new List<string>();
+        var Skills = skillService.GetAllSkills(0, int.MaxValue, true, null);
+
+        foreach (var skill in Skills)
+        {
+            SkillNames.Add(skill.Name);
+        }
+
+        return SkillNames.ToArray();
+    }
+
+    private bool _isInitialized = false;
+
+    // Load all developers and teams on page load
+    protected override async Task OnInitializedAsync()
+    {
+        if (!_isInitialized)
+        {
+            await LoadAllResults();
+            _isInitialized = true;
+        }
+    }
+
+    private async Task LoadAllResults()
+    {
+        // Load all developers and teams
+        var developers = developerService.GetAll();
+        var teams = teamService.GetAllTeams(0, int.MaxValue, null, null, null, null);
+
+        // Add developers to the results
+        InitialResultDevs = developers.ToList();
+
+        // Add teams to the results
+        InitialResultTeams = teams.ToList();
+    }
+
+    private async Task<IEnumerable<string>> Search2(string value, CancellationToken token)
+    {
+        // Making sure previous search results are removed
+        SearchResultDevs.Clear();
+        SearchResultTeams.Clear();
+
+        await Task.Delay(5, token);
+
+        if (string.IsNullOrEmpty(value))
+        {
+            // If search term is empty, load all results again
+            await LoadAllResults();
+            return new string[0];
+        }
+        else
+        {
+            // Search logic for filtering based on search input
+            var developers = developerService.GetDevsBasedOnSearchValue(value);
+            var teams = teamService.GetTeamsBasedOnSearchValue(value);
+
+            foreach (var dev in developers)
+            {
+                SearchResultDevs.Add(dev);
+            }
+
+            foreach (var team in teams)
+            {
+                SearchResultTeams.Add(team);
+            }
+
+            return new string[0];
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            // Trigger the search when the Enter key is pressed
+            await Search2(value2, new CancellationToken());
+        }
+    }
+}
+

@@ -10,6 +10,7 @@ namespace OutsourcingSystemWepApp.Services
         IEnumerable<filtrationDeveloperdto> GetByAvailability(bool av);
         Developer GetById(int id);
         IEnumerable<filtrationDeveloperdto> GetName(string name);
+        List<DeveloperOutDTO> GetDevsBasedOnSearchValue(string value);
         IEnumerable<filtrationDeveloperdto> Getrate(decimal rating);
         IEnumerable<filtrationDeveloperdto> GetSpecilization(string spec);
         void RegisterDeveloper(UserDeveloperInputDto input);

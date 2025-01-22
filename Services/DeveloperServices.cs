@@ -297,6 +297,31 @@ namespace OutsourcingSystemWepApp.Services
                 throw new Exception($"An error occurred while retrieving developer in the industry '{name}'.", ex);
             }
         }
+
+        public List<DeveloperOutDTO> GetDevsBasedOnSearchValue(string value)
+        {
+            var devs = _developerRepositry.GetAll();
+            var found = devs.Where(d => d.DeveloperName.Contains(value) || d.Specialization.Contains(value) || d.CareerSummary.Contains(value)).ToList();
+            var ResultDevs = new List<DeveloperOutDTO>();
+
+            //mapping
+            foreach (var dev in found)
+            {
+                var d = new DeveloperOutDTO
+                {
+                    DeveloperName = dev.DeveloperName,
+                    Specialization = dev.Specialization,
+                    HourlyRate = dev.HourlyRate,
+                    CommitmentRating = dev.CommitmentRating,
+                    AvailabilityStatus = dev.AvailabilityStatus,
+                    CompletedProjects = dev.CompletedProjects,
+                };
+                ResultDevs.Add(d);
+            }
+
+            return ResultDevs;
+        }
+
         public IEnumerable<filtrationDeveloperdto> GetSpecilization(string spec)
         {
             // Validate the industry parameter to ensure it not null 

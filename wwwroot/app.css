@@ -538,3 +538,15 @@ body {
     font-style: italic;
     color: #777;
 }
+
+@media (max-width: 600px) {
+    .card-with-price {
+        width: 100% !important; /* Cards take up full width on small screens */
+    }
+}
+
+@media (min-width: 601px) {
+    .card-with-price {
+        width: 45% !important; /* Cards take up 45% of the width on larger screens */
+    }
+}

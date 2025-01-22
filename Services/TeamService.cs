@@ -58,6 +58,13 @@ namespace OutsourcingSystemWepApp.Services
             return team != null ? true : false; //if team found return true if not found return false
         }
 
+
+        public  List<Team> GetTeamsBasedOnSearchValue(string value)
+        {
+            var teams = _teamRepository.GetAllTeams();
+            return teams.Where(t=>t.TeamName.Contains(value) || t.Description.Contains(value)).ToList();
+        }
+
         public Team GetTeamByID(int TeamID)
         {
             return _teamRepository.GetTeamByID(TeamID);
