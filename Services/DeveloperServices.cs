@@ -298,10 +298,11 @@ namespace OutsourcingSystemWepApp.Services
             }
         }
 
-        public List<DeveloperOutDTO> GetDevsBasedOnSearchValue(string value)
+        public List<DeveloperOutDTO> GetDevsBasedOnSearchValue(string Value)
         {
             var devs = _developerRepositry.GetAll();
-            var found = devs.Where(d => d.DeveloperName.Contains(value) || d.Specialization.Contains(value) || d.CareerSummary.Contains(value)).ToList();
+            var value = Value.ToLower();
+            var found = devs.Where(d => d.DeveloperName.ToLower().Contains(value) || d.Specialization.ToLower().Contains(value) || d.CareerSummary.ToLower().Contains(value)).ToList();
             var ResultDevs = new List<DeveloperOutDTO>();
 
             //mapping
