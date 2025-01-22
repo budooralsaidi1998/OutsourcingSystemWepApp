@@ -16,7 +16,7 @@
                     <MudText Typo="Typo.h5" Color="Color.Success">Filters</MudText>
 
                     @* Switches *@
-                    <MudSwitch @bind-Value="Basic_Switch2" Label="Only show currently active" Size="Size.Small" Color="Color.Success" />
+                    <MudSwitch @bind-Value="OnlyAvailableSwitch" Label="Only show currently available" Size="Size.Small" Color="Color.Success" />
 
                     @* Filter By: Developers/Teams/Both *@
                     <MudStack Spacing="1" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
@@ -49,140 +49,56 @@
     </MudDrawer>
 
     <!-- Main Content -->
+<!-- Main Content -->
     <MudMain Style="flex-grow: 1; display: flex; flex-direction: column; padding-left: 350px;">
         <!-- Search Section -->
         <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
             <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
-            ResetValueOnEmptyText="@resetValueOnEmptyText"
-            CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
-            AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
-            Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
+                             ResetValueOnEmptyText="@resetValueOnEmptyText"
+                             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
+                             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
         </MudStack>
 
-        <!-- Search Results Section with Carousel -->
-        <MudStack Spacing="3" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start" FullWidth="true" Style="margin-top: 50px;">
-            <MudText Typo="Typo.h6" Color="Color.Success">Search Results</MudText>
-
-            @if (SearchResultDevs.Any() || SearchResultTeams.Any())
-            {
-                <MudCarousel TData="MudCard" AutoPlay="true" AnimationInterval="3000" Indicators="true" Circular="true" VisibleItems="3">
-                    @foreach (var dev in SearchResultDevs)
-                    {
-                        <MudCard Class="card-with-price">
+        <!-- MudPaper container for cards -->
+        <MudPaper Class="pa-4" Style="margin-top: 32px;">
+            <MudGrid>
+                @foreach (var item in GetCardItems())  @* Adjust this to fit your data logic *@
+                {
+                    <MudItem xs="12" sm="6" md="4"> <!-- Create responsive card layout -->
+                        <MudCard Elevation="4" Class="pa-4">
                             <MudCardContent>
-                                <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
-                                <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                                <MudText Typo="Typo.h6">@item.Title</MudText> <!-- Card Title -->
+                                <MudText Typo="Typo.body2">@item.Description</MudText> <!-- Card Description -->
                             </MudCardContent>
-                            <MudText Class="price-tag">@dev.HourlyRate.ToString("C")</MudText> <!-- Show the price on the top right -->
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success">View Details</MudButton>
+                            </MudCardActions>
                         </MudCard>
-                    }
-                    @foreach (var team in SearchResultTeams)
-                    {
-                        <MudCard Class="card-with-price">
-                            <MudCardContent>
-                                <MudText Typo="Typo.h6">@team.TeamName</MudText>
-                                <MudText Typo="Typo.body2">@team.Description</MudText>
-                            </MudCardContent>
-                            <MudText Class="price-tag">@team.HourlyRate.ToString("C")</MudText> <!-- Show the price on the top right -->
-                        </MudCard>
-                    }
-                </MudCarousel>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
 
-            }
-            else
-            {
-                <MudText>No results found.</MudText>
-            }
-        </MudStack>
     </MudMain>
 </MudLayout>
 
-@* Custom CSS for focus style *@
-<style>
-    /* Global font */
-    body {
-    font-family: 'Roboto', sans-serif;
-    }
-
-    .custom-focus-style .mud-select-root:focus,
-    .custom-focus-style .mud-autocomplete-root:focus {
-    border-color: #4caf50 !important;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
-    }
-
-    .custom-focus-style .mud-select-root .mud-input-root:focus-within,
-    .custom-focus-style .mud-autocomplete-root .mud-input-root:focus-within {
-    border-color: #4caf50 !important;
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
-    }
-
-    /* Styling for Slider */
-    .mud-slider .mud-slider-track {
-    background-color: #4caf50 !important;
-    }
-
-    .mud-slider .mud-slider-thumb {
-    background-color: #4caf50 !important;
-    }
-
-    /* Custom style for headings */
-    .mud-text-h5 {
-    font-family: 'Poppins', sans-serif !important;
-    font-weight: 600;
-    font-size: 1.25rem;
-    }
-
-    .mud-text-subtitle2 {
-    font-family: 'Poppins', sans-serif !important;
-    font-weight: 500;
-    font-size: 1rem;
-    }
-
-    .mud-text-body2 {
-    font-family: 'Roboto', sans-serif !important;
-    font-size: 0.875rem;
-    }
-
-    /* Card with price tag in the top-right corner */
-    /* Card with price tag in the top-right corner */
-    .card-with-price {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        padding: 24px; /* Increased padding for a bigger card */
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
-        width: 150%; /* Increased the width by 50% */
-        height: 150%; /* Increased the height by 50% */
-        max-width: 400px; /* Optional: Limit max width to maintain responsive design */
-    }
-
-    .price-tag {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        background-color: rgba(76, 175, 80, 0.8); /* Green background */
-        color: white;
-        padding: 5px 10px;
-        border-radius: 12px;
-        font-weight: bold;
-        font-size: 0.8rem;
-    }
-</style>
-
 @* Shared Code *@
 @code {
-    public bool Basic_Switch1 { get; set; } = false;
-    public bool Basic_Switch2 { get; set; } = true;
-
+    public bool OnlyAvailableSwitch { get; set; } = true;
     private string _value1 = "Both";
-    private int ratingValue = 2; // This will be the initial selected value
+    private int ratingValue = 2; 
     private bool resetValueOnEmptyText;
     private bool coerceText;
     private bool coerceValue;
     private bool selectedOnTab;
     private string value2;
+
+    //All developers and teams
+    public List<Developer> InitialResultDevs = new List<Developer>();
+    public List<TeamOutDTO> InitialResultTeams = new List<TeamOutDTO>();
+
+    //Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
     public List<Team> SearchResultTeams = new List<Team>();
 
@@ -192,6 +108,7 @@
 
     private int maxPrice = 500;
 
+    // Initialize the list of available skills
     private string[] GetAvailableSkills()
     {
         List<string> SkillNames = new List<string>();
@@ -205,18 +122,64 @@
         return SkillNames.ToArray();
     }
 
+    private bool _isInitialized = false;
+    // Load all developers and teams on page load
+    protected override async Task OnInitializedAsync()
+    {
+        if (!_isInitialized)
+        {
+            await LoadAllResults();
+            _isInitialized = true;
+        }
+    }
+
+    private async Task LoadAllResults()
+    {
+        // Load all developers and teams
+        var developers = developerService.GetAll(); 
+        var teams = teamService.GetAllTeams(0,int.MaxValue, null, null, null, null); 
+
+        // Add developers to the results
+        InitialResultDevs = developers.ToList();
+
+        // Add teams to the results
+        InitialResultTeams = teams.ToList();
+    }
+
+    public class CardItem
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
+
+    private List<CardItem> GetCardItems()
+    {
+        return new List<CardItem>
+        {
+            new CardItem { Title = "Card 1", Description = "This is the description for card 1" },
+            new CardItem { Title = "Card 2", Description = "This is the description for card 2" },
+            new CardItem { Title = "Card 3", Description = "This is the description for card 3" }
+        };
+    }
+
+
     private async Task<IEnumerable<string>> Search2(string value, CancellationToken token)
     {
-        //Making sure previous search results removed 
+        //Making sure previous search results removed
         SearchResultDevs.Clear();
         SearchResultTeams.Clear();
 
         await Task.Delay(5, token);
 
         if (string.IsNullOrEmpty(value))
+        {
+            // If search term is empty, load all results again
+            await LoadAllResults();
             return new string[0];
+        }
         else
         {
+            // Search logic for filtering based on search input
             var developers = developerService.GetDevsBasedOnSearchValue(value);
             var teams = teamService.GetTeamsBasedOnSearchValue(value);
 
