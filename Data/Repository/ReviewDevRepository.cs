@@ -1,4 +1,5 @@
-﻿using OutsourcingSystemWepApp.Data.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystemWepApp.Data.Model;
 
 namespace OutsourcingSystemWepApp.Data.Repository
 {
@@ -47,6 +48,14 @@ namespace OutsourcingSystemWepApp.Data.Repository
         public ClientReviewDeveloper GetReviewByClientAndTeamIDs(int ClientID, int DevID)
         {
             return _context.ClientReviewDeveloper.FirstOrDefault(r => r.DeveloperID == DevID && r.ClientID == ClientID);
+        }
+
+        public List<ClientReviewDeveloper> GetAllDevReviewsnames()
+        {
+            return _context.ClientReviewDeveloper
+                .Include(r => r.Developer)   // Include developer details
+                .Include(r => r.Client)      // Include client details
+                .ToList();
         }
     }
 }

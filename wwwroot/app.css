@@ -49,3 +49,492 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+.login-btn {
+    border: none;
+    font-size: 16px;
+    padding: 5px 15px;
+    margin-right: 10px;
+    cursor: pointer;
+    color: black;
+
+}
+
+.signup-btn {
+    border: none;
+    font-size: 16px;
+    padding: 5px 15px;
+    cursor: pointer;
+    color: white;
+    background-color: green;
+}
+
+    .signup-btn:hover {
+        background-color: darkgreen;
+    }
+
+.login-btn:hover {
+    background-color: lightgray;
+}
+.article-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.text-section {
+    width: 50%; /* Adjust text section width */
+}
+
+.article-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.article-paragraph {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.read-more-link {
+    color: green;
+    
+    cursor: pointer;
+}
+
+    .read-more-link:hover {
+        color: forestgreen;
+    }
+
+.image-section {
+    width: 50%; /* Adjust image section width */
+    text-align: left;
+}
+
+.article-image {
+    width: 100%;
+    height: auto;
+}
+
+/*----------------------------Skill In Home page css -----------*/
+
+
+/*.card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.card-carousel {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
+    overflow: hidden;
+    width: calc(100% - 80px);*/ /* Leave space for arrows */
+   /*justify-content: center;
+}
+
+.card {
+    flex: 0 0 300px;*/ /* Set fixed width for each card */
+    /*padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+   text-align:center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.arrow {
+    font-size: 2rem;
+    cursor: pointer;
+    color: forestgreen;
+    user-select: none;
+    transition: color 0.2s ease-in-out;
+}
+
+    .arrow:hover {
+        color: forestgreen;
+    }
+
+.left {
+    margin-right: 10px;
+}
+
+.right {
+    margin-left: 10px;
+}
+.view-developers {
+    display: inline-block;
+    margin-top: 10px;
+    color: forestgreen;
+    text-decoration: none;
+    font-weight: bold;
+}
+ .view-developers:hover {
+        text-decoration: underline;
+        color: darkolivegreen;
+    }
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: left;*/ /* Align the title to the left */
+    /*padding-left: 20px;
+}*/
+/*@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap');
+
+body {
+    font-family: 'Oswald', sans-serif;
+    background-color: #f4f4f4;*/ /* Light gray background for the page */
+/*}
+
+.card-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.card-carousel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+}
+
+.card {
+    position: relative;
+    height: 200px;
+    width: 300px;
+    margin: 10px;
+    background-color: #ffffff;*/ /* White background */
+    /*border-radius: 8px;*/ /* Rounded corners */
+    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);*/ /* Soft shadow */
+    /*transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    overflow: hidden;
+}
+
+    .card:hover {
+        transform: scale(1.05);*/ /* Slight scaling on hover */
+        /*box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.10);*/ /* Enhanced shadow on hover */
+    /*}
+
+    .card h2 {
+        font-size: 1.5em;
+        font-weight: 600;
+        color: #333;*/ /* Dark gray for text */
+        /*margin-bottom: 10px;
+    }
+
+    .card p {
+        font-size: 1em;
+        color: #555;*/ /* Medium gray for text */
+        /*margin-bottom: 8px;
+    }
+
+    .card a {
+        display: inline-block;
+        color: forestgreen;*/ /* Green button */
+        /*text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-align: center;
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+        .card a:hover {
+            color: #45a049;*/ /* Darker green on hover */
+            /*transform: translateY(-2px);*/ /* Slight lift on hover */
+        /*}*/
+
+/* Card Back Animation */
+/*.card-back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: #0b0f08;*/ /* Dark background for back */
+    /*border-radius: 8px;
+    transform: translateY(200%);
+    transition: transform 0.5s ease-in-out;
+}
+
+.card:hover .card-back {
+    transform: translateY(0);
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3em;*/ /* Larger arrow size */
+    /*color: forestgreen;*/ /* Bright green arrow */
+    /*cursor: pointer;
+    user-select: none;
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+    .arrow:hover {
+        transform: scale(1.2);*/ /* Enlarge arrow on hover */
+    /*}
+
+    .arrow.left {
+        left: 20px;*/ /* Extra spacing */
+    /*}
+
+    .arrow.right {
+        right: 20px;*/ /* Extra spacing */
+    /*}*/
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap');
+
+body {
+    font-family: 'Oswald', sans-serif;
+    background-color: #f4f4f4; /* Light gray background */
+}
+
+.card-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.card-carousel {
+    display: flex;
+    justify-content: center; /* Center-align cards */
+    gap: 5px; /* Reduce the gap between cards */
+    overflow: hidden;
+}
+
+.card {
+    position: relative;
+    height: 250px; /* Decreased height */
+    width: 200px;
+    margin: 5px; /* Reduced margin for tighter spacing */
+    background-color: #ffffff; /* White background */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 1s ease;
+   
+}
+
+    .card:hover {
+        transform: rotateY(180deg);
+    }
+
+.cover,
+.card-back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    backface-visibility: hidden;
+    border-radius: 8px;
+}
+
+.cover {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+    .cover h3 {
+        font-size: 1.5em;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .cover .price {
+        font-size: 1em;
+        color: #555;
+    }
+
+    .cover .des {
+        font-size: 0.9em;
+        color: #777;
+    }
+
+.card-back {
+    background-color: #f0f0f0; /* Light gray for the back */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotateY(180deg);
+}
+
+    .card-back a {
+        text-decoration: none;
+        color: white;
+        background-color: forestgreen;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+        .card-back a:hover {
+            background-color: #45a049; /* Slightly darker green */
+        }
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2em;
+    color: forestgreen; /* Green color for the arrow */
+    cursor: pointer;
+    user-select: none;
+    z-index: 10;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+    .arrow:hover {
+        color: green; /* Slightly darker green on hover */
+        transform: scale(1.2); /* Enlarge arrow on hover */
+    }
+
+    .arrow.left {
+        left: 10px;
+        color:forestgreen;
+    }
+
+    .arrow.right {
+        right: 10px;
+        color: forestgreen;
+    }
+
+/* ---------------------client work with us -----------------*/
+
+/* Container for the moving bar */
+.moving-bar-container {
+    width: 100%;
+    height: 100px; /* Adjust height to fit images */
+    overflow: hidden;
+    position: relative;
+    background-color: #f9f9f9; /* Optional background for visibility */
+    border: 1px solid #ddd; /* Optional border */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Title centered above the bar */
+.moving-bar-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px; /* Space between title and bar */
+    text-align: center;
+}
+
+/* Moving bar styling */
+.moving-bar {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: moveBar 10s linear infinite; /* Continuous scrolling animation */
+    position: relative;
+}
+
+    /* Images in the moving bar */
+    .moving-bar img {
+        height: 80px; /* Ensure consistent size */
+        margin-right: 20px; /* Space between images */
+        display: inline-block;
+    }
+
+/* Continuous scrolling animation */
+@keyframes moveBar {
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-100%); /* Move out of view */
+    }
+}
+
+
+/*---------------Review developer --------------*/
+
+.review-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: 20px;
+}
+
+.review-carousel {
+    display: flex;
+    overflow: hidden;
+    width: 80%;
+    justify-content: center;
+}
+
+.review-card {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    min-width: 250px;
+    max-width: 350px;
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    color: #007bff;
+    cursor: pointer;
+    z-index: 1;
+    padding: 10px;
+}
+
+    .arrow.left {
+        left: 10px;
+    }
+
+    .arrow.right {
+        right: 10px;
+    }
+
+    .arrow:hover {
+        color: #0056b3;
+    }
+
+.review-card h3 {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.review-card p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.review-card em {
+    font-style: italic;
+    color: #777;
+}

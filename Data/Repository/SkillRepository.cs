@@ -43,5 +43,18 @@ namespace OutsourcingSystemWepApp.Data.Repository
         {
             return _context.Skills.FirstOrDefault(s => s.SkillID == ID);
         }
+
+        public List<(Skill skill, int DeveloperCount)> GetAllSkillsWithDeveloperCount()
+        {
+            return _context.Skills
+                .Select(s => new
+                {
+                    Skill = s,
+                    DeveloperCount = s.DeveloperSkills.Count
+                })
+                .ToList()
+                .Select(x => (x.Skill, x.DeveloperCount))
+                .ToList();
+        }
     }
 }

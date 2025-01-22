@@ -81,6 +81,25 @@ namespace OutsourcingSystemWepApp.Services
             else return 1; //team not found 
         }
 
+        public ClientReviewDeveloper GetReviewByDevIdnames(int DevID)
+        {
+            var review = _reviewDevRepository.GetDevReviewByDevID(DevID);
+            if (review != null)
+            {
+                return new ClientReviewDeveloper
+                {
+                    ReviewID = review.ReviewID,
+                    Rating = review.Rating,
+                    Comment = review.Comment,
+                    Date = review.Date,
+                    Developer = review.Developer,
+                    Client = review.Client
+                };
+            }
+            return null;
+        }
+
+
         public List<ClientReviewDeveloper> GetAllDevReviews(int Page, int PageSize, int? Rating, int? DevID)
         {
             var reviewTeams = _reviewDevRepository.GetAllDevReviews();
@@ -102,5 +121,11 @@ namespace OutsourcingSystemWepApp.Services
             return reviewTeams.OrderByDescending(t => t.Rating).Skip(number).Take(PageSize).ToList();
         }
 
+        public List<ClientReviewDeveloper> GetAllDevReviews(int Page, int PageSize)
+        {
+            var reviewTeams = _reviewDevRepository.GetAllDevReviewsnames();
+            int number = PageSize * Page;
+            return reviewTeams.OrderByDescending(t => t.Rating).Skip(number).Take(PageSize).ToList();
+        }
     }
-}
+    }
