@@ -64,7 +64,7 @@
             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style"
-            OnKeyDown="HandleKeyDown" />
+            OnKeyDown="HandleKeyDown"/>
         </MudStack>
 
         <!-- Developers Section -->
@@ -76,7 +76,7 @@
                     @foreach (var dev in SearchResultDevs)
                     {
                         <MudItem xs="12" sm="6" md="4">
-                            <MudCard Elevation="8" Class="pa-4">
+                            <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
                                     <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                                     <MudText Typo="Typo.body2">@dev.Specialization</MudText>
@@ -84,6 +84,11 @@
                                 <MudCardActions>
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                 </MudCardActions>
+
+                                <!-- Hourly Rate in top-right corner -->
+                                     <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                        $@dev.HourlyRate
+                                    </MudText>
                             </MudCard>
                         </MudItem>
                     }
@@ -97,7 +102,7 @@
                             @foreach (var dev in InitialResultDevs)
                             {
                                 <MudItem xs="12" sm="6" md="4">
-                                    <MudCard Elevation="8" Class="pa-4">
+                                    <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                         <MudCardContent>
                                             <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                                             <MudText Typo="Typo.body2">@dev.Specialization</MudText>
@@ -105,6 +110,11 @@
                                         <MudCardActions>
                                             <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                         </MudCardActions>
+
+                                        <!-- Hourly Rate in top-right corner -->
+                                    <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                        $@dev.HourlyRate
+                                    </MudText>
                                     </MudCard>
                                 </MudItem>
                             }
@@ -127,7 +137,7 @@
                     @foreach (var team in SearchResultTeams)
                     {
                         <MudItem xs="12" sm="6" md="4">
-                            <MudCard Elevation="8" Class="pa-4">
+                            <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
                                     <MudText Typo="Typo.h6">@team.TeamName</MudText>
                                     <MudText Typo="Typo.body2">@team.Description</MudText>
@@ -135,6 +145,11 @@
                                 <MudCardActions>
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                 </MudCardActions>
+
+                                <!-- Hourly Rate in top-right corner -->
+                                    <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                        $@team.HourlyRate
+                                    </MudText>
                             </MudCard>
                         </MudItem>
                     }
@@ -148,7 +163,7 @@
                             @foreach (var team in InitialResultTeams)
                             {
                                 <MudItem xs="12" sm="6" md="4">
-                                    <MudCard Elevation="8" Class="pa-4">
+                                    <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                         <MudCardContent>
                                             <MudText Typo="Typo.h6">@team.TeamName</MudText>
                                             <MudText Typo="Typo.body2">@team.Description</MudText>
@@ -156,6 +171,11 @@
                                         <MudCardActions>
                                             <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                         </MudCardActions>
+
+                                        <!-- Hourly Rate in top-right corner -->
+                                    <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                        $@team.HourlyRate
+                                    </MudText>
                                     </MudCard>
                                 </MudItem>
                             }
@@ -163,7 +183,7 @@
                     }
                     else
                     {
-                        <MudText>No developers available.</MudText>
+                        <MudText>No teams available.</MudText>
                     }
                 }
             </MudGrid>
@@ -278,6 +298,7 @@
         {
             // Trigger the search when the Enter key is pressed
             await Search2(SearchValue, new CancellationToken());
+
         }
     }
 
