@@ -5,6 +5,7 @@
 @inject ISkillService skillService
 @inject ITeamService teamService
 @inject IDeveloperServices developerService
+@inject NavigationManager Navigation
 
 <MudLayout>
     <!-- Sidebar -->
@@ -20,7 +21,7 @@
 
                     @* Filter By: Developers/Teams/Both *@
                     <MudStack Spacing="1" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Start">
-                        <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="_value1" Color="Color.Success" CheckMark FixedContent>
+                        <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" @bind-Value="ResourceType" Color="Color.Success" CheckMark FixedContent>
                             <MudToggleItem Value="@("Developers")" Text="Devs only" Typography="Typo.body2" />
                             <MudToggleItem Value="@("Teams")" Text="Teams Only" Typography="Typo.body2" />
                             <MudToggleItem Value="@("Both")" Text="Both" Typography="Typo.body2" />
@@ -58,7 +59,7 @@
     <MudMain Style="flex-grow: 1; display: flex; flex-direction: column; padding-left: 350px;">
         <!-- Search Section -->
         <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
-            <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
+            <MudAutocomplete T="string" Label="Search" @bind-Value="SearchValue" SearchFunc="@Search2"
             ResetValueOnEmptyText="@resetValueOnEmptyText"
             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
@@ -166,16 +167,17 @@
 
 @* Shared Code *@
 @code {
-    public bool OnlyAvailableSwitch { get; set; } = true;
-    private string _value1 = "Both";
-    private int ratingValue = 2;
+    public bool OnlyAvailableSwitch { get; set; } = true; //Used to filter by availability
+    private string ResourceType = "Both"; //Used to filter by DevsOnly/TeamsOnly/Both
+    private int ratingValue = 2; //Used to filter by minimum rating
+    private int maxPrice = 500; //Used to filter by max price 
+
+    //Used for searching
     private bool resetValueOnEmptyText;
     private bool coerceText;
     private bool coerceValue;
     private bool selectedOnTab;
-    private string value2;
-    private int maxPrice = 500;
-    private bool _isInitialized = false;
+    private string SearchValue; //value inputted to search by
 
 
     // All developers and teams
@@ -208,11 +210,7 @@
     // Load all developers and teams on page load
     protected override async Task OnInitializedAsync()
     {
-        if (!_isInitialized)
-        {
-            await LoadAllResults();
-            _isInitialized = true;
-        }
+        await LoadAllResults();
     }
 
     private async Task LoadAllResults()
@@ -267,46 +265,71 @@
         if (e.Key == "Enter")
         {
             // Trigger the search when the Enter key is pressed
-            await Search2(value2, new CancellationToken());
+            await Search2(SearchValue, new CancellationToken());
         }
     }
 
     private async Task HandleSearchIconClick()
     {
         // Trigger the search when the search icon is clicked
-        await Search2(value2, new CancellationToken());
+        await Search2(SearchValue, new CancellationToken());
     }
 
     // Apply Filters
     private async Task ApplyFilters()
     {
-        // Here, you can apply any filtering logic if needed
+        //Filtering by minimum rating
         if (ratingValue != null)
         {
             InitialResultDevs = InitialResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.Rating >= ratingValue).ToList();
+
+            SearchResultDevs = SearchResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
+            SearchResultTeams = SearchResultTeams.Where(d => d.Rating >= ratingValue).ToList();
         }
 
+        //Filtering by max  price
         if (maxPrice != null)
         {
             InitialResultDevs = InitialResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.HourlyRate <= maxPrice).ToList();
+
+            SearchResultDevs = SearchResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
+            SearchResultTeams = SearchResultTeams.Where(d => d.HourlyRate <= maxPrice).ToList();
         }
 
+        //Filtering by availability status [Available]
         if (OnlyAvailableSwitch == true)
         {
             InitialResultDevs = InitialResultDevs.Where(d => d.IsDelete == false).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.Active == true).ToList();
+
+            SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == true).ToList();
+            SearchResultTeams = SearchResultTeams.Where(d => d.Active == true).ToList();
         }
 
+
+        //Filtering by availablity status [Not Available]
         if (OnlyAvailableSwitch == false)
         {
             InitialResultDevs = InitialResultDevs.Where(d => d.IsDelete == true).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.Active == false).ToList();
+
+            SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
+            SearchResultTeams = SearchResultTeams.Where(d => d.Active == false).ToList();
         }
 
-        // For now, let's just call the search function
-        //await Search2(value2, new CancellationToken());
+        if (ResourceType == "Developers")
+        {
+            SearchResultTeams.Clear();
+            InitialResultTeams.Clear();
+        }
+
+        if (ResourceType == "Teams")
+        {
+            SearchResultDevs.Clear();
+            InitialResultDevs.Clear();
+        }
     }
 
     // Clear Filters
@@ -314,10 +337,11 @@
     {
         // Reset filter values
         OnlyAvailableSwitch = true;
-        _value1 = "Both";
+        ResourceType = "Both";
         ratingValue = 2;
         _value = "Nothing selected";
         _options = new HashSet<string> { "Skills: " };
         maxPrice = 500;
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
     }
 }
