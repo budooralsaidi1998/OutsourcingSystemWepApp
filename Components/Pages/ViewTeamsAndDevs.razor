@@ -53,10 +53,10 @@
         <!-- Search Section -->
         <MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" FullWidth="true">
             <MudAutocomplete T="string" Label="Search" @bind-Value="value2" SearchFunc="@Search2"
-                             ResetValueOnEmptyText="@resetValueOnEmptyText"
-                             CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
-                             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
-                             Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
+            ResetValueOnEmptyText="@resetValueOnEmptyText"
+            CoerceText="@coerceText" CoerceValue="@coerceValue" SelectValueOnTab="@selectedOnTab"
+            AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Success"
+            Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style" />
         </MudStack>
 
         <!-- Search Results Section with Carousel -->
@@ -68,20 +68,22 @@
                 <MudCarousel TData="MudCard" AutoPlay="true" AnimationInterval="3000" Indicators="true" Circular="true" VisibleItems="3">
                     @foreach (var dev in SearchResultDevs)
                     {
-                        <MudCard>
+                        <MudCard Class="card-with-price">
                             <MudCardContent>
                                 <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                                 <MudText Typo="Typo.body2">@dev.Specialization</MudText>
                             </MudCardContent>
+                            <MudText Class="price-tag">@dev.HourlyRate.ToString("C")</MudText> <!-- Show the price on the top right -->
                         </MudCard>
                     }
                     @foreach (var team in SearchResultTeams)
                     {
-                        <MudCard>
+                        <MudCard Class="card-with-price">
                             <MudCardContent>
                                 <MudText Typo="Typo.h6">@team.TeamName</MudText>
                                 <MudText Typo="Typo.body2">@team.Description</MudText>
                             </MudCardContent>
+                            <MudText Class="price-tag">@team.HourlyRate.ToString("C")</MudText> <!-- Show the price on the top right -->
                         </MudCard>
                     }
                 </MudCarousel>
@@ -99,46 +101,73 @@
 <style>
     /* Global font */
     body {
-        font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
     }
 
     .custom-focus-style .mud-select-root:focus,
     .custom-focus-style .mud-autocomplete-root:focus {
-        border-color: #4caf50 !important;
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
+    border-color: #4caf50 !important;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
     }
 
     .custom-focus-style .mud-select-root .mud-input-root:focus-within,
     .custom-focus-style .mud-autocomplete-root .mud-input-root:focus-within {
-        border-color: #4caf50 !important;
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
+    border-color: #4caf50 !important;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
     }
 
     /* Styling for Slider */
     .mud-slider .mud-slider-track {
-        background-color: #4caf50 !important;
+    background-color: #4caf50 !important;
     }
 
     .mud-slider .mud-slider-thumb {
-        background-color: #4caf50 !important;
+    background-color: #4caf50 !important;
     }
 
     /* Custom style for headings */
     .mud-text-h5 {
-        font-family: 'Poppins', sans-serif !important;
-        font-weight: 600;
-        font-size: 1.25rem;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 600;
+    font-size: 1.25rem;
     }
 
     .mud-text-subtitle2 {
-        font-family: 'Poppins', sans-serif !important;
-        font-weight: 500;
-        font-size: 1rem;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 500;
+    font-size: 1rem;
     }
 
     .mud-text-body2 {
-        font-family: 'Roboto', sans-serif !important;
-        font-size: 0.875rem;
+    font-family: 'Roboto', sans-serif !important;
+    font-size: 0.875rem;
+    }
+
+    /* Card with price tag in the top-right corner */
+    /* Card with price tag in the top-right corner */
+    .card-with-price {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 24px; /* Increased padding for a bigger card */
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+        width: 150%; /* Increased the width by 50% */
+        height: 150%; /* Increased the height by 50% */
+        max-width: 400px; /* Optional: Limit max width to maintain responsive design */
+    }
+
+    .price-tag {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background-color: rgba(76, 175, 80, 0.8); /* Green background */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 0.8rem;
     }
 </style>
 
@@ -154,7 +183,7 @@
     private bool coerceValue;
     private bool selectedOnTab;
     private string value2;
-    public List<filtrationDeveloperdto> SearchResultDevs = new List<filtrationDeveloperdto>();
+    public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
     public List<Team> SearchResultTeams = new List<Team>();
 
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
@@ -178,13 +207,17 @@
 
     private async Task<IEnumerable<string>> Search2(string value, CancellationToken token)
     {
+        //Making sure previous search results removed 
+        SearchResultDevs.Clear();
+        SearchResultTeams.Clear();
+
         await Task.Delay(5, token);
 
         if (string.IsNullOrEmpty(value))
             return new string[0];
         else
         {
-            var developers = developerService.GetName(value);
+            var developers = developerService.GetDevsBasedOnSearchValue(value);
             var teams = teamService.GetTeamsBasedOnSearchValue(value);
 
             foreach (var dev in developers)
@@ -201,4 +234,3 @@
         }
     }
 }
-
