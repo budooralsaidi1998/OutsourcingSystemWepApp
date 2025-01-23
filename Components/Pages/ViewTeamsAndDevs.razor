@@ -35,7 +35,7 @@
                     <MudText Size="Size.Small">Selected Rating: @ratingValue</MudText>
 
                     @* Multi skill selector *@
-                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-Value="_value" @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
+                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-Value="_value"  @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
                         @foreach (var state in GetAvailableSkills())
                         {
                             <MudSelectItem T="string" Value="@state">@state</MudSelectItem>
@@ -45,7 +45,7 @@
                     @* Max Price Slider *@
                     <MudText Typo="Typo.subtitle2">Set Max Price</MudText>
                     <MudSlider @bind-Value="maxPrice" Min="0" Max="500" Step="10" Label="Max Price" TickMarks="true" Color="Color.Success" Size="Size.Small" />
-                    <MudText Size="Size.Small">Selected Max Price: @maxPrice</MudText>
+                    <MudText Size="Size.Small">Selected Max Price: $@maxPrice </MudText>
 
                     @* Buttons to Apply or Clear Filters *@
                     <MudStack Spacing="2">
@@ -77,40 +77,40 @@
                 {
                     @foreach (var dev in SearchResultDevs)
                     {
-                                 <MudItem xs="12" sm="6" md="4">
-                                    <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
-                                        <MudCardContent>
-                                            <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
-                                            <MudText Typo="Typo.body1">@dev.Specialization</MudText>
-                                            <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
-                                            <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                    <MudText Typo="Typo.body1">@dev.Specialization</MudText>
+                                    <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
+                                    <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
 
-                                            <!-- Skills section -->
-                                            @GetDevSkills(dev.DevId)
+                                    <!-- Skills section -->
+                                    @GetDevSkills(dev.DevId)
 
-                                            @if(DevSkills != null)
+                                    @if(DevSkills != null)
+                                    {
+                                        <div class="d-flex flex-wrap gap-2 mt-1">
+                                            @foreach (var skill in DevSkills)
                                             {
-                                                <div class="d-flex flex-wrap gap-2 mt-1">
-                                                    @foreach (var skill in DevSkills)
-                                                    {
-                                                        <MudChip T="string" Color="Color.Success">
-                                                            @skill
-                                                        </MudChip>
-                                                    }
-                                                </div>
+                                                <MudChip T="string" Color="Color.Success">
+                                                    @skill
+                                                </MudChip>
                                             }
-                                        </MudCardContent>
+                                        </div>
+                                    }
+                                </MudCardContent>
 
-                                        <MudCardActions>
-                                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                                        </MudCardActions>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                </MudCardActions>
 
-                                        <!-- Hourly Rate in top-right corner -->
-                                        <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                            $@dev.HourlyRate
-                                        </MudText>
-                                    </MudCard>
-                                </MudItem>
+                                <!-- Hourly Rate in top-right corner -->
+                                <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                    $@dev.HourlyRate
+                                </MudText>
+                            </MudCard>
+                        </MudItem>
                     }
                 }
 
@@ -132,6 +132,7 @@
                         <MudItem xs="12" sm="6" md="4">
                             <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
+                                    @UpdateNoMembersInTeam(team.TeamID)
                                     <MudText Typo="Typo.h6">@team.TeamName</MudText>
                                     <MudText Typo="Typo.body1">@team.Description</MudText>
                                     <MudText Typo="Typo.body2">Rating: @team.Rating</MudText>
@@ -153,10 +154,10 @@
                         </MudItem>
                     }
                 }                
-                    else
-                    {
-                        <MudText>No teams available.</MudText>
-                    }
+                else
+                {
+                    <MudText>No teams available.</MudText>
+                }
             </MudGrid>
         </MudPaper>
     </MudMain>
@@ -182,9 +183,11 @@
     // Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
     public List<TeamOutDTO> SearchResultTeams = new List<TeamOutDTO>();
-
+    // private List<string> selectedSkills = new List<string>();  // Selected skills
+    // private List<string> availableSkills = new List<string>();  // All skills
 
     public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer 
+
 
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
     private string _value = "Nothing selected";
@@ -301,6 +304,83 @@
             SearchResultTeams = SearchResultTeams.Where(d => d.Active == true).ToList();
         }
 
+        // Filtering by selected skills
+        if (_options.Any() )  // Ensure skills have been selected && _options.First() != "Skills: "
+        {
+            var selectedSkills = _options.Where(skill => skill != "Skills: ").ToList();
+            //var selectedSkills = _options.ToList();  // Get the list of selected skill
+
+            // Filter developers based on selected skills
+            SearchResultDevs = SearchResultDevs.Where(dev =>
+            {
+                var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
+
+                // Get the skill names for the developer
+                List<string> SkillNames = new List<string>();
+                foreach (var devskill in devSkills)
+                {
+                    var skill = skillService.GetSkillsByID(devskill.SkillID);  // Get skill by ID
+                    SkillNames.Add(skill.Name);  // Add skill name to the list
+                }
+
+                // Check if the developer has all the selected skills
+                return selectedSkills.All(skill => SkillNames.Contains(skill));
+            }).ToList();
+            SearchResultTeams.Clear();
+        }
+
+
+        // // Filtering by selected skills
+        // if (_options.Any())  // Ensure skills have been selected  && _options.First() != "Skills: "
+        // {
+        //     var selectedSkills = _options.ToList();  // Get the list of selected skills
+
+        //     SearchResultDevs = SearchResultDevs.Where(dev =>
+        //     {
+        //         var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
+        //                                                                            // Check if the developer has all the selected skills
+
+        //         List<string> SkillNames = new List<string>();
+
+        //         foreach (var devskill in devSkills)
+        //         {
+        //             var skill = skillService.GetSkillsByID(devskill.SkillID);
+        //             SkillNames.Add(skill.Name);
+        //         }
+        //         return selectedSkills.All(skill => SkillNames.Contains(skill));
+        //     }).ToList();
+
+        //     if (SkillNames.Contains.All(selectedSkills))
+        //     {
+        //         SearchResultDevs.Remove(dev);
+        //     }
+
+        // }
+
+        // Filtering by availability status [Not Available]
+        if (OnlyAvailableSwitch == false)
+        {
+            SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
+            SearchResultTeams = SearchResultTeams.Where(d => d.Active == false).ToList();
+        }
+
+        // //Filtering by selected skills
+        // if (_options.Any())
+        // {
+        //     foreach (var dev in SearchResultDevs)
+        //     {
+        //         // Filter developers based on selected skills
+        //         //list of skills per  developer
+        //         var ListOfSkills = developerSkillService.GetSkillByDevID(dev.DevId);
+        //         if (ListOfSkills.All(_options).Contains(ListOfSkills.)))
+        //         {
+
+        //         }
+        //         //Remove developer if  skill not found
+        //         else
+        //         { SearchResultDevs.Remove(dev); }
+        //     }
+        // }
 
         //Filtering by availablity status [Not Available]
         if (OnlyAvailableSwitch == false)
@@ -358,8 +438,6 @@
         NoTeamMembers = TeamMembers.Count();
         return "";
     }
-}
-@code{
 
     private IEnumerable<Developer> AllDevs = new List<Developer>(); 
     // Full list of developers
@@ -371,7 +449,9 @@
         AllDevs = developerService.GetAll();
         // Initially render all developers 
         RenderedResultDevs = new List<Developer>(AllDevs); 
-    } private void ApplyFilter(int? ratingValue)
+    } 
+    
+    private void ApplyFilter(int? ratingValue)
     {
         if (ratingValue != null)
         { // Filter based on rating 
