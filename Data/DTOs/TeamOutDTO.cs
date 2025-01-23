@@ -10,5 +10,6 @@
         public decimal Rating { get; set; }
         public int CompletedProjects { get; set; }
         public bool Active { get; set; } = true;
+        public bool IsAvailable { get; set; } 
     }
 }

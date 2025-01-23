@@ -196,6 +196,7 @@ namespace OutsourcingSystemWepApp.Services
                     HourlyRate = team.HourlyRate,
                     CompletedProjects = team.CompletedProjects,
                     Active = team.Active,
+                    IsAvailable = team.IsAvailable
                 };
                 OutTeams.Add(t);
             }

@@ -313,32 +313,42 @@
         if (OnlyAvailableSwitch == true)
         {
             SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == true).ToList();
-            SearchResultTeams = SearchResultTeams.Where(d => d.Active == true).ToList();
+            SearchResultTeams = SearchResultTeams.Where(d => d.IsAvailable == true).ToList();
+        }
+
+        //Filtering by availability status [Not Available]
+        if (OnlyAvailableSwitch == false)
+        {
+            // SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
+            // SearchResultTeams = SearchResultTeams.Where(d => d.Active == false).ToList();
         }
 
         // Filtering by selected skills
         if (_options.Any() )  // Ensure skills have been selected && _options.First() != "Skills: "
         {
-            var selectedSkills = _options.Where(skill => skill != "Skills: ").ToList();
-            //var selectedSkills = _options.ToList();  // Get the list of selected skill
-
-            // Filter developers based on selected skills
-            SearchResultDevs = SearchResultDevs.Where(dev =>
+            if (_options.Count() != 1) //means that only "Skill:" so needs to be ignored
             {
-                var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
+                var selectedSkills = _options.Where(skill => skill != "Skills: ").ToList();
+                //var selectedSkills = _options.ToList();  // Get the list of selected skill
 
-                // Get the skill names for the developer
-                List<string> SkillNames = new List<string>();
-                foreach (var devskill in devSkills)
+                // Filter developers based on selected skills
+                SearchResultDevs = SearchResultDevs.Where(dev =>
                 {
-                    var skill = skillService.GetSkillsByID(devskill.SkillID);  // Get skill by ID
-                    SkillNames.Add(skill.Name);  // Add skill name to the list
-                }
+                    var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
 
-                // Check if the developer has all the selected skills
-                return selectedSkills.All(skill => SkillNames.Contains(skill));
-            }).ToList();
-            SearchResultTeams.Clear();
+                    // Get the skill names for the developer
+                    List<string> SkillNames = new List<string>();
+                    foreach (var devskill in devSkills)
+                    {
+                        var skill = skillService.GetSkillsByID(devskill.SkillID);  // Get skill by ID
+                        SkillNames.Add(skill.Name);  // Add skill name to the list
+                    }
+
+                    // Check if the developer has all the selected skills
+                    return selectedSkills.All(skill => SkillNames.Contains(skill));
+                }).ToList();
+                SearchResultTeams.Clear();
+            }
         }
 
 
@@ -369,12 +379,6 @@
 
         // }
 
-        // Filtering by availability status [Not Available]
-        if (OnlyAvailableSwitch == false)
-        {
-            SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
-            SearchResultTeams = SearchResultTeams.Where(d => d.Active == false).ToList();
-        }
 
         // //Filtering by selected skills
         // if (_options.Any())
@@ -395,11 +399,7 @@
         // }
 
         //Filtering by availablity status [Not Available]
-        if (OnlyAvailableSwitch == false)
-        {
-            SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
-            SearchResultTeams = SearchResultTeams.Where(d => d.Active == false).ToList();
-        }
+
 
         if (ResourceType == "Developers")
         {
