@@ -5,6 +5,7 @@
 @inject ISkillService skillService
 @inject ITeamService teamService
 @inject IDeveloperServices developerService
+@inject IDeveloperSkillService developerSkillService
 @inject NavigationManager Navigation
 
 <MudLayout>
@@ -80,15 +81,16 @@
                                 <MudCardContent>
                                     <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                                     <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                                    <MudText Typo="Typo.body1">@dev.CommitmentRating</MudText>
                                 </MudCardContent>
                                 <MudCardActions>
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                 </MudCardActions>
 
                                 <!-- Hourly Rate in top-right corner -->
-                                     <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                        $@dev.HourlyRate
-                                    </MudText>
+                                <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                    $@dev.HourlyRate
+                                </MudText>
                             </MudCard>
                         </MudItem>
                     }
@@ -105,18 +107,37 @@
                                     <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                         <MudCardContent>
                                             <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
-                                            <MudText Typo="Typo.body2">@dev.Specialization</MudText>
+                                            <MudText Typo="Typo.body1">@dev.Specialization</MudText>
+                                            <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
+                                            <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
+
+                                            <!-- Skills section -->
+                                            @GetDevSkills(dev.DeveloperID)
+
+                                            @if(DevSkills != null)
+                                            {
+                                            <div class="d-flex flex-wrap gap-2 mt-1">
+                                                @foreach (var skill in DevSkills)
+                                                {
+                                                    <MudChip T="string" Color="Color.Success">
+                                                        @skill
+                                                    </MudChip>
+                                                }
+                                            </div>
+                                            }
                                         </MudCardContent>
+
                                         <MudCardActions>
                                             <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                         </MudCardActions>
 
                                         <!-- Hourly Rate in top-right corner -->
-                                    <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                        $@dev.HourlyRate
-                                    </MudText>
+                                        <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                            $@dev.HourlyRate
+                                        </MudText>
                                     </MudCard>
                                 </MudItem>
+
                             }
                         }
                     }
@@ -147,9 +168,9 @@
                                 </MudCardActions>
 
                                 <!-- Hourly Rate in top-right corner -->
-                                    <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                        $@team.HourlyRate
-                                    </MudText>
+                                <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                    $@team.HourlyRate
+                                </MudText>
                             </MudCard>
                         </MudItem>
                     }
@@ -173,9 +194,9 @@
                                         </MudCardActions>
 
                                         <!-- Hourly Rate in top-right corner -->
-                                    <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                        $@team.HourlyRate
-                                    </MudText>
+                                        <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                            $@team.HourlyRate
+                                        </MudText>
                                     </MudCard>
                                 </MudItem>
                             }
@@ -213,6 +234,9 @@
     // Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
     public List<Team> SearchResultTeams = new List<Team>();
+
+
+    public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer 
 
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
     private string _value = "Nothing selected";
@@ -376,5 +400,21 @@
         _options = new HashSet<string> { "Skills: " };
         maxPrice = 500;
         Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+    }
+
+
+    private string GetDevSkills(int DevID)
+    {
+        //getting all the skills for a specific developer
+        var devSkills = developerSkillService.GetSkillByDevID(DevID);
+        DevSkills.Clear();
+
+        //converting the list of devskills to a list of skill names 
+        foreach(var skill in devSkills)
+        {
+            var skillName = skillService.GetSkillsByID(skill.SkillID);
+            DevSkills.Add(skillName.Name);
+        }
+        return "";
     }
 }

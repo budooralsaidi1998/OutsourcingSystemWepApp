@@ -10,5 +10,6 @@ namespace OutsourcingSystemWepApp.Services
         int ReactivateSkill(int SkillID);
         int UpdateSkill(int skillID, string name, string description);
         List<(Skill skill, int DeveloperCount)> GetSkillsWithDeveloperCount();
+        Skill GetSkillsByID(int SkillID);
     }
 }
