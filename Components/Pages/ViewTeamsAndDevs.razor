@@ -93,7 +93,7 @@
                                         <div class="d-flex flex-wrap gap-2 mt-1">
                                             @foreach (var skill in DevSkills)
                                             {
-                                                <MudChip T="string" Color="Color.Success">
+                                                <MudChip T="string" Color="Color.Transparent">
                                                     @skill
                                                 </MudChip>
                                             }
@@ -191,7 +191,7 @@
 
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
     private string _value = "Nothing selected";
-    private IEnumerable<string> _options = new HashSet<string> { "Skills: " };
+    private IEnumerable<string> _options = new HashSet<string> { "Skills: " }; //list of options chosen in skill filter 
 
 
     // Initialize the list of available skills
@@ -213,6 +213,18 @@
     {
         await LoadAllResults();
         ResourceFound = false;
+        var uri = Navigation.Uri;
+
+        // //getting original skill filter 
+        // if (_options is HashSet<string> optionsSet)
+        // {
+        //     var uriSegments = uri.Split('/');
+        //     if (uriSegments.Length > 1)
+        //     {
+        //         optionsSet.Add(uriSegments[uriSegments.Length - 1]);
+        //     }
+        // }
+        // ApplyFilters();
     }
 
     private async Task LoadAllResults()
@@ -432,8 +444,6 @@
     private string UpdateNoMembersInTeam(int TeamID)
     {
         //making sure that number not affected by previous searches 
-        NoTeamMembers = 0;
-
         var TeamMembers = teamMemberService.GetTeamMemberByTeamID(TeamID);
         NoTeamMembers = TeamMembers.Count();
         return "";
