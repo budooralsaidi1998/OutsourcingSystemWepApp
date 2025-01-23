@@ -183,8 +183,6 @@
     // Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
     public List<TeamOutDTO> SearchResultTeams = new List<TeamOutDTO>();
-    // private List<string> selectedSkills = new List<string>();  // Selected skills
-    // private List<string> availableSkills = new List<string>();  // All skills
 
     public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer 
 
@@ -214,17 +212,6 @@
         await LoadAllResults();
         ResourceFound = false;
         var uri = Navigation.Uri;
-
-        // //getting original skill filter 
-        // if (_options is HashSet<string> optionsSet)
-        // {
-        //     var uriSegments = uri.Split('/');
-        //     if (uriSegments.Length > 1)
-        //     {
-        //         optionsSet.Add(uriSegments[uriSegments.Length - 1]);
-        //     }
-        // }
-        // ApplyFilters();
     }
 
     private async Task LoadAllResults()
@@ -316,13 +303,6 @@
             SearchResultTeams = SearchResultTeams.Where(d => d.IsAvailable == true).ToList();
         }
 
-        //Filtering by availability status [Not Available]
-        if (OnlyAvailableSwitch == false)
-        {
-            // SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
-            // SearchResultTeams = SearchResultTeams.Where(d => d.Active == false).ToList();
-        }
-
         // Filtering by selected skills
         if (_options.Any() )  // Ensure skills have been selected && _options.First() != "Skills: "
         {
@@ -350,57 +330,6 @@
                 SearchResultTeams.Clear();
             }
         }
-
-
-        // // Filtering by selected skills
-        // if (_options.Any())  // Ensure skills have been selected  && _options.First() != "Skills: "
-        // {
-        //     var selectedSkills = _options.ToList();  // Get the list of selected skills
-
-        //     SearchResultDevs = SearchResultDevs.Where(dev =>
-        //     {
-        //         var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
-        //                                                                            // Check if the developer has all the selected skills
-
-        //         List<string> SkillNames = new List<string>();
-
-        //         foreach (var devskill in devSkills)
-        //         {
-        //             var skill = skillService.GetSkillsByID(devskill.SkillID);
-        //             SkillNames.Add(skill.Name);
-        //         }
-        //         return selectedSkills.All(skill => SkillNames.Contains(skill));
-        //     }).ToList();
-
-        //     if (SkillNames.Contains.All(selectedSkills))
-        //     {
-        //         SearchResultDevs.Remove(dev);
-        //     }
-
-        // }
-
-
-        // //Filtering by selected skills
-        // if (_options.Any())
-        // {
-        //     foreach (var dev in SearchResultDevs)
-        //     {
-        //         // Filter developers based on selected skills
-        //         //list of skills per  developer
-        //         var ListOfSkills = developerSkillService.GetSkillByDevID(dev.DevId);
-        //         if (ListOfSkills.All(_options).Contains(ListOfSkills.)))
-        //         {
-
-        //         }
-        //         //Remove developer if  skill not found
-        //         else
-        //         { SearchResultDevs.Remove(dev); }
-        //     }
-        // }
-
-        //Filtering by availablity status [Not Available]
-
-
         if (ResourceType == "Developers")
         {
             SearchResultTeams.Clear();
