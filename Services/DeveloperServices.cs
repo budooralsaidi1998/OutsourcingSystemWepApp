@@ -300,7 +300,6 @@ namespace OutsourcingSystemWepApp.Services
 
         public List<DeveloperOutDTO> GetDevsBasedOnSearchValue(string Value)
         {
-          //  IEnumerable<Developer> devs;
             var devs = _developerRepositry.GetAll();
             if (Value != null)               
             {

@@ -113,57 +113,11 @@
                                 </MudItem>
                     }
                 }
-@*                 else
+
+                else
                 {
-                    @if (ResourceFound != true) //ensuring does not show results if results found in team
-                    {
-                        @if (SearchResultDevs.Any())
-                        {
-                            @foreach (var dev in SearchResultDevs)
-                            {
-                                <MudItem xs="12" sm="6" md="4">
-                                    <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
-                                        <MudCardContent>
-                                            <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
-                                            <MudText Typo="Typo.body1">@dev.Specialization</MudText>
-                                            <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
-                                            <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
-
-                                            <!-- Skills section -->
-                                            @GetDevSkills(dev.DevId)
-
-                                            @if(DevSkills != null)
-                                            {
-                                                <div class="d-flex flex-wrap gap-2 mt-1">
-                                                    @foreach (var skill in DevSkills)
-                                                    {
-                                                        <MudChip T="string" Color="Color.Success">
-                                                            @skill
-                                                        </MudChip>
-                                                    }
-                                                </div>
-                                            }
-                                        </MudCardContent>
-
-                                        <MudCardActions>
-                                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                                        </MudCardActions>
-
-                                        <!-- Hourly Rate in top-right corner -->
-                                        <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                            $@dev.HourlyRate
-                                        </MudText>
-                                    </MudCard>
-                                </MudItem>
-
-                            }
-                        }
-                    }
-                    else
-                    {
-                        <MudText>No developers available.</MudText>
-                    }
-                } *@
+                    <MudText>No teams available.</MudText>
+                }
             </MudGrid>
         </MudPaper>
 
@@ -179,8 +133,14 @@
                             <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
                                     <MudText Typo="Typo.h6">@team.TeamName</MudText>
-                                    <MudText Typo="Typo.body2">@team.Description</MudText>
+                                    <MudText Typo="Typo.body1">@team.Description</MudText>
+                                    <MudText Typo="Typo.body2">Rating: @team.Rating</MudText>
+                                    <MudText Typo="Typo.body2">Completed projects: @team.CompletedProjects</MudText>
+                                    <MudText Typo="Typo.body2">No. of Members: @NoTeamMembers</MudText>
+
+
                                 </MudCardContent>
+
                                 <MudCardActions>
                                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                 </MudCardActions>
@@ -192,45 +152,11 @@
                             </MudCard>
                         </MudItem>
                     }
-                }
-                else
-                {
-                    @if (ResourceFound != true) //ensuring does not show results if results found in dev
-                    {
-                        @if (InitialResultTeams.Any())
-                        {
-                            @foreach (var team in InitialResultTeams)
-                            {
-                                <MudItem xs="12" sm="6" md="4">
-                                    <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
-                                        <MudCardContent>
-                                            <MudText Typo="Typo.h6">@team.TeamName</MudText>
-                                            <MudText Typo="Typo.body1">@team.Description</MudText>
-                                            <MudText Typo="Typo.body2">Rating: @team.Rating</MudText>
-                                            <MudText Typo="Typo.body2">Completed projects: @team.CompletedProjects</MudText>
-                                            <MudText Typo="Typo.body2">No. of Members: @NoTeamMembers</MudText>
-
-
-                                        </MudCardContent>
-
-                                        <MudCardActions>
-                                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                                        </MudCardActions>
-
-                                        <!-- Hourly Rate in top-right corner -->
-                                        <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                            $@team.HourlyRate
-                                        </MudText>
-                                    </MudCard>
-                                </MudItem>
-                            }
-                        }
-                    }
+                }                
                     else
                     {
                         <MudText>No teams available.</MudText>
                     }
-                }
             </MudGrid>
         </MudPaper>
     </MudMain>
@@ -253,13 +179,9 @@
 
     private int NoTeamMembers; //The number of members in a team
 
-    // All developers and teams
-  //  public List<Developer> InitialResultDevs = new List<Developer>();
-    public List<TeamOutDTO> InitialResultTeams = new List<TeamOutDTO>();
-
     // Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
-    public List<Team> SearchResultTeams = new List<Team>();
+    public List<TeamOutDTO> SearchResultTeams = new List<TeamOutDTO>();
 
 
     public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer 
@@ -296,11 +218,8 @@
         SearchResultDevs = developerService.GetDevsBasedOnSearchValue(null);
         var teams = teamService.GetAllTeams(0, int.MaxValue, null, null, null, null);
 
-        // Add developers to the results
-      //  SearchResultDevs = developers.ToList();
-
         // Add teams to the results
-        InitialResultTeams = teams.ToList();
+        SearchResultTeams = teams.ToList();
     }
 
     private async Task<IEnumerable<string>> Search2(string value, CancellationToken token)
@@ -364,9 +283,6 @@
         //Filtering by minimum rating
         if (ratingValue != null)
         {
-            //SearchResultDevs = SearchResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
-            InitialResultTeams = InitialResultTeams.Where(d => d.Rating >= ratingValue).ToList();
-
             SearchResultDevs = SearchResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
             SearchResultTeams = SearchResultTeams.Where(d => d.Rating >= ratingValue).ToList();
         }
@@ -374,9 +290,6 @@
         //Filtering by max  price
         if (maxPrice != null)
         {
-           // SearchResultDevs = SearchResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
-            InitialResultTeams = InitialResultTeams.Where(d => d.HourlyRate <= maxPrice).ToList();
-
             SearchResultDevs = SearchResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
             SearchResultTeams = SearchResultTeams.Where(d => d.HourlyRate <= maxPrice).ToList();
         }
@@ -384,9 +297,6 @@
         //Filtering by availability status [Available]
         if (OnlyAvailableSwitch == true)
         {
-          //  SearchResultDevs = SearchResultDevs.Where(d => d.IsDelete == false).ToList();
-            InitialResultTeams = InitialResultTeams.Where(d => d.Active == true).ToList();
-
             SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == true).ToList();
             SearchResultTeams = SearchResultTeams.Where(d => d.Active == true).ToList();
         }
@@ -395,9 +305,6 @@
         //Filtering by availablity status [Not Available]
         if (OnlyAvailableSwitch == false)
         {
-            //SearchResultDevs = SearchResultDevs.Where(d => d.IsDelete == true).ToList();
-            InitialResultTeams = InitialResultTeams.Where(d => d.Active == false).ToList();
-
             SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
             SearchResultTeams = SearchResultTeams.Where(d => d.Active == false).ToList();
         }
@@ -405,13 +312,11 @@
         if (ResourceType == "Developers")
         {
             SearchResultTeams.Clear();
-            InitialResultTeams.Clear();
         }
 
         if (ResourceType == "Teams")
         {
             SearchResultDevs.Clear();
-           // InitialResultDevs.Clear();
         }
     }
 

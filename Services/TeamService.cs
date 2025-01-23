@@ -59,11 +59,35 @@ namespace OutsourcingSystemWepApp.Services
         }
 
 
-        public  List<Team> GetTeamsBasedOnSearchValue(string Value)
+        public  List<TeamOutDTO> GetTeamsBasedOnSearchValue(string Value)
         {
-            var value = Value.ToLower();
             var teams = _teamRepository.GetAllTeams();
-            return teams.Where(t=>t.TeamName.ToLower().Contains(value) || t.Description.ToLower().Contains(value)).ToList();
+            if (Value != null)
+            {
+                var value = Value.ToLower();
+                teams = teams.Where(t => t.TeamName.ToLower().Contains(value) || t.Description.ToLower().Contains(value)).ToList();
+            }
+            var ResultTeams = new List<TeamOutDTO>();
+
+            //mapping
+            foreach (var team in teams)
+            {
+                var t = new TeamOutDTO
+                {
+                    TeamID = team.TeamID,
+                    TeamName = team.TeamName,
+                    Description = team.Description,
+                    TeamCapacity = team.TeamCapacity,
+                    HourlyRate = team.HourlyRate,
+                    Rating = team.Rating,
+                    CompletedProjects = team.CompletedProjects,
+                    Active = team.Active,
+                };
+                ResultTeams.Add(t);
+            }
+
+
+            return ResultTeams;
         }
 
         public Team GetTeamByID(int TeamID)
