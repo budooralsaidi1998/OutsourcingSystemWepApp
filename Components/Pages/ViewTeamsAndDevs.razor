@@ -6,6 +6,7 @@
 @inject ITeamService teamService
 @inject IDeveloperServices developerService
 @inject IDeveloperSkillService developerSkillService
+@inject ITeamMemberService teamMemberService
 @inject NavigationManager Navigation
 
 <MudLayout>
@@ -76,32 +77,49 @@
                 {
                     @foreach (var dev in SearchResultDevs)
                     {
-                        <MudItem xs="12" sm="6" md="4">
-                            <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
-                                <MudCardContent>
-                                    <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
-                                    <MudText Typo="Typo.body2">@dev.Specialization</MudText>
-                                    <MudText Typo="Typo.body1">@dev.CommitmentRating</MudText>
-                                </MudCardContent>
-                                <MudCardActions>
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
-                                </MudCardActions>
+                                 <MudItem xs="12" sm="6" md="4">
+                                    <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
+                                        <MudCardContent>
+                                            <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                                            <MudText Typo="Typo.body1">@dev.Specialization</MudText>
+                                            <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
+                                            <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
 
-                                <!-- Hourly Rate in top-right corner -->
-                                <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
-                                    $@dev.HourlyRate
-                                </MudText>
-                            </MudCard>
-                        </MudItem>
+                                            <!-- Skills section -->
+                                            @GetDevSkills(dev.DevId)
+
+                                            @if(DevSkills != null)
+                                            {
+                                                <div class="d-flex flex-wrap gap-2 mt-1">
+                                                    @foreach (var skill in DevSkills)
+                                                    {
+                                                        <MudChip T="string" Color="Color.Success">
+                                                            @skill
+                                                        </MudChip>
+                                                    }
+                                                </div>
+                                            }
+                                        </MudCardContent>
+
+                                        <MudCardActions>
+                                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                        </MudCardActions>
+
+                                        <!-- Hourly Rate in top-right corner -->
+                                        <MudText Typo="Typo.body2" Style="position: absolute; top: 8px; right: 8px; background-color: green; color: white; padding: 4px 8px; border-radius: 0;">
+                                            $@dev.HourlyRate
+                                        </MudText>
+                                    </MudCard>
+                                </MudItem>
                     }
                 }
-                else
+@*                 else
                 {
                     @if (ResourceFound != true) //ensuring does not show results if results found in team
                     {
-                        @if(InitialResultDevs.Any())
+                        @if (SearchResultDevs.Any())
                         {
-                            @foreach (var dev in InitialResultDevs)
+                            @foreach (var dev in SearchResultDevs)
                             {
                                 <MudItem xs="12" sm="6" md="4">
                                     <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
@@ -112,18 +130,18 @@
                                             <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
 
                                             <!-- Skills section -->
-                                            @GetDevSkills(dev.DeveloperID)
+                                            @GetDevSkills(dev.DevId)
 
                                             @if(DevSkills != null)
                                             {
-                                            <div class="d-flex flex-wrap gap-2 mt-1">
-                                                @foreach (var skill in DevSkills)
-                                                {
-                                                    <MudChip T="string" Color="Color.Success">
-                                                        @skill
-                                                    </MudChip>
-                                                }
-                                            </div>
+                                                <div class="d-flex flex-wrap gap-2 mt-1">
+                                                    @foreach (var skill in DevSkills)
+                                                    {
+                                                        <MudChip T="string" Color="Color.Success">
+                                                            @skill
+                                                        </MudChip>
+                                                    }
+                                                </div>
                                             }
                                         </MudCardContent>
 
@@ -145,7 +163,7 @@
                     {
                         <MudText>No developers available.</MudText>
                     }
-                }
+                } *@
             </MudGrid>
         </MudPaper>
 
@@ -187,8 +205,14 @@
                                     <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                         <MudCardContent>
                                             <MudText Typo="Typo.h6">@team.TeamName</MudText>
-                                            <MudText Typo="Typo.body2">@team.Description</MudText>
+                                            <MudText Typo="Typo.body1">@team.Description</MudText>
+                                            <MudText Typo="Typo.body2">Rating: @team.Rating</MudText>
+                                            <MudText Typo="Typo.body2">Completed projects: @team.CompletedProjects</MudText>
+                                            <MudText Typo="Typo.body2">No. of Members: @NoTeamMembers</MudText>
+
+
                                         </MudCardContent>
+
                                         <MudCardActions>
                                             <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
                                         </MudCardActions>
@@ -227,8 +251,10 @@
     private string SearchValue; //value inputted to search by
     private bool ResourceFound = false; 
 
+    private int NoTeamMembers; //The number of members in a team
+
     // All developers and teams
-    public List<Developer> InitialResultDevs = new List<Developer>();
+  //  public List<Developer> InitialResultDevs = new List<Developer>();
     public List<TeamOutDTO> InitialResultTeams = new List<TeamOutDTO>();
 
     // Filtered devs and teams
@@ -267,11 +293,11 @@
     private async Task LoadAllResults()
     {
         // Load all developers and teams
-        var developers = developerService.GetAll();
+        SearchResultDevs = developerService.GetDevsBasedOnSearchValue(null);
         var teams = teamService.GetAllTeams(0, int.MaxValue, null, null, null, null);
 
         // Add developers to the results
-        InitialResultDevs = developers.ToList();
+      //  SearchResultDevs = developers.ToList();
 
         // Add teams to the results
         InitialResultTeams = teams.ToList();
@@ -307,7 +333,7 @@
                 SearchResultTeams.Add(team);
             }
 
-            if (SearchResultDevs != null || SearchResultTeams != null) //showing if resource was found 
+            if (SearchResultDevs != null || SearchResultTeams != null) //showing if resource was found
             {
                 ResourceFound = true;
             }
@@ -338,7 +364,7 @@
         //Filtering by minimum rating
         if (ratingValue != null)
         {
-            InitialResultDevs = InitialResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
+            //SearchResultDevs = SearchResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.Rating >= ratingValue).ToList();
 
             SearchResultDevs = SearchResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
@@ -348,7 +374,7 @@
         //Filtering by max  price
         if (maxPrice != null)
         {
-            InitialResultDevs = InitialResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
+           // SearchResultDevs = SearchResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.HourlyRate <= maxPrice).ToList();
 
             SearchResultDevs = SearchResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
@@ -358,7 +384,7 @@
         //Filtering by availability status [Available]
         if (OnlyAvailableSwitch == true)
         {
-            InitialResultDevs = InitialResultDevs.Where(d => d.IsDelete == false).ToList();
+          //  SearchResultDevs = SearchResultDevs.Where(d => d.IsDelete == false).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.Active == true).ToList();
 
             SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == true).ToList();
@@ -369,7 +395,7 @@
         //Filtering by availablity status [Not Available]
         if (OnlyAvailableSwitch == false)
         {
-            InitialResultDevs = InitialResultDevs.Where(d => d.IsDelete == true).ToList();
+            //SearchResultDevs = SearchResultDevs.Where(d => d.IsDelete == true).ToList();
             InitialResultTeams = InitialResultTeams.Where(d => d.Active == false).ToList();
 
             SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == false).ToList();
@@ -385,7 +411,7 @@
         if (ResourceType == "Teams")
         {
             SearchResultDevs.Clear();
-            InitialResultDevs.Clear();
+           // InitialResultDevs.Clear();
         }
     }
 
@@ -417,4 +443,38 @@
         }
         return "";
     }
+
+    private string UpdateNoMembersInTeam(int TeamID)
+    {
+        //making sure that number not affected by previous searches 
+        NoTeamMembers = 0;
+
+        var TeamMembers = teamMemberService.GetTeamMemberByTeamID(TeamID);
+        NoTeamMembers = TeamMembers.Count();
+        return "";
+    }
 }
+@code{
+
+    private IEnumerable<Developer> AllDevs = new List<Developer>(); 
+    // Full list of developers
+    private List<Developer> RenderedResultDevs = new List<Developer>(); 
+    // List used for rendering
+
+    protected override void OnInitialized()
+    { // Initialize AllDevs with all developers 
+        AllDevs = developerService.GetAll();
+        // Initially render all developers 
+        RenderedResultDevs = new List<Developer>(AllDevs); 
+    } private void ApplyFilter(int? ratingValue)
+    {
+        if (ratingValue != null)
+        { // Filter based on rating 
+            RenderedResultDevs = AllDevs.Where(d => d.CommitmentRating >= ratingValue).ToList(); 
+        }
+        else 
+        { // If no filter, show all developers 
+            RenderedResultDevs = new List<Developer>(AllDevs); } 
+        }
+    }
+ }

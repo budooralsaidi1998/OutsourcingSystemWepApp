@@ -300,25 +300,31 @@ namespace OutsourcingSystemWepApp.Services
 
         public List<DeveloperOutDTO> GetDevsBasedOnSearchValue(string Value)
         {
+          //  IEnumerable<Developer> devs;
             var devs = _developerRepositry.GetAll();
-            var value = Value.ToLower();
-            var found = devs.Where(d => d.DeveloperName.ToLower().Contains(value) || d.Specialization.ToLower().Contains(value) || d.CareerSummary.ToLower().Contains(value)).ToList();
-            var ResultDevs = new List<DeveloperOutDTO>();
-
-            //mapping
-            foreach (var dev in found)
+            if (Value != null)               
             {
-                var d = new DeveloperOutDTO
-                {
-                    DeveloperName = dev.DeveloperName,
-                    Specialization = dev.Specialization,
-                    HourlyRate = dev.HourlyRate,
-                    CommitmentRating = dev.CommitmentRating,
-                    AvailabilityStatus = dev.AvailabilityStatus,
-                    CompletedProjects = dev.CompletedProjects,
-                };
-                ResultDevs.Add(d);
+                var value = Value.ToLower();
+                devs= devs.Where(d => d.DeveloperName.ToLower().Contains(value) || d.Specialization.ToLower().Contains(value) || d.CareerSummary.ToLower().Contains(value)).ToList();
             }
+                var ResultDevs = new List<DeveloperOutDTO>();
+
+                //mapping
+                foreach (var dev in devs)
+                {
+                    var d = new DeveloperOutDTO
+                    {
+                        DevId= dev.DeveloperID,
+                        DeveloperName = dev.DeveloperName,
+                        Specialization = dev.Specialization,
+                        HourlyRate = dev.HourlyRate,
+                        CommitmentRating = dev.CommitmentRating,
+                        AvailabilityStatus = dev.AvailabilityStatus,
+                        CompletedProjects = dev.CompletedProjects,
+                    };
+                    ResultDevs.Add(d);
+                }
+            
 
             return ResultDevs;
         }

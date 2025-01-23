@@ -4,6 +4,7 @@ namespace OutsourcingSystemWepApp.Data.DTOs
 {
     public class DeveloperOutDTO
     {
+        public int DevId { get; set; }
         public string DeveloperName { get; set; }
 
         [Required(ErrorMessage = "Specialization is required.")]
