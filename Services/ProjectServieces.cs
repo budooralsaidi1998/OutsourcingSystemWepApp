@@ -57,8 +57,31 @@ namespace OutsourcingSystemWepApp.Services
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
 
+        }
+        public List<Project> GetProjectsByDevID(int DevID)
+        {
+            try
+            {
+                if (DevID == null)
+
+                    throw new UnauthorizedAccessException("it null id  .");
+
+                var projects = _projectRepositry.GetProjectsByDevID(DevID);
+                if (projects == null)
+                {
+                    throw new UnauthorizedAccessException("it null project  .");
+                }
+
+                return projects;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An unexpected error occurred: {ex.Message}");
+            }
+
 
         }
+        
 
         public Project GetProjectByClientId(int id)
         {

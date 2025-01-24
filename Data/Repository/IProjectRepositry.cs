@@ -9,5 +9,6 @@ namespace OutsourcingSystemWepApp.Data.Repository
         Project GetProjectByID(int pid);
         Project GetProjectByIDClient(int clientid);
         void UpdateProject(Project pro);
+        List<Project> GetProjectsByDevID(int DevID);
     }
 }

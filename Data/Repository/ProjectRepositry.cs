@@ -44,6 +44,22 @@ namespace OutsourcingSystemWepApp.Data.Repository
                 throw new Exception("An error occurred .", ex);
             }
         }
+
+        //get project by id project 
+        public List<Project> GetProjectsByDevID(int DevID)
+        {
+            try
+            {
+                return _context.Project.Where(p => p.DeveloperID == DevID).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred : {ex.Message}");
+                // Optionally, you could throw the exception to be handled by a higher level
+                throw new Exception("An error occurred .", ex);
+            }
+        }
+
         //get project by id project 
         public Project GetProjectByIDClient(int clientid)
         {
