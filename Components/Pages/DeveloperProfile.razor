@@ -1,0 +1,85 @@
+﻿@page "/DeveloperProfile"
+@inject IDeveloperServices developerService
+@inject IProjectServieces projectService
+@using Data.Model
+
+<MudContainer>
+    <MudTextField @bind-Value="devIDString" Label="Enter provider ID" Variant="Variant.Filled" FullWidth="true" />
+
+    <MudButton OnClick="GetProviderDetails" Color="Color.Success" Variant="Variant.Filled" FullWidth="true">
+        Get Details
+    </MudButton>
+
+    @if (dev != null)
+    {
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
+                <MudText>Specialization: @dev.Specialization</MudText>
+                <MudText>Availability: @dev.AvailabilityStatus</MudText>
+                <MudText>Average Rating: @dev.CommitmentRating</MudText>
+                <MudText>Hourly Rate: @dev.HourlyRate</MudText>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h6">Career Summary</MudText>
+                <MudText>@dev.CareerSummary</MudText>
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard>
+            @if (projects != null)
+            {
+                <MudText Typo="Typo.h6">Projects</MudText>
+
+                    @foreach (var project in projects)
+                    {
+                    <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
+                    <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
+                    <MudText Typo="Typo.body1">Client rating: </MudText>
+
+                    
+                    }
+            }
+        </MudCard>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+    }
+</MudContainer>
+
+@code
+{
+    private string devIDString = string.Empty;
+    private Developer dev = null;
+    private string errorMessage = string.Empty;
+
+    private List<Project> projects = new List<Project>();
+
+    private void GetProviderDetails()
+    {
+        // Convert string input to integer
+        if (int.TryParse(devIDString, out int devID) && devID > 0)
+        {
+            dev = developerService.GetById(devID); // Get the developer details based on ID
+            projects = projectService.GetProjectsByDevID(dev.DeveloperID);
+
+
+            if (dev == null)
+            {
+                errorMessage = "Developer not found.";
+            }
+            else
+            {
+                errorMessage = string.Empty; // Clear error message if developer found
+            }
+        }
+        else
+        {
+            errorMessage = "Please enter a valid provider ID.";
+        }
+    }
+}

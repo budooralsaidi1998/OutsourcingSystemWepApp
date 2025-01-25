@@ -115,5 +115,10 @@ namespace OutsourcingSystemWepApp.Services
         {
             return _skillRepository.GetAllSkillsWithDeveloperCount();
         }
+
+        public Skill GetSkillsByID(int SkillID)
+        { 
+            return _skillRepository.GetSkillByID(SkillID);
+        }
     }
 }

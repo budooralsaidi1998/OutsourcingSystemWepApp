@@ -10,5 +10,6 @@ namespace OutsourcingSystemWepApp.Services
         Project GetProjectById(int id);
         bool SoftDeleteClient(int id);
         void UpdateProject(int id, UpdateProjectDto project);
+        List<Project> GetProjectsByDevID(int DevID);
     }
 }
