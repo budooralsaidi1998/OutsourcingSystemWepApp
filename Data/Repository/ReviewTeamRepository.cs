@@ -1,4 +1,5 @@
-﻿using OutsourcingSystemWepApp.Data.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystemWepApp.Data.Model;
 
 namespace OutsourcingSystemWepApp.Data.Repository
 {
@@ -35,7 +36,7 @@ namespace OutsourcingSystemWepApp.Data.Repository
         //Gets all TeamReviews [returns list of team reviews]
         public List<ClientReviewTeam> GetAllTeamReviews()
         {
-            return _context.ClientReviewTeam.ToList();
+            return _context.ClientReviewTeam.Include(r=>r.Teams).ToList();
         }
 
         //Get TeamReview by TeamID [returns teamReview by ID]

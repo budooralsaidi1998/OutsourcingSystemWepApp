@@ -12,13 +12,13 @@ namespace OutsourcingSystemWepApp.Data.Model
         [Required]
         [ForeignKey(nameof(Client))]
         public int ClientID { get; set; }
-        public Client Client { get; set; }
+        public virtual Client Client { get; set; }
 
 
         [Required]
         [ForeignKey(nameof(Teams))]
         public int TeamID { get; set; }
-        public Team Teams { get; set; }
+        public  Team Teams { get; set; }
 
 
         [Required(ErrorMessage = "Rating is required.")]

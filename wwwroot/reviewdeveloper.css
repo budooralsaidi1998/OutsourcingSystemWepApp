@@ -1,0 +1,114 @@
+﻿.review-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    margin: 20px;
+}
+
+/* Review Title */
+.review-title {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Carousel Arrow Styles */
+.arrow {
+    cursor: pointer;
+    font-size: 24px;
+    padding: 10px;
+}
+
+    .arrow.left {
+        margin-right: 20px;
+    }
+
+    .arrow.right {
+        margin-left: 20px;
+    }
+
+/* Review Card */
+.review-carousel {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.review-card {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 300px;
+    height: 220px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+    text-align: left;
+}
+
+.developer-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+
+.review-date {
+    font-size: 12px;
+    color: #777;
+    margin-top: 10px;
+}
+
+/* Review Card Styling */
+.review-card {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 300px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Star Rating Styling */
+.star-rating {
+    display: flow-root;
+    gap: 5px; /* Space between stars */
+    text-align: left;
+    margin: 10px 0; /* Add some spacing */
+}
+
+/* Common Star Style */
+.star {
+    font-size: 20px; /* Adjust star size */
+    color: #ddd; /* Default color for empty stars */
+}
+
+    /* Filled Star Style */
+    .star.filled {
+        color: gold; /* Gold color for filled stars */
+    }
+/* Pagination Controls */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.page-button {
+    color: forestgreen;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .page-button:hover {
+        background-color: #45a049;
+    }
