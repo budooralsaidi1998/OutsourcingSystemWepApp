@@ -75,21 +75,31 @@ h1:focus {
 .login-btn:hover {
     background-color: lightgray;
 }
+
+
+/*----------------------------about ---------------------*/
+
 .article-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px;
+    width:100%;
+    gap:100px;
+    height:100%;
 }
 
 .text-section {
-    width: 50%; /* Adjust text section width */
+    width: 50%;
+    height:50%;/* Adjust text section width */
+    gap:10px;
+    padding-left:100px;
 }
 
 .article-title {
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .article-paragraph {
@@ -109,295 +119,169 @@ h1:focus {
     }
 
 .image-section {
-    width: 50%; /* Adjust image section width */
-    text-align: left;
+    width: 50%;/* Adjust image section width */
+    height:50%;
+  
 }
 
 .article-image {
-    width: 100%;
-    height: auto;
+    width: 500px;
+    height: 450px;
+    padding-left:19px;
+    text-align:left;
+  
 }
 
 /*----------------------------Skill In Home page css -----------*/
 
 
-/*.card-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-}
-
-.card-carousel {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 15px;
-    overflow: hidden;
-    width: calc(100% - 80px);*/ /* Leave space for arrows */
-   /*justify-content: center;
-}
-
-.card {
-    flex: 0 0 300px;*/ /* Set fixed width for each card */
-    /*padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-   text-align:center;
-    transition: transform 0.3s ease-in-out;
-}
-
-.arrow {
-    font-size: 2rem;
-    cursor: pointer;
-    color: forestgreen;
-    user-select: none;
-    transition: color 0.2s ease-in-out;
-}
-
-    .arrow:hover {
-        color: forestgreen;
-    }
-
-.left {
-    margin-right: 10px;
-}
-
-.right {
-    margin-left: 10px;
-}
-.view-developers {
-    display: inline-block;
-    margin-top: 10px;
-    color: forestgreen;
-    text-decoration: none;
-    font-weight: bold;
-}
- .view-developers:hover {
-        text-decoration: underline;
-        color: darkolivegreen;
-    }
-
-.title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: left;*/ /* Align the title to the left */
-    /*padding-left: 20px;
-}*/
-/*@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap');
-
-body {
-    font-family: 'Oswald', sans-serif;
-    background-color: #f4f4f4;*/ /* Light gray background for the page */
-/*}
-
-.card-container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-}
-
-.card-carousel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    overflow: hidden;
-}
-
-.card {
-    position: relative;
-    height: 200px;
-    width: 300px;
-    margin: 10px;
-    background-color: #ffffff;*/ /* White background */
-    /*border-radius: 8px;*/ /* Rounded corners */
-    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);*/ /* Soft shadow */
-    /*transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-    overflow: hidden;
-}
-
-    .card:hover {
-        transform: scale(1.05);*/ /* Slight scaling on hover */
-        /*box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.10);*/ /* Enhanced shadow on hover */
-    /*}
-
-    .card h2 {
-        font-size: 1.5em;
-        font-weight: 600;
-        color: #333;*/ /* Dark gray for text */
-        /*margin-bottom: 10px;
-    }
-
-    .card p {
-        font-size: 1em;
-        color: #555;*/ /* Medium gray for text */
-        /*margin-bottom: 8px;
-    }
-
-    .card a {
-        display: inline-block;
-        color: forestgreen;*/ /* Green button */
-        /*text-decoration: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-weight: 600;
-        text-align: center;
-        transition: color 0.3s ease, transform 0.3s ease;
-    }
-
-        .card a:hover {
-            color: #45a049;*/ /* Darker green on hover */
-            /*transform: translateY(-2px);*/ /* Slight lift on hover */
-        /*}*/
-
-/* Card Back Animation */
-/*.card-back {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background: #0b0f08;*/ /* Dark background for back */
-    /*border-radius: 8px;
-    transform: translateY(200%);
-    transition: transform 0.5s ease-in-out;
-}
-
-.card:hover .card-back {
-    transform: translateY(0);
-}
-
-.arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 3em;*/ /* Larger arrow size */
-    /*color: forestgreen;*/ /* Bright green arrow */
-    /*cursor: pointer;
-    user-select: none;
-    z-index: 10;
-    transition: transform 0.3s ease;
-}
-
-    .arrow:hover {
-        transform: scale(1.2);*/ /* Enlarge arrow on hover */
-    /*}
-
-    .arrow.left {
-        left: 20px;*/ /* Extra spacing */
-    /*}
-
-    .arrow.right {
-        right: 20px;*/ /* Extra spacing */
-    /*}*/
 
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;600&display=swap');
-
 body {
     font-family: 'Oswald', sans-serif;
     background-color: #f4f4f4; /* Light gray background */
+    margin: 0;
+    padding: 0;
 }
 
+/* Title */
+.title {
+    text-align: center;
+    font-size: 28px; /* Larger font size for prominence */
+    font-weight: bold;
+    margin-bottom: 40px; /* Increased margin for better spacing */
+    color: #333; /* Dark color for title */
+    margin-top: 50px;
+}
+
+/* Card Container */
 .card-container {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
     position: relative;
+    margin-bottom: 100px;
+    margin-top: 100px;
 }
 
+/* Card Carousel */
 .card-carousel {
     display: flex;
     justify-content: center; /* Center-align cards */
-    gap: 5px; /* Reduce the gap between cards */
+    gap: 10px; /* Slightly wider gap for better spacing */
     overflow: hidden;
+    position: relative;
+    align-items: center; /* Center content vertically */
+
 }
 
+/* Card Styling */
 .card {
     position: relative;
-    height: 250px; /* Decreased height */
-    width: 200px;
-    margin: 5px; /* Reduced margin for tighter spacing */
+    height: 250px;
+    width: 250px;
+    margin: 10px;
     background-color: #ffffff; /* White background */
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-    perspective: 1000px;
-    transform-style: preserve-3d;
-    transition: transform 1s ease;
-   
+    border-radius: 12px; /* Slightly rounded corners */
+    border: 2px solid lightgreen; /* Light green border */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* Ensure content stays within card bounds */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
-
+    /* Hover Effect for Card */
     .card:hover {
-        transform: rotateY(180deg);
+        transform: scale(0.95); /* Zoom-out effect */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Slightly larger shadow */
+        border-color: #a1e6a1; /* Slightly darker green border */
     }
 
-.cover,
-.card-back {
-    position: absolute;
+/* Cover and Card Back (Flip Animation) */
+/* Inner Content Styling */
+.cover {
+    position: relative;
     height: 100%;
     width: 100%;
-    backface-visibility: hidden;
-    border-radius: 8px;
-}
-
-.cover {
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 20px;
+    box-sizing: border-box;
+    transition: opacity 0.3s ease; /* Smooth fade for cover content */
+}
+
+.card:hover .cover {
+    opacity: 0.5; /* Dim the cover on hover */
 }
 
     .cover h3 {
-        font-size: 1.5em;
-        font-weight: 600;
+        font-size: 1.6em; /* Increased font size for better readability */
+        font-weight: bold;
         color: #333;
     }
 
     .cover .price {
-        font-size: 1em;
+        font-size: 1.2em;
         color: #555;
     }
 
     .cover .des {
-        font-size: 0.9em;
+        font-size: 1em;
         color: #777;
     }
 
 .card-back {
-    background-color: #f0f0f0; /* Light gray for the back */
+    position: absolute;
+    bottom: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, 50%) scale(0); /* Start scaled down and hidden */
+    opacity: 0; /* Start fully transparent */
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth reveal animation */
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: rotateY(180deg);
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    background-color: forestgreen; /* Green background */
+    color: #fff; /* White text */
+    border-radius: 12px; /* Rounded border */
+    padding: 10px 20px; /* Padding for spacing */
+    border: 2px solid white; /* White border for better visibility */
+    width: auto; /* Adjust width to content */
+    height: auto; /* Adjust height to content */
+    text-align: center;
+    font-size: 1em; /* Ensure text is legible */
+    font-weight: bold; /* Make text stand out */
 }
 
-    .card-back a {
-        text-decoration: none;
-        color: white;
-        background-color: forestgreen;
-        padding: 10px 20px;
-        border-radius: 4px;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-    }
+.card:hover .card-back {
+    transform: translate(-50%, 50%) scale(1); /* Scale up to full size */
+    opacity: 1; /* Make it fully visible */
+}
 
-        .card-back a:hover {
-            background-color: #45a049; /* Slightly darker green */
-        }
+.card-back a {
+    text-decoration: none;
+    color: white; /* White text for the link */
+    background-color: transparent; /* Transparent background for the link */
+    padding: 12px 24px;
+    border-radius: 8px; /* Rounded corners for the link */
+    font-weight: bold;
+    border: 2px solid white; /* White border for the link */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    width:200%;
+    height:100%;
+}
 
-.arrow {
+    .card-back a:hover {
+        background-color: white; /* White background on hover */
+        color: forestgreen; /* Green text on hover */
+        transform: scale(1.1);
+        opacity:100%;/* Slight zoom-in effect */
+    }/* Make visible */
+    /* Arrow Styles for Navigation */
+    .arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 2em;
+    font-size: 3em; /* Larger arrow size */
     color: forestgreen; /* Green color for the arrow */
     cursor: pointer;
     user-select: none;
@@ -405,65 +289,110 @@ body {
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
+    /* Arrow Hover Effect */
     .arrow:hover {
-        color: green; /* Slightly darker green on hover */
-        transform: scale(1.2); /* Enlarge arrow on hover */
+        color: #4CAF50; /* Slightly lighter green on hover */
+        transform: scale(1.3); /* Enlarged arrow on hover */
     }
 
-    .arrow.left {
+    /* Left Arrow */
+    .arrow.leftt {
         left: 10px;
-        color:forestgreen;
     }
 
-    .arrow.right {
+    /* Right Arrow */
+    .arrow.rightt {
         right: 10px;
-        color: forestgreen;
     }
+
+/* Mobile Responsiveness for Smaller Screens */
+@media (max-width: 768px) {
+    .card {
+        width: 180px; /* Smaller cards for mobile */
+        height: 200px; /* Adjust height */
+    }
+
+    .cover h3 {
+        font-size: 1.3em; /* Slightly smaller title on mobile */
+    }
+
+    .arrow {
+        font-size: 2em; /* Slightly smaller arrows on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 22px; /* Smaller title for small screens */
+    }
+
+    .card {
+        width: 150px; /* Even smaller cards on very small screens */
+        height: 180px;
+    }
+}
+
 
 /* ---------------------client work with us -----------------*/
-
+/* Container for the moving bar */
+/* Container for the moving bar */
 /* Container for the moving bar */
 .moving-bar-container {
     width: 100%;
-    height: 100px; /* Adjust height to fit images */
+    height: 250px; /* Adjust height to fit images */
     overflow: hidden;
     position: relative;
-    background-color: #f9f9f9; /* Optional background for visibility */
-    border: 1px solid #ddd; /* Optional border */
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 20%;
 }
 
 /* Title centered above the bar */
 .moving-bar-title {
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 10px; /* Space between title and bar */
+    margin-bottom: 70px; /* Reduced space between title and bar */
     text-align: center;
+    margin-top: 50px; /* Adjust space above the title if needed */
 }
 
 /* Moving bar styling */
 .moving-bar {
     display: flex;
-    align-items: center;
-    white-space: nowrap;
-    animation: moveBar 10s linear infinite; /* Continuous scrolling animation */
     position: relative;
+    width: 100%;
+    animation: moveBar 10s linear infinite; /* Continuous scrolling animation */
 }
 
-    /* Images in the moving bar */
-    .moving-bar img {
-        height: 80px; /* Ensure consistent size */
-        margin-right: 20px; /* Space between images */
-        display: inline-block;
+/* Frames of images (each set is in its own div) */
+.moving-bar-frame-one,
+.moving-bar-frame-two {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    gap:15px;
+}
+
+/* Images in the moving bar */
+.moving-bar img {
+    height: 80px; /* Ensure consistent size */
+    margin-right: 10px; /* Add space between images */
+    display: inline-block;
+    filter: grayscale(100%); /* Default grayscale */
+    transition: filter 0.3s ease; /* Smooth transition for hover effect */
+}
+
+    /* Grayscale to color on hover */
+    .moving-bar img:hover {
+        filter: grayscale(0%); /* Show full color on hover */
     }
 
 /* Continuous scrolling animation */
 @keyframes moveBar {
     0% {
-        transform: translateX(0%);
+        transform: translateX(0%); /* Start from the left */
     }
 
     100% {
@@ -471,82 +400,291 @@ body {
     }
 }
 
+/* Position the second frame next to the first */
+.moving-bar-frame-two {
+    position: absolute;
+    left: 100%; /* Initially place the second frame right after the first one */
+}
+
+
+/* Duplicate the images in HTML (not CSS) */
+
+
 
 /*---------------Review developer --------------*/
 
-.review-container {
+/* Review Container */
+/* Custom class for smaller MudRating stars */
+
+/*.review-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    position: relative;
-    margin-top: 20px;
-}
+    text-align:left;
+    margin: 20px;
+}*/
 
-.review-carousel {
-    display: flex;
-    overflow: hidden;
-    width: 80%;
-    justify-content: center;
-}
-
-.review-card {
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 0 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Review Title */
+/*.review-title {
     text-align: center;
-    min-width: 250px;
-    max-width: 350px;
-}
+    margin-bottom: 50px;
+    font-size: 24px;
+    font-weight: bold;
+}*/
 
-.arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 30px;
-    color: #007bff;
+/* Carousel Arrow Styles */
+/*.arrow {
     cursor: pointer;
-    z-index: 1;
+    font-size: 24px;
     padding: 10px;
 }
 
     .arrow.left {
-        left: 10px;
+        margin-right: 20px;
     }
 
     .arrow.right {
-        right: 10px;
-    }
+        margin-left: 20px;
+    }*/
 
-    .arrow:hover {
-        color: #0056b3;
-    }
+/* Review Card */
+/*.review-carousel {
+    display: flex;
 
-.review-card h3 {
-    font-size: 1.25rem;
-    color: #333;
+    margin-bottom: 20px;
+}
+
+.review-card {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 300px;
+    height:220px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+    text-align: left;
+}
+
+.developer-name {
+    font-size: 18px;
+    font-weight: bold;
     margin-bottom: 10px;
 }
 
-.review-card p {
-    font-size: 1rem;
-    color: #555;
-}
 
-.review-card em {
-    font-style: italic;
+.review-date {
+    font-size: 12px;
     color: #777;
+    margin-top: 10px;
+}*/
+
+/* Review Card Styling */
+/*.review-card {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 300px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}*/
+
+/* Star Rating Styling */
+/*.star-rating {
+    display: flow-root;
+    gap: 5px;*/ /* Space between stars */
+    /*text-align: left;
+    margin: 10px 0;*/ /* Add some spacing */
+/*}*/
+
+/* Common Star Style */
+/*.star {
+    font-size: 20px;*/ /* Adjust star size */
+    /*color: #ddd;*/ /* Default color for empty stars */
+/*}*/
+
+    /* Filled Star Style */
+    /*.star.filled {
+        color: gold;*/ /* Gold color for filled stars */
+    /*}*/
+/* Pagination Controls */
+/*.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
 }
 
-@media (max-width: 600px) {
-    .card-with-price {
-        width: 100% !important; /* Cards take up full width on small screens */
+.page-button {
+  
+    color: forestgreen;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .page-button:hover {
+        background-color: #45a049;
+    }*/
+
+/* No Reviews Message */
+
+
+
+/* Title centered above the reviews */
+
+/*-------------------------------contact us ------------------*/
+
+svg {
+    height: 23rem;
+    margin-right: 4rem;
+}
+
+#envelope {
+    animation: float 2s ease-in-out infinite;
+}
+
+#star1, #star2, #star3, #star4, #star5, #star6 {
+    animation: blink 1s ease-in-out infinite;
+}
+
+#star2 {
+    animation-delay: 100ms;
+}
+
+#star3 {
+    animation-delay: 500ms;
+}
+
+#star4 {
+    animation-delay: 700ms;
+}
+
+#star5 {
+    animation-delay: 300ms;
+}
+
+#star6 {
+    animation-delay: 200ms
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0px);
     }
 }
 
-@media (min-width: 601px) {
-    .card-with-price {
-        width: 45% !important; /* Cards take up 45% of the width on larger screens */
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 1;
     }
 }
+
+.container {
+    height: 100vh;
+}
+form {
+    min-width: 25rem;
+}
+
+.title {
+    font-family: cursive;
+    color: #212529;
+    font-size: 2.5rem;
+}
+
+/* Form control styling */
+.form-control {
+    background-color: #f2f6f8;
+    border-radius: 2rem;
+    border: none;
+    box-shadow: 0px 7px 5px rgba(0, 0, 0, 0.11);
+    padding: 1rem 2rem; /* Space between input padding */
+}
+
+    .form-control.thick {
+        height: 3.3rem;
+        padding: .5rem 3.5rem;
+    }
+
+    /* Focus effect */
+    .form-control:focus {
+        background-color: #f2f6f8;
+        border: none;
+        box-shadow: 0px 7px 5px rgba(0, 0, 0, 0.11);
+    }
+
+/* Message field control */
+.message .form-control {
+    padding: .5rem 1.8rem;
+}
+
+/* Placeholder styling */
+::placeholder {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #838788;
+    position: relative;
+    left: 0;
+}
+
+/* Input and textarea font settings */
+input,
+textarea {
+    font-family: 'Quicksand', sans-serif;
+    color: #212529;
+    font-size: 1.1rem;
+}
+
+/* Icon positioning */
+.icon {
+    color: #57565c;
+    height: 1.3rem;
+    position: absolute;
+    left: 1.5rem;
+    top: 1.1rem;
+}
+
+/* Button styling */
+.btn.btn-primary {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: bold;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    padding: 0 3rem;
+    border: 0;
+    border-radius: 3rem;
+    background-image: linear-gradient(131deg, #ffd340, #ff923c, #ff923c, #ff923c);
+    background-size: 300% 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+    /* Button hover effect */
+    .btn.btn-primary:hover:enabled {
+        box-shadow: 0 0.5em 0.5em -0.4em #ff923cba;
+        background-size: 100% 100%;
+        transform: translateY(-0.15em);
+    }
