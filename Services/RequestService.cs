@@ -209,7 +209,7 @@ namespace OutsourcingSystemWepApp.Services
                 {
                     RequestId = req.RequestID,
                     Type = "Developer",
-                    ClientID = req.ClientID,
+                    ClientName = req.Client.CompanyName,
                     StartDate = req.StartDate,
                     EndDate = req.EndDate,
                     Status = req.Status

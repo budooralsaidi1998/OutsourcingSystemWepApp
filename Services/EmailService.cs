@@ -17,7 +17,8 @@ namespace OutsourcingSystemWepApp.Services
 
         public async Task SendEmailAsync(string recipientEmail, string subject, string message)
         {
-            var smtpClient = new SmtpClient(_emailSettings.SMTPHost)
+            try { 
+             var smtpClient = new SmtpClient(_emailSettings.SMTPHost)
             {
                 Port = _emailSettings.Port,
                 Credentials = new NetworkCredential(_emailSettings.SenderEmail, _emailSettings.Password),
@@ -34,8 +35,7 @@ namespace OutsourcingSystemWepApp.Services
 
             mailMessage.To.Add(recipientEmail);
 
-            try
-            {
+           
                 await smtpClient.SendMailAsync(mailMessage);
             }
             catch (Exception ex)

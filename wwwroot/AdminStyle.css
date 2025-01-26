@@ -1,0 +1,20 @@
+﻿.menu-item {
+    font-weight: normal; /* Regular font weight */
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Inherit text color from parent */
+    transition: color 0.3s, font-weight 0.3s; /* Smooth transition for hover effects */
+}
+
+    .menu-item:hover {
+        color: green; /* Green color on hover */
+        font-weight: bold; /* Bold text on hover */
+    }
+
+.item {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: center; /* Center items horizontally */
+    font-family: 'Arial', sans-serif;
+
+}
