@@ -92,7 +92,23 @@
 
                                     <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                                     <MudText Typo="Typo.body1">@dev.Specialization</MudText>
-                                    <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
+                                    <div class="star-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= (int)dev.CommitmentRating)
+                                            {
+                                                <span class="star filled">&#9733;</span> <!-- Filled star -->
+                                            }
+                                            else if (i - (double)dev.CommitmentRating >= 0.5)
+                                            {
+                                                <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                                            }
+                                            else
+                                            {
+                                                <span class="star">&#9734;</span> <!-- Empty star -->
+                                            }
+                                        }
+                                    </div>
                                     <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
 
                                     <!-- Skills section -->
