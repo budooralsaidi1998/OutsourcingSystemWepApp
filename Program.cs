@@ -71,6 +71,10 @@ namespace OutsourcingSystemWepApp
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddScoped<IAdminService, AdminService>();
 
+            var jwtSettings = new JwtSettings();
+            builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
+            builder.Services.AddSingleton(jwtSettings);
+
 
             builder.Services.AddMudServices();
             builder.Services.AddRazorComponents()
