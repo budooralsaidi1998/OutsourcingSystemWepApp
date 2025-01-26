@@ -12,5 +12,6 @@ namespace OutsourcingSystemWepApp.Data.Repository
         List<DeveloperSkill> GetDevelopersBySkillID(int SkillID);
         DeveloperSkill GetDeveloperSkillByIDs(int devID, int skillID);
         List<DeveloperSkill> GetSkillsByDeveloperID(int DevID);
+        void UpdateDeveloperSkills(List<DeveloperSkill> skills);
     }
 }

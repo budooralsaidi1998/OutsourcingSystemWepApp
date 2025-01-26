@@ -6,101 +6,155 @@ namespace OutsourcingSystemWepApp.Services
 {
     public class ClientService : IClientService
     {
+        private readonly ApplictionDbContext _context;
         private readonly IClientRepository _clientRepository;
         private readonly IUserRepositry _userRepositry;
 
-        public ClientService(IClientRepository clientRepository, IUserRepositry userRepositry)
+        public ClientService(ApplictionDbContext context, IClientRepository clientRepository, IUserRepositry userRepositry)
         {
-
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _userRepositry = userRepositry;
             _clientRepository = clientRepository;
 
 
         }
 
-        public void RegisterClient(UserInputDto client)
+        //public void RegisterClient(UserInputDto client)
+        //{
+        //    // Validate the input DTO to ensure it is not null
+
+        //    if (client == null)
+        //        throw new ArgumentNullException(nameof(client), "Client data cannot be null.");
+
+        //    // Check that the CompanyName is provided and not  null
+
+        //    if (string.IsNullOrEmpty(client.CompanyName))
+
+        //        throw new ArgumentException("Company name is required.");
+
+        //    var existingUserByEmail = _userRepositry.GetUserByEmail(client.Email);
+        //    if (existingUserByEmail != null)
+        //    {
+        //        throw new ArgumentException("A user with this email already exists.");
+        //    }
+
+        //    // Check for duplicate password
+        //    var existingUserByPassword = _userRepositry.GetUserByPassword(client.Password);
+        //    if (existingUserByPassword != null)
+        //    {
+        //        throw new ArgumentException("A user with this password already exists. Please choose a different password.");
+        //    }
+
+        //    // Validate CompanyName
+        //    if (string.IsNullOrWhiteSpace(client.CompanyName))
+        //    {
+        //        throw new ArgumentException("Company name is required.");
+        //    }
+        //    if (client.CompanyName.Length > 100)
+        //    {
+        //        throw new ArgumentException("Company name cannot be more than 100 characters.");
+        //    }
+
+        //    // Validate Industry
+        //    if (!string.IsNullOrEmpty(client.Industry) && client.Industry.Length > 100)
+        //    {
+        //        throw new ArgumentException("Industry name cannot be more than 100 characters.");
+        //    }
+
+
+        //    // Validate Notes
+        //    if (!string.IsNullOrEmpty(client.Notes) && client.Notes.Length > 1000)
+        //    {
+        //        throw new ArgumentException("Notes cannot be more than 1000 characters.");
+        //    }
+
+        //    try
+        //    {
+        //        // Map the data from ClientDTO to a new Client 
+
+        //        client.Password = BCrypt.Net.BCrypt.HashPassword(client.Password);
+        //        var user = new User
+        //        {
+        //            Name = client.Name,
+        //            Email = client.Email,
+        //            Password = client.Password,
+        //            role = client.role,
+        //            CreatedAt = client.CreatedAtClient,
+        //        };
+        //        // Add the new client entity to the repository
+        //        int userID = _userRepositry.AddUserInt(user);
+
+        //        var Clienet = new Client
+        //        {
+        //            UID = userID,
+        //            CompanyName = client.CompanyName, // Assign company name 
+        //            Industry = client.Industry,       // Assign industry 
+        //            Notes = client.Notes,
+        //            CreatedAt = DateTime.Now             //  date is current time
+        //        };
+        //        _clientRepository.Add(Clienet);
+
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        throw new Exception("An error occurred while registering the client.", ex);
+        //    }
+        //}
+
+
+        public async Task<bool> RegisterClient(RegisterClientDto clientDto)
         {
-            // Validate the input DTO to ensure it is not null
-
-            if (client == null)
-                throw new ArgumentNullException(nameof(client), "Client data cannot be null.");
-
-            // Check that the CompanyName is provided and not  null
-
-            if (string.IsNullOrEmpty(client.CompanyName))
-
-                throw new ArgumentException("Company name is required.");
-
-            var existingUserByEmail = _userRepositry.GetUserByEmail(client.Email);
-            if (existingUserByEmail != null)
+            if (string.IsNullOrWhiteSpace(clientDto.Industry) || string.IsNullOrWhiteSpace(clientDto.CompanyName))
             {
-                throw new ArgumentException("A user with this email already exists.");
+                throw new ArgumentException("Industry and Company Name are required fields.");
             }
 
-            // Check for duplicate password
-            var existingUserByPassword = _userRepositry.GetUserByPassword(client.Password);
-            if (existingUserByPassword != null)
+            // Check if the email already exists
+            var existingUser = await _userRepositry.GetUserByEmailAsync(clientDto.Email.ToLower());
+            if (existingUser != null)
             {
-                throw new ArgumentException("A user with this password already exists. Please choose a different password.");
+                throw new ArgumentException("This email is already registered.");
             }
 
-            // Validate CompanyName
-            if (string.IsNullOrWhiteSpace(client.CompanyName))
+            // Create a new user
+            var user = new User
             {
-                throw new ArgumentException("Company name is required.");
-            }
-            if (client.CompanyName.Length > 100)
-            {
-                throw new ArgumentException("Company name cannot be more than 100 characters.");
-            }
+                Name = clientDto.Name,
+                Email = clientDto.Email.ToLower(),
+                Password = BCrypt.Net.BCrypt.HashPassword(clientDto.Password), // Hash password
+                role = "Client",
+                CreatedAt = DateTime.UtcNow
+            };
 
-            // Validate Industry
-            if (!string.IsNullOrEmpty(client.Industry) && client.Industry.Length > 100)
-            {
-                throw new ArgumentException("Industry name cannot be more than 100 characters.");
-            }
+            // Add user to database
+            int userId = await _userRepositry.AddUserIntAsync(user);
 
-
-            // Validate Notes
-            if (!string.IsNullOrEmpty(client.Notes) && client.Notes.Length > 1000)
+            // Create a new client associated with the user
+            var client = new Client
             {
-                throw new ArgumentException("Notes cannot be more than 1000 characters.");
-            }
+                UID = userId,
+                CompanyName = clientDto.CompanyName,
+
+                Industry = clientDto.Industry,
+                Notes = string.Empty,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Client.Add(client);
 
             try
             {
-                // Map the data from ClientDTO to a new Client 
-
-                client.Password = BCrypt.Net.BCrypt.HashPassword(client.Password);
-                var user = new User
-                {
-                    Name = client.Name,
-                    Email = client.Email,
-                    Password = client.Password,
-                    role = client.role,
-                    CreatedAt = client.CreatedAtClient,
-                };
-                // Add the new client entity to the repository
-                int userID = _userRepositry.AddUserInt(user);
-
-                var Clienet = new Client
-                {
-                    UID = userID,
-                    CompanyName = client.CompanyName, // Assign company name 
-                    Industry = client.Industry,       // Assign industry 
-                    Notes = client.Notes,
-                    CreatedAt = DateTime.Now             //  date is current time
-                };
-                _clientRepository.Add(Clienet);
-
-
-
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-
-                throw new Exception("An error occurred while registering the client.", ex);
+                throw new Exception($"Database Error: {ex.InnerException?.Message}");
             }
+
+            return true;
         }
 
 
@@ -342,6 +396,35 @@ namespace OutsourcingSystemWepApp.Services
 
                 throw new Exception($"An error occurred while retrieving clients with a rating >= {rating}.", ex);
             }
+        }
+
+        //new 
+
+
+        public updateClientDtocs GetClientProfile(int clientId)
+        {
+            var client = _clientRepository.GetClientProfile(clientId);
+            return new updateClientDtocs
+            {
+                ClientID = client.ClientID,
+                CompanyName = client.CompanyName,
+                Industry = client.Industry
+            };
+        }
+
+        public List<string> GetPreviousProjects(int clientId)
+        {
+            return _clientRepository.GetPreviousProjects(clientId);
+        }
+
+        public List<string> GetCurrentProjects(int clientId)
+        {
+            return _clientRepository.GetCurrentProjects(clientId);
+        }
+
+        public void UpdateIndustry(int clientId, string industry)
+        {
+            _clientRepository.UpdateIndustry(clientId, industry);
         }
 
 

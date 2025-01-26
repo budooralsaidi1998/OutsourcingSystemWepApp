@@ -25,26 +25,39 @@ namespace OutsourcingSystemWepApp.Data.Repository
                 throw new Exception($"An error happen while retrieving the Developer with ID {id}.", ex);
             }
         }
-        public void Add(Developer developer)
+        //public void Add(Developer developer)
+        //{
+        //    try
+        //    {
+        //        _context.Developer.Add(developer);
+        //        _context.SaveChanges(); // Saves changes  after adding
+        //    }
+        //    catch (DbUpdateException dbEx)
+        //    {
+        //        Console.WriteLine($"Database Update Exception: {dbEx.Message}");
+        //        Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
+        //        throw new Exception("Database error while adding a new developer.", dbEx);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"General error: {ex.Message}");
+        //        throw new Exception("An error occurred while adding a new client.", ex);
+        //    }
+        //}
+        public async Task AddAsync(Developer developer)
         {
             try
             {
                 _context.Developer.Add(developer);
-                _context.SaveChanges(); // Saves changes  after adding
-            }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine($"Database Update Exception: {dbEx.Message}");
-                Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
-                throw new Exception("Database error while adding a new developer.", dbEx);
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"General error: {ex.Message}");
-                throw new Exception("An error occurred while adding a new client.", ex);
+                Console.WriteLine(" Error while saving Developer: " + ex.Message);
+                Console.WriteLine(" Inner Exception: " + ex.InnerException?.Message);
+                throw;
             }
         }
-
         public void Update(Developer dev)
         {
             try
