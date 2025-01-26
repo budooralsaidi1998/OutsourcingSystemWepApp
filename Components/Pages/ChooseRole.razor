@@ -1,0 +1,134 @@
+﻿@page "/choose-role"
+@inject NavigationManager NavigationManager
+
+<style>
+    .role-selection-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+    }
+
+    .role-box {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 400px;
+    }
+
+    .role-title {
+        font-size: 22px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .role-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .role-option {
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 16px;
+        background: white;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .role-option:hover, .role-option.selected {
+            background-color: #14a800;
+            color: white;
+            border-color: #14a800;
+        }
+
+    .continue-button {
+        margin-top: 20px;
+        width: 100%;
+        background-color: #14a800;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+        .continue-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+    .signup-text {
+        margin-top: 15px;
+    }
+
+    .error-message {
+        color: red;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="role-selection-container">
+    <div class="role-box">
+        <h3 class="role-title">Join as a Client, Developer, or Admin</h3>
+
+        <div class="role-options">
+            <div class="role-option @(selectedRole == "Client" ? "selected" : "")" @onclick='() => SelectRole("Client")'>
+                I'm a Client, hiring for a project
+            </div>
+            <div class="role-option @(selectedRole == "Developer" ? "selected" : "")" @onclick='() => SelectRole("Developer")'>
+                I'm a Developer, looking for work
+            </div>
+            <div class="role-option @(selectedRole == "Admin" ? "selected" : "")" @onclick='() => SelectRole("Admin")'>
+                I'm an Admin, managing the system
+            </div>
+        </div>
+
+        <button class="continue-button" @onclick="NavigateToRegistration" disabled="@(!IsRoleSelected)">Continue</button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <p class="error-message">@errorMessage</p>
+        }
+
+        <p class="signup-text">Already have an account? <a href="/" class="signup-link">Log In</a></p>
+    </div>
+</div>
+
+@code {
+    private string selectedRole;
+    private string errorMessage = "";
+    private bool IsRoleSelected => !string.IsNullOrEmpty(selectedRole);
+
+    private void SelectRole(string role)
+    {
+        selectedRole = role;
+        errorMessage = "";
+    }
+
+    private void NavigateToRegistration()
+    {
+        if (string.IsNullOrEmpty(selectedRole))
+        {
+            errorMessage = "Please select a role before continuing.";
+            return;
+        }
+
+        if (selectedRole == "Developer")
+        {
+            NavigationManager.NavigateTo("/RegisterDeveloper");
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/register-{selectedRole.ToLower()}");
+        }
+    }
+}
