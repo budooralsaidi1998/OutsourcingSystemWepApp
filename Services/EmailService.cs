@@ -2,21 +2,23 @@
 using Microsoft.Extensions.Options;
 using System.Net.Mail;
 using System.Net;
+using OutsourcingSystemWepApp.Configurations;
 
 namespace OutsourcingSystemWepApp.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly Configurations.EmailSettings _emailSettings;
+        private readonly EmailSettings _emailSettings;
 
-        public EmailService(IOptions<Configurations.EmailSettings> emailSettings)
+        public EmailService(IOptions<EmailSettings> emailSettings)
         {
             _emailSettings = emailSettings.Value;
         }
 
         public async Task SendEmailAsync(string recipientEmail, string subject, string message)
         {
-            var smtpClient = new SmtpClient(_emailSettings.SMTPHost)
+            try { 
+             var smtpClient = new SmtpClient(_emailSettings.SMTPHost)
             {
                 Port = _emailSettings.Port,
                 Credentials = new NetworkCredential(_emailSettings.SenderEmail, _emailSettings.Password),
@@ -33,8 +35,7 @@ namespace OutsourcingSystemWepApp.Services
 
             mailMessage.To.Add(recipientEmail);
 
-            try
-            {
+           
                 await smtpClient.SendMailAsync(mailMessage);
             }
             catch (Exception ex)

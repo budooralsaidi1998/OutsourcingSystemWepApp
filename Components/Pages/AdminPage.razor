@@ -1,0 +1,141 @@
+﻿@page "/"
+@layout Layout.AdminLayout
+
+@inject IRequestService _requestService
+
+
+<div>
+    <br/>
+    <br/>
+    <br/>
+</div>
+<MudAlert Severity="@(alertSeverity)" Visible="@isAlertVisible" OnClose="HideAlert"
+          Dense="true" Icon="null" Style="position: fixed;top:9%; Right: 90%; transform: translateX(-50%); z-index: 1000; width:auto;
+max-width: 400px;">
+    @alertMessage
+</MudAlert>
+<div>
+    <MudContainer>
+        <MudGrid>
+        <!-- MudAlert at the top of the page -->
+        
+
+        @if (pendingDeveloperRequests != null && pendingDeveloperRequests.Any())
+        {
+            @foreach (var request in pendingDeveloperRequests)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard>
+                        <!-- Status Badge at top-left -->
+                        <MudCardHeader>
+                            <MudText Typo="Typo.h6">Developer Request - @request.Status</MudText>
+                        </MudCardHeader>
+
+                        <MudCardContent>
+                            <MudText><strong>Request ID:</strong> @request.RequestId</MudText>
+                            <MudText><strong>Client Name:</strong> @request.ClientName</MudText>
+                            <MudText><strong>Booking:</strong> @request.Type</MudText>
+                            <MudText><strong>Start Date:</strong> @request.StartDate.ToShortDateString()</MudText>
+                            <MudText><strong>End Date:</strong> @request.EndDate?.ToShortDateString()</MudText>
+                        </MudCardContent>
+
+                        <MudCardActions>
+                            @if (request.Status == "Pending")
+                            {
+                                <MudButton OnClick="() => AcceptRequest(request.RequestId)" Color="Color.Primary" Variant="Variant.Filled">Accept</MudButton>
+                                <MudButton OnClick="() => RejectRequest(request.RequestId)" Color="Color.Error" Variant="Variant.Filled">Reject</MudButton>
+                            }
+                            else
+                            {
+                                <MudText>Request has been processed.</MudText>
+                            }
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        }
+        else
+        {
+            <MudText>No pending requests found.</MudText>
+        }
+    </MudGrid>
+</MudContainer>
+</div>
+
+@code {
+    private IEnumerable<PendingRequestDto> pendingDeveloperRequests;
+    private string alertMessage;
+    private MudBlazor.Severity alertSeverity;
+    private bool isAlertVisible;
+
+    // On initialization, fetch pending developer requests
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPendingRequests();
+    }
+
+    private async Task LoadPendingRequests()
+    {
+        pendingDeveloperRequests = await _requestService.GetPendingRequestsAsync();
+    }
+
+    private async Task AcceptRequest(int requestId)
+    {
+        try
+        {
+            // Call backend to process the request as accepted
+            await _requestService.ProcessRequestAsync(requestId, true, "Developer");
+
+            // Optionally, update the UI here after processing the request
+            await LoadPendingRequests();
+
+            // Set alert message and show success alert
+            alertMessage = "Request has been accepted successfully!";
+            alertSeverity = MudBlazor.Severity.Success;
+            isAlertVisible = true;
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors (e.g., email sending issues)
+            Console.WriteLine($"Error accepting request: {ex.Message}");
+
+            // Set alert message and show error alert
+            alertMessage = "There was an error accepting the request.";
+            alertSeverity = MudBlazor.Severity.Error;
+            isAlertVisible = true;
+        }
+    }
+
+    private async Task RejectRequest(int requestId)
+    {
+        try
+        {
+            // Call backend to process the request as rejected
+            await _requestService.ProcessRequestAsync(requestId, false, "Developer");
+
+            // Optionally, update the UI here after processing the request
+            await LoadPendingRequests();
+
+            // Set alert message and show success alert
+            alertMessage = "Request has been rejected successfully!";
+            alertSeverity = MudBlazor.Severity.Error;
+            isAlertVisible = true;
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors (e.g., email sending issues)
+            Console.WriteLine($"Error rejecting request: {ex.Message}");
+
+            // Set alert message and show error alert
+            alertMessage = "There was an error rejecting the request.";
+            alertSeverity = MudBlazor.Severity.Error;
+            isAlertVisible = true;
+        }
+    }
+
+    // Hide the alert when it's closed by the user
+    private void HideAlert()
+    {
+        isAlertVisible = false;
+    }
+}
