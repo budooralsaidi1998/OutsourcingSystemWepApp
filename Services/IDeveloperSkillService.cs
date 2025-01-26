@@ -1,4 +1,5 @@
-﻿using OutsourcingSystemWepApp.Data.Model;
+﻿using OutsourcingSystemWepApp.Data.DTOs;
+using OutsourcingSystemWepApp.Data.Model;
 
 namespace OutsourcingSystemWepApp.Services
 {
@@ -10,5 +11,6 @@ namespace OutsourcingSystemWepApp.Services
         List<DeveloperSkill> GetAllDeveloperSkills(int Page, int PageSize, int? developerID, int? skillID);
         List<DeveloperSkill> GetDevelopersBySkill(int skillID);
         List<DeveloperSkill> GetSkillByDevID(int DevID);
+        Task UpdateDeveloperSkills(int developerId, List<DeveloperSkillDTO> skills);
     }
 }

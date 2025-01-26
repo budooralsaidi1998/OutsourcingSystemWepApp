@@ -1,4 +1,5 @@
-﻿using OutsourcingSystemWepApp.Data.Model;
+﻿using OutsourcingSystemWepApp.Data.DTOs;
+using OutsourcingSystemWepApp.Data.Model;
 using OutsourcingSystemWepApp.Data.Repository;
 
 namespace OutsourcingSystemWepApp.Services
@@ -96,6 +97,36 @@ namespace OutsourcingSystemWepApp.Services
         public List<DeveloperSkill> GetDevelopersBySkill(int skillID)
         {
             return _DeveloperSkillRepository.GetDevelopersBySkillID(skillID);
+        }
+
+        public async Task UpdateDeveloperSkills(int developerId, List<DeveloperSkillDTO> skills)
+        {
+
+            var existingSkills = _DeveloperSkillRepository.GetSkillsByDeveloperID(developerId);
+
+            foreach (var skillDto in skills)
+            {
+                var existingSkill = existingSkills.FirstOrDefault(s => s.SkillID == skillDto.SkillID);
+
+                if (existingSkill != null)
+                {
+
+                    existingSkill.Proficiency = skillDto.Proficiency;
+                }
+                else
+                {
+                    var newSkill = new DeveloperSkill
+                    {
+                        DeveloperID = developerId,
+                        SkillID = skillDto.SkillID,
+                        Proficiency = skillDto.Proficiency
+                    };
+
+                    _DeveloperSkillRepository.AddDeveloperSkill(newSkill);
+                }
+            }
+
+            await Task.CompletedTask;
         }
     }
 }

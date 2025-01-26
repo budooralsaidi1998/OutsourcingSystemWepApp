@@ -83,30 +83,26 @@ namespace OutsourcingSystemWepApp.Data.Repository
             }
         }
 
-        //public IEnumerable<Client> GetUnapprovedClients()
+
+        //public void Add(Client client)
         //{
-        //    return _context.Client.Where(c => !c.IsApprove && !c.IsDeleted).ToList();
+        //    try
+        //    {
+        //        _context.Client.Add(client);
+        //        _context.SaveChanges(); // Saves changes  after adding
+        //    }
+        //    catch (DbUpdateException dbEx)
+        //    {
+        //        Console.WriteLine($"Database Update Exception: {dbEx.Message}");
+        //        Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
+        //        throw new Exception("Database error while adding a new client.", dbEx);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"General error: {ex.Message}");
+        //        throw new Exception("An error occurred while adding a new client.", ex);
+        //    }
         //}
-        // Adds a new client to the database and saves changes
-        public void Add(Client client)
-        {
-            try
-            {
-                _context.Client.Add(client);
-                _context.SaveChanges(); // Saves changes  after adding
-            }
-            catch (DbUpdateException dbEx)
-            {
-                Console.WriteLine($"Database Update Exception: {dbEx.Message}");
-                Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
-                throw new Exception("Database error while adding a new client.", dbEx);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"General error: {ex.Message}");
-                throw new Exception("An error occurred while adding a new client.", ex);
-            }
-        }
 
 
         // Updates  client in the database and saves change
@@ -141,6 +137,44 @@ namespace OutsourcingSystemWepApp.Data.Repository
             {
 
                 throw new Exception("An error occurred while soft deleting the client.", ex);
+            }
+        }
+
+
+        public async Task AddAsync(Client client)
+        {
+            _context.Client.Add(client);
+            await _context.SaveChangesAsync();
+        }
+
+        public Client GetClientProfile(int clientId)
+        {
+            return _context.Client.FirstOrDefault(c => c.ClientID == clientId);
+        }
+
+        public List<string> GetPreviousProjects(int clientId)
+        {
+            return _context.Project
+                   .Where(p => p.ClientID == clientId && p.EndAt != null) // project  completed 
+                   .Select(p => p.Name)  // project  completed 
+                   .ToList();
+        }
+
+        public List<string> GetCurrentProjects(int clientId)
+        {
+            return _context.Project
+                   .Where(p => p.ClientID == clientId && p.EndAt == null) // project  not completed 
+                   .Select(p => p.Name)
+                   .ToList();
+        }
+
+        public void UpdateIndustry(int clientId, string industry)
+        {
+            var client = _context.Client.FirstOrDefault(c => c.ClientID == clientId);
+            if (client != null)
+            {
+                client.Industry = industry;
+                _context.SaveChanges();
             }
         }
 
