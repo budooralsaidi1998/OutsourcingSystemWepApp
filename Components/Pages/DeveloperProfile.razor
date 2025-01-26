@@ -1,5 +1,7 @@
 ﻿@page "/DeveloperProfile"
 @inject IDeveloperServices developerService
+@inject ISkillService skillService
+@inject IDeveloperSkillService developerSkillService
 @inject IProjectServieces projectService
 @using Data.Model
 
@@ -19,6 +21,20 @@
                 <MudText>Availability: @dev.AvailabilityStatus</MudText>
                 <MudText>Average Rating: @dev.CommitmentRating</MudText>
                 <MudText>Hourly Rate: @dev.HourlyRate</MudText>
+
+                @GetDevSkills(dev.DeveloperID)
+
+                @if (DevSkills != null)
+                {
+                    <div class="d-flex flex-wrap gap-2 mt-1">
+                        @foreach (var skill in DevSkills)
+                        {
+                            <MudChip T="string" Color="Color.Transparent">
+                                @skill
+                            </MudChip>
+                        }
+                    </div>
+                }
             </MudCardContent>
         </MudCard>
 
@@ -34,14 +50,14 @@
             {
                 <MudText Typo="Typo.h6">Projects</MudText>
 
-                    @foreach (var project in projects)
-                    {
+                @foreach (var project in projects)
+                {
                     <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
                     <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
                     <MudText Typo="Typo.body1">Client rating: </MudText>
 
-                    
-                    }
+
+                }
             }
         </MudCard>
     }
@@ -58,6 +74,8 @@
     private string errorMessage = string.Empty;
 
     private List<Project> projects = new List<Project>();
+    public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer
+
 
     private void GetProviderDetails()
     {
@@ -82,4 +100,20 @@
             errorMessage = "Please enter a valid provider ID.";
         }
     }
+
+    private string GetDevSkills(int DevID)
+    {
+        //getting all the skills for a specific developer
+        var devSkills = developerSkillService.GetSkillByDevID(DevID);
+        DevSkills.Clear();
+
+        //converting the list of devskills to a list of skill names
+        foreach (var skill in devSkills)
+        {
+            var skillName = skillService.GetSkillsByID(skill.SkillID);
+            DevSkills.Add(skillName.Name);
+        }
+        return "";
+    }
+    
 }
