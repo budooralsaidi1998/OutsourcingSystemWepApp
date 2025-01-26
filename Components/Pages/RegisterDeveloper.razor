@@ -1,0 +1,134 @@
+﻿@page "/RegisterDeveloper"
+@using OutsourcingSystemWepApp.Data.DTOs;
+@using OutsourcingSystemWepApp.Services;
+@inject IDeveloperServices DeveloperService
+@inject NavigationManager Navigation
+
+<h3>Register as Developer</h3>
+
+<EditForm Model="developerModel" OnValidSubmit="HandleRegister">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Name:</label>
+        <InputText @bind-Value="developerModel.Name" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="developerModel.Email" class="form-control" type="email" required />
+    </div>
+
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="developerModel.Password" class="form-control" type="password" required />
+    </div>
+
+    <div>
+        <label>Specialization:</label>
+        <InputText @bind-Value="developerModel.Specialization" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Years of Experience:</label>
+        <InputNumber @bind-Value="developerModel.YearsOfExperience" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Age:</label>
+        <InputNumber @bind-Value="developerModel.Age" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Hourly Rate:</label>
+        <InputNumber @bind-Value="developerModel.HourlyRate" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Career Summary:</label>
+        <InputTextArea @bind-Value="developerModel.CareerSummary" class="form-control" required />
+    </div>
+
+    <div>
+        <label>Upload Your CV:</label>
+        <InputFile OnChange="HandleFileSelected" />
+    </div>
+
+    <div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </div>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+
+
+@if (!string.IsNullOrEmpty(UploadedFileName))
+{
+    <p>File uploaded: @UploadedFileName</p>
+}
+
+
+@code {
+    private RegisterDeveloperDto developerModel = new RegisterDeveloperDto();
+    private string ErrorMessage;
+
+    private async Task HandleRegister()
+    {
+        try
+        {
+            developerModel.DocumentLink = "DeveloperCVs" + "\\" + UploadedFileName;
+            await DeveloperService.RegisterDeveloper(developerModel);
+            Navigation.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    private string UploadedFileName;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null && file.ContentType == "application/pdf")
+        {
+            // Store the file name
+            UploadedFileName = file.Name;
+
+            // Read the file content
+            using var stream = file.OpenReadStream(10 * 1024 * 1024); // Max 10 MB
+            await SaveFileToDisk(stream, file.Name);
+
+            // Optionally, reset stream after saving
+            stream.Seek(0, SeekOrigin.Begin);
+
+            UploadedFileName = $"File '{file.Name}' has been uploaded and saved.";
+        }
+        else
+        {
+            UploadedFileName = "Invalid file. Please upload a PDF.";
+        }
+    }
+
+    string savePath = null;
+    private async Task SaveFileToDisk(Stream fileStream, string fileName)
+    {
+        // Specify the path where the file will be saved
+        savePath = Path.Combine("wwwroot", "DeveloperCVs", fileName);
+
+        // Ensure the directory exists
+        Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+
+        // Save the file to disk
+        using var file = File.Create(savePath);
+        fileStream.Seek(0, SeekOrigin.Begin); // Reset the stream position
+        await fileStream.CopyToAsync(file);
+    }
+
+}
