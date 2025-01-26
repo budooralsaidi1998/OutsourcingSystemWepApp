@@ -26,6 +26,6 @@ namespace OutsourcingSystemWepApp.Data.Model
 
         [Required(ErrorMessage = "Status is required.")]
         [MaxLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
-        public string Status { get; set; } // Pending, Approved, Rejected
+        public string Status { get; set; } = "Pending";// Pending, Approved, Rejected
     }
 }

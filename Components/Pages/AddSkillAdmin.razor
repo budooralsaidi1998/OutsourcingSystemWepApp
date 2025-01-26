@@ -1,0 +1,58 @@
+﻿@page "/"
+@inject ISkillService SkillService
+@inject MudBlazor.ISnackbar Snackbar
+@layout Layout.AdminLayout
+
+<div class="form-container">
+    <div class="skill-form-card">
+        <h2 class="skill-form-title">Add New Skill</h2>
+        <EditForm Model="newSkill" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="input-group">
+                <label for="skillNameInput">Skill Name</label>
+                <InputText id="skillNameInput" @bind-Value="newSkill.Name" class="input-field" required maxlength="500" />
+                <ValidationMessage For="@(() => newSkill.Name)" />
+            </div>
+
+            <div class="input-group">
+                <label for="skillDescriptionInput">Skill Description</label>
+                <InputText id="skillDescriptionInput" @bind-Value="newSkill.Description" class="input-field" maxlength="500" />
+                <ValidationMessage For="@(() => newSkill.Description)" />
+            </div>
+
+            <div class="input-group">
+                <label for="activeStatusCheckbox">Active</label>
+                <InputCheckbox id="activeStatusCheckbox" @bind-Value="newSkill.Active" />
+            </div>
+
+            <button type="submit" class="submit-button">Add Skill</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Skill newSkill = new Skill();
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            var result =  SkillService.AddSkill(newSkill.Name, newSkill.Description);
+            if (result > 0)
+            {
+                Snackbar.Add("Skill added successfully!", Severity.Success);
+                newSkill = new Skill(); // Reset form
+            }
+            else
+            {
+                Snackbar.Add("An error occurred while adding the skill.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+}
