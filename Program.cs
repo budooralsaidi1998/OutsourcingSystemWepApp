@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using OutsourcingSystemWepApp.Components;
+using OutsourcingSystemWepApp.Configurations;
 using OutsourcingSystemWepApp.Data.Repository;
 using OutsourcingSystemWepApp.helpers;
 using OutsourcingSystemWepApp.Services;
@@ -58,7 +59,7 @@ namespace OutsourcingSystemWepApp
             builder.Services.AddScoped<IClientRequestTeamRepository, ClientRequestTeamRepository>();
 
             // Register EmailSettings and EmailService
-            //  builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
             builder.Services.AddScoped<IEmailService, EmailService>();
 

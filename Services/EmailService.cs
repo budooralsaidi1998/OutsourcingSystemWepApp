@@ -2,14 +2,15 @@
 using Microsoft.Extensions.Options;
 using System.Net.Mail;
 using System.Net;
+using OutsourcingSystemWepApp.Configurations;
 
 namespace OutsourcingSystemWepApp.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly Configurations.EmailSettings _emailSettings;
+        private readonly EmailSettings _emailSettings;
 
-        public EmailService(IOptions<Configurations.EmailSettings> emailSettings)
+        public EmailService(IOptions<EmailSettings> emailSettings)
         {
             _emailSettings = emailSettings.Value;
         }
