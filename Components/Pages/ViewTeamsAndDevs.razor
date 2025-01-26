@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/ViewTeamsAndDevs"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -155,10 +155,11 @@
                 {
                     @foreach (var team in SearchResultTeams)
                     {
+                        @UpdateNoMembersInTeam(team.TeamID)
+
                         <MudItem xs="12" sm="6" md="4">
                             <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
-                                    @UpdateNoMembersInTeam(team.TeamID)
                                     <MudText Typo="Typo.h6">@team.TeamName</MudText>
                                     <MudText Typo="Typo.body1">@team.Description</MudText>
                                     <div class="star-rating">
@@ -218,7 +219,7 @@
     private string SearchValue; //value inputted to search by
     private bool ResourceFound = false; 
 
-    private int NoTeamMembers; //The number of members in a team
+    private int NoTeamMembers = 0; //The number of members in a team
 
     // Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
