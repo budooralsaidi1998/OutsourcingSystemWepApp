@@ -14,6 +14,10 @@ namespace OutsourcingSystemWepApp.Data.Model
         public int UID { get; set; }
         public User User { get; set; }
 
+        [Required(ErrorMessage = "Phone number is required.")]
+        [StringLength(8, ErrorMessage = "Phone number must be 8 digits.")]
+        public string PhoneNumber { get; set; }
+
         [Required(ErrorMessage = "Company name is required.")]
         [MaxLength(100, ErrorMessage = "Company name cannot more than 100 characters.")]
         public string CompanyName { get; set; }
