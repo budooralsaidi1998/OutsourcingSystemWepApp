@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using OutsourcingSystemWepApp.Components;
 using OutsourcingSystemWepApp.Configurations;
 using OutsourcingSystemWepApp.Data.Repository;
+using OutsourcingSystemWepApp.helpers;
 using OutsourcingSystemWepApp.Services;
 
 namespace OutsourcingSystemWepApp
@@ -24,7 +26,7 @@ namespace OutsourcingSystemWepApp
                   );
 
 
-            builder.Services.AddScoped<IUserRepositry, UserRepositry>();
+           // builder.Services.AddScoped<IUserRepositry, UserRepositry>();
             builder.Services.AddScoped<ISkillRepository, SkillRepository>();
             builder.Services.AddScoped<ITeamRepository, TeamRepository>();
             builder.Services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
@@ -44,7 +46,7 @@ namespace OutsourcingSystemWepApp
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<ITeamService, TeamService>();
             builder.Services.AddScoped<ISkillService, SkillService>();
-            builder.Services.AddScoped<IUserServices, UserServices>();
+           // builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
             builder.Services.AddScoped<IJointService, JointService>();
             builder.Services.AddScoped<ITeamService, TeamService>();
@@ -57,10 +59,21 @@ namespace OutsourcingSystemWepApp
             builder.Services.AddScoped<IClientRequestTeamRepository, ClientRequestTeamRepository>();
 
             // Register EmailSettings and EmailService
-            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
             builder.Services.AddScoped<IEmailService, EmailService>();
 
+
+
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IUserServices, UserServices>();
+            builder.Services.AddScoped<IUserRepositry, UserRepositry>();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
+
+            var jwtSettings = new JwtSettings();
+            builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
+            builder.Services.AddSingleton(jwtSettings);
 
 
             builder.Services.AddMudServices();

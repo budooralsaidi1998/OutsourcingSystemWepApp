@@ -64,5 +64,25 @@ namespace OutsourcingSystemWepApp.Data.Repository
         {
             return _context.DeveloperSkill.FirstOrDefault(d => d.DeveloperID == devID && d.SkillID == skillID);
         }
+
+        public void UpdateDeveloperSkills(List<DeveloperSkill> skills)
+        {
+            foreach (var skill in skills)
+            {
+                var existingSkill = _context.DeveloperSkill
+                    .FirstOrDefault(s => s.DeveloperID == skill.DeveloperID && s.SkillID == skill.SkillID);
+
+                if (existingSkill != null)
+                {
+                    existingSkill.Proficiency = skill.Proficiency;
+                }
+                else
+                {
+                    _context.DeveloperSkill.Add(skill);
+                }
+            }
+
+            _context.SaveChanges();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿@page "/ViewTeamsAndDevs"
+﻿@page "/"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -80,9 +80,35 @@
                         <MudItem xs="12" sm="6" md="4">
                             <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
+                                    @if (!string.IsNullOrEmpty(dev.imagePath))
+                                    {
+                                        <img src="@dev.imagePath" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
+                                    }
+
+                                    else
+                                    {
+                                        <img src="images/DefaultImage.png" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
+                                    }
+
                                     <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                                     <MudText Typo="Typo.body1">@dev.Specialization</MudText>
-                                    <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
+                                    <div class="star-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= (int)dev.CommitmentRating)
+                                            {
+                                                <span class="star filled">&#9733;</span> <!-- Filled star -->
+                                            }
+                                            else if (i - (double)dev.CommitmentRating >= 0.5)
+                                            {
+                                                <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                                            }
+                                            else
+                                            {
+                                                <span class="star">&#9734;</span> <!-- Empty star -->
+                                            }
+                                        }
+                                    </div>
                                     <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
 
                                     <!-- Skills section -->
@@ -135,11 +161,25 @@
                                     @UpdateNoMembersInTeam(team.TeamID)
                                     <MudText Typo="Typo.h6">@team.TeamName</MudText>
                                     <MudText Typo="Typo.body1">@team.Description</MudText>
-                                    <MudText Typo="Typo.body2">Rating: @team.Rating</MudText>
+                                    <div class="star-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= (int)team.Rating)
+                                            {
+                                                <span class="star filled">&#9733;</span> <!-- Filled star -->
+                                            }
+                                            else if (i - (double)team.Rating >= 0.5)
+                                            {
+                                                <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                                            }
+                                            else
+                                            {
+                                                <span class="star">&#9734;</span> <!-- Empty star -->
+                                            }
+                                        }
+                                    </div>
                                     <MudText Typo="Typo.body2">Completed projects: @team.CompletedProjects</MudText>
                                     <MudText Typo="Typo.body2">No. of Members: @NoTeamMembers</MudText>
-
-
                                 </MudCardContent>
 
                                 <MudCardActions>
@@ -373,6 +413,7 @@
     private string UpdateNoMembersInTeam(int TeamID)
     {
         //making sure that number not affected by previous searches 
+        NoTeamMembers = 0;
         var TeamMembers = teamMemberService.GetTeamMemberByTeamID(TeamID);
         NoTeamMembers = TeamMembers.Count();
         return "";
