@@ -314,6 +314,7 @@ namespace OutsourcingSystemWepApp.Services
                     var d = new DeveloperOutDTO
                     {
                         DevId= dev.DeveloperID,
+                        imagePath = dev.imagePath,
                         DeveloperName = dev.DeveloperName,
                         Specialization = dev.Specialization,
                         HourlyRate = dev.HourlyRate,
