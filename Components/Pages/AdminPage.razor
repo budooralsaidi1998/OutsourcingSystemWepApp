@@ -1,65 +1,66 @@
-﻿@page "/Admin"
+﻿@page "/."
 @layout Layout.AdminLayout
 
 @inject IRequestService _requestService
 
-
+<div>
+    <MudAlert Severity="@(alertSeverity)" Visible="@isAlertVisible" OnClose="HideAlert"
+              Dense="true" Icon="null"
+              Style="position: fixed; top: 9%; right: 50%; transform: translateX(50%); z-index: 1000; width: 477px; word-wrap: break-word; max-width: 400px;">
+        @alertMessage
+    </MudAlert>
+</div>
 <div>
     <br/>
     <br/>
     <br/>
+    <br />
 </div>
-<MudAlert Severity="@(alertSeverity)" Visible="@isAlertVisible" OnClose="HideAlert"
-          Dense="true" Icon="null" Style="position: fixed;top:9%; Right: 90%; transform: translateX(-50%); z-index: 1000; width:auto;
-max-width: 400px;">
-    @alertMessage
-</MudAlert>
 <div>
     <MudContainer>
-        <MudGrid>
-        <!-- MudAlert at the top of the page -->
-        
-
-        @if (pendingDeveloperRequests != null && pendingDeveloperRequests.Any())
-        {
-            @foreach (var request in pendingDeveloperRequests)
+        <MudGrid >
+            @if (pendingDeveloperRequests != null && pendingDeveloperRequests.Any())
             {
-                <MudItem xs="12" sm="6" md="4">
-                    <MudCard>
-                        <!-- Status Badge at top-left -->
-                        <MudCardHeader>
-                            <MudText Typo="Typo.h6">Developer Request - @request.Status</MudText>
-                        </MudCardHeader>
+                @foreach (var request in pendingDeveloperRequests)
+                {
+                    <MudItem xs="12" sm="6" md="4" >
+                        <MudCard>
+                            <MudCardHeader>
+                                <MudText Typo="Typo.h6">Developer Request - @request.Status</MudText>
+                            </MudCardHeader>
 
-                        <MudCardContent>
-                            <MudText><strong>Request ID:</strong> @request.RequestId</MudText>
-                            <MudText><strong>Client Name:</strong> @request.ClientName</MudText>
-                            <MudText><strong>Booking:</strong> @request.Type</MudText>
-                            <MudText><strong>Start Date:</strong> @request.StartDate.ToShortDateString()</MudText>
-                            <MudText><strong>End Date:</strong> @request.EndDate?.ToShortDateString()</MudText>
-                        </MudCardContent>
+                            <MudCardContent>
+                                <MudText><strong>Request ID:</strong> @request.RequestId</MudText>
+                                <MudText><strong>Client Name:</strong> @request.ClientName</MudText>
+                                <MudText><strong>Booking:</strong>@request.Type</MudText>
+                                <MudText><strong>Start Date:</strong> @request.StartDate.ToShortDateString()</MudText>
+                                <MudText><strong>End Date:</strong> @request.EndDate?.ToShortDateString()</MudText>
+                            </MudCardContent>
 
-                        <MudCardActions>
-                            @if (request.Status == "Pending")
-                            {
-                                <MudButton OnClick="() => AcceptRequest(request.RequestId)" Color="Color.Primary" Variant="Variant.Filled">Accept</MudButton>
-                                <MudButton OnClick="() => RejectRequest(request.RequestId)" Color="Color.Error" Variant="Variant.Filled">Reject</MudButton>
-                            }
-                            else
-                            {
-                                <MudText>Request has been processed.</MudText>
-                            }
-                        </MudCardActions>
-                    </MudCard>
-                </MudItem>
+                            <MudCardActions Style="display: flex; justify-content: center; align-items: center;">
+                                @if (request.Status == "Pending")
+                                {
+                                    <!-- "Accept" button -->
+                                    <MudButton OnClick="() => AcceptRequest(request.RequestId)" Color="Color.Success" Variant="Variant.Filled" Style="margin-left: 10px;">Accept</MudButton>
+
+                                    <!-- "Reject" button -->
+                                    <MudButton OnClick="() => RejectRequest(request.RequestId)" Color="Color.Error" Variant="Variant.Filled" Style="margin-left: 10px;">Reject</MudButton>
+                                }
+                                else
+                                {
+                                    <MudText>Request has been processed.</MudText>
+                                }
+                            </MudCardActions>
+                        </MudCard>
+                    </MudItem>
+                }
             }
-        }
-        else
-        {
-            <MudText>No pending requests found.</MudText>
-        }
-    </MudGrid>
-</MudContainer>
+            else
+            {
+                <MudText>No pending requests found.</MudText>
+            }
+        </MudGrid>
+    </MudContainer>
 </div>
 
 @code {

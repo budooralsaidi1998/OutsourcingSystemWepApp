@@ -1,0 +1,64 @@
+﻿@page "/GetAccept"
+@layout Layout.AdminLayout
+
+@inject  IRequestService RequestServicese
+
+@* <MudSelect T="string" Label="Filter By Status" @bind-Value="selectedStatus" OnChanged="OnStatusChanged">
+    <MudSelectItem T ="string">All</MudSelectItem>  
+    <MudSelectItem Value="Approved">Approved</MudSelectItem>
+    <MudSelectItem Value="Rejected">Rejected</MudSelectItem>
+</MudSelect> *@
+
+<MudGrid>
+    @foreach (var request in filteredRequests)
+    {
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">@request.ClientName</MudText>
+                    <MudText Typo="Typo.body1">@request.Type</MudText>
+                    <MudText Typo="Typo.body2">Start Date: @request.StartDate.ToShortDateString()</MudText>
+                    <MudText Typo="Typo.body2">End Date: @request.EndDate?.ToShortDateString()</MudText>
+                    <MudText Typo="Typo.body2">Status: @request.Status</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    private IEnumerable<PendingRequestDto> allRequests;
+    private IEnumerable<PendingRequestDto> filteredRequests;
+    private string selectedStatus;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch all requests (both Approved and Rejected) initially
+        allRequests = await RequestServicese.GetAcceptAndReject();
+        
+        // Set the filteredRequests to all requests by default
+        filteredRequests = allRequests;
+    }
+
+    private void FilterRequests()
+    {
+        if (string.IsNullOrEmpty(selectedStatus))
+        {
+            // If no filter is selected, show all requests
+            filteredRequests = allRequests;
+        }
+        else
+        {
+            // Filter based on the selected status
+            filteredRequests = allRequests.Where(r => r.Status == selectedStatus);
+        }
+    }
+
+    // This is triggered when the filter status is changed
+    private void OnStatusChanged(string status)
+    {
+        selectedStatus = status;
+        FilterRequests();
+    }
+}
+

@@ -33,5 +33,30 @@ namespace OutsourcingSystemWepApp.Data.Repository
         {
             return await Task.Run(() => _context.ClientRequestDeveloper.Where(req => req.Status == "Pending").Include(S=>S.Client).ToList());
         }
+
+        public async Task<IEnumerable<ClientRequestDeveloper>> ApprovedRequest()
+        {
+            try
+            {
+                // Direct asynchronous query without Task.Run()
+                return await _context.ClientRequestDeveloper
+                    .Where(req => req.Status == "Approved") // Check if Status is exactly "Approved"
+                    .Include(req => req.Client)  // Ensure that 'Client' is a valid navigation property
+                    .ToListAsync();  // Use ToListAsync() for EF Core asynchronous queries
+            }
+            catch (Exception e)
+            {
+                // Log the exception or handle it as needed
+                Console.WriteLine($"Error fetching approved requests: {e.Message}");
+                // Optionally rethrow or return an empty list or null
+                return Enumerable.Empty<ClientRequestDeveloper>();
+            }
+        }
+
+
+        public async Task<IEnumerable<ClientRequestDeveloper>> RejectedRequest()
+        {
+            return await Task.Run(() => _context.ClientRequestDeveloper.Where(req => req.Status == "Rejected").Include(S => S.Client).ToList());
+        }
     }
 }
