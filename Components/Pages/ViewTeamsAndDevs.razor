@@ -212,7 +212,7 @@
 
     public bool OnlyAvailableSwitch { get; set; } = true; //Used to filter by availability
     private string ResourceType = "Both"; //Used to filter by DevsOnly/TeamsOnly/Both
-    private int ratingValue = 2; //Used to filter by minimum rating
+    private int ratingValue = 1; //Used to filter by minimum rating
     private int maxPrice = 500; //Used to filter by max price 
 
     //Used for searching
@@ -258,7 +258,13 @@
         ResourceFound = false;
         var uri = Navigation.Uri;
         var skill=skillService.GetSkillsByID(SkillID);
-        _options = new List<string> { "Skills: ", skill.Name }; 
+        if (SkillID == 0)
+        { _options = new List<string> { "Skills: " }; }
+        else
+        {
+            _options = new List<string> { "Skills: ", skill.Name };
+           
+        }
         ApplyFilters();
     }
 
@@ -498,7 +504,8 @@
         _options = new HashSet<string> { "Skills: " };
         maxPrice = 500;
         SkillID = 0;
-        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        Navigation.NavigateTo("https://localhost:7025/ViewTeamsAndDevs/0", forceLoad: true);
+
     }
 
 
