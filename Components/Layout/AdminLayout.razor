@@ -1,14 +1,9 @@
 ﻿@inherits LayoutComponentBase
-
+@inject IAuthService AuthService
 @* Required *@
 <MudThemeProvider />
-
 <MudPopoverProvider />
-
-@* Needed for dialogs *@
 <MudDialogProvider />
-
-@* Needed for snackbars *@
 <MudSnackbarProvider />
 
 <div class="page1" style="padding-bottom:2px;">
@@ -17,7 +12,7 @@
             <div style="display: flex; align-items: center;">
                 <img src="images/logo.png" alt="Logo" style="height: 20px; margin-right: 15px;" @onclick="ToHome">
             </div>
-             
+
             <div class="item">
                 <!-- Menu Items -->
                 <a href="#" @onclick="NavigateToViewClient" class="menu-item">ViewClient</a>
@@ -44,20 +39,22 @@
 </div>
 
 @code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    
+
+   
     private void ToHome()
     {
         NavigationManager.NavigateTo("/");
     }
 
-    private void Logout()
+    private async Task Logout()
     {
-        // Clear session or token here if needed
-        // AuthenticationService.Logout();
-
-        // Navigate to login page
+         AuthService.Logout();
         NavigationManager.NavigateTo("/login");
     }
-
     // Navigation methods for the new menu items
     private void NavigateToViewClient()
     {
@@ -79,12 +76,8 @@
         NavigationManager.NavigateTo("/AddSkillAdmin");
     }
 
-
     private void NavigateToViewAcceptReject()
     {
         NavigationManager.NavigateTo("/GetAcceptsReject");
     }
-
-    [Inject]
-    private NavigationManager NavigationManager { get; set; }
 }
