@@ -1,14 +1,14 @@
-﻿@page "/GetAccept"
+﻿ @page "/GetAcceptsReject"
 @layout Layout.AdminLayout
 
-@inject  IRequestService RequestServicese
+ @* @inject  IRequestService RequestServicese
 
 @* <MudSelect T="string" Label="Filter By Status" @bind-Value="selectedStatus" OnChanged="OnStatusChanged">
     <MudSelectItem T ="string">All</MudSelectItem>  
     <MudSelectItem Value="Approved">Approved</MudSelectItem>
     <MudSelectItem Value="Rejected">Rejected</MudSelectItem>
 </MudSelect> *@
-
+@*
 <MudGrid>
     @foreach (var request in filteredRequests)
     {
@@ -34,7 +34,7 @@
     protected override async Task OnInitializedAsync()
     {
         // Fetch all requests (both Approved and Rejected) initially
-        allRequests = await RequestServicese.GetAcceptAndReject();
+     //   allRequests = await RequestServicese.GetAcceptAndReject();
         
         // Set the filteredRequests to all requests by default
         filteredRequests = allRequests;
@@ -60,5 +60,4 @@
         selectedStatus = status;
         FilterRequests();
     }
-}
-
+} *@ 

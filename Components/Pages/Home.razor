@@ -1,4 +1,4 @@
-﻿@page "/jj"
+﻿@page "/"
 @inject ISkillService SkillService
 @inject IReviewDeveloperService ReviewDeveloperService
 @inject IReviewTeamService ReviewTeamService
@@ -158,7 +158,7 @@
 							<p class="des">@skill.Skill.Description</p>
 						</div>
 						<div class="card-back">
-							<a href="@($"/developers/{skill.Skill.SkillID}")">
+								<a href="@($"/ViewTeamsAndDevs/{skill.Skill.SkillID}")">
 								View Developers →
 							</a>
 						</div>

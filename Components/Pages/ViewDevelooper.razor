@@ -1,0 +1,118 @@
+﻿ @page "/ViewDevelooper"
+ @layout Layout.AdminLayout
+ @*
+
+@inject ISnackbar Snackbar
+@inject IDeveloperServices DeveloperView
+
+<MudContainer MaxWidth="MaxWidth.Large" Style="height: 100vh; display: flex; flex-direction: column; align-items: center;">
+    <MudCard Elevation="4" Style="width: 100%; max-width: 1200px;">
+        <MudCardContent>
+            <MudText Typo="Typo.h5" Align="Align.Center">Developer List</MudText>
+
+            <!-- Filters Section -->
+            <MudGrid>
+                <MudItem xs="12" sm="4">
+                    <MudTextField Label="Developer Name" @bind-Value="filter.Name" OnInput="ApplyFilter" FullWidth />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <MudTextField Label="Specialization" @bind-Value="filter.Specialization" OnInput="ApplyFilter" FullWidth />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <MudTextField Label="Min Rating" @bind-Value="filter.Rating" OnInput="ApplyFilter" FullWidth />
+                </MudItem>
+            </MudGrid>
+
+            <!-- Table Section -->
+            <MudTable Items="filteredDevelopers" Hover="true" Bordered="true" Striped="true">
+                <HeaderContent >
+                    <MudTh>Developer Name</MudTh>
+                    <MudTh>Specialization</MudTh>
+                    <MudTh>Rating</MudTh>
+                    <MudTh>Availability Status</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Developer Name">@context.DeveloperName</MudTd>
+                    <MudTd DataLabel="Specialization">@context.Specialization</MudTd>
+                    <MudTd DataLabel="Rating">@context.CommitmentRating</MudTd>
+                    <MudTd DataLabel="Availability Status">@context.AvailabilityStatus ? "Available" : "Not Available"</MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="@(() => SoftDeleteDeveloper(context.DeveloperID))" StartIcon="Icons.Material.Filled.Delete">
+                            Soft Delete
+                        </MudButton> 
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="LoadDevelopers" FullWidth Style="margin-top: 20px;">Load Developers</MudButton>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private List<filtrationDeveloperdto> developers = new List<filtrationDeveloperdto>();
+    private List<filtrationDeveloperdto> filteredDevelopers = new List<filtrationDeveloperdto>();
+
+    private DeveloperFilter filter = new DeveloperFilter();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDevelopers();
+    }
+
+    private async Task LoadDevelopers()
+    {
+        try
+        {
+            // Fetch all developers from the service with initial filters (empty)
+            var allDevelopers =  DeveloperView.GetAlldeveloper(filter.Name, filter.Specialization, filter.Rating, null, 1, 10);
+
+            // Store the full list
+            developers = allDevelopers.ToList();
+
+            // Apply filters after loading data
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading developers: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        // Apply filters to the list of developers based on current filter values
+        filteredDevelopers = developers.Where(dev =>
+            (string.IsNullOrEmpty(filter.Name) || dev.DeveloperName.Contains(filter.Name, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(filter.Specialization) || dev.Specialization.Contains(filter.Specialization, StringComparison.OrdinalIgnoreCase)) &&
+            (!filter.Rating.HasValue || dev.CommitmentRating >= filter.Rating.Value)
+        ).ToList();
+    }
+
+    private async Task SoftDeleteDeveloper(int developerId)
+    {
+        try
+        {
+            // Perform the soft delete operation
+            DeveloperView.SoftDeleteClient(developerId);
+
+            // Refresh the developer list after soft-deletion
+            await LoadDevelopers();
+
+            Snackbar.Add("Developer soft-deleted successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting developer: {ex.Message}", Severity.Error);
+        }
+    }
+
+    public class DeveloperFilter
+    {
+        public string Name { get; set; }
+        public string Specialization { get; set; }
+        public decimal? Rating { get; set; }
+    }
+}
+ *@

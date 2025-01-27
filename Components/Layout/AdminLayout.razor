@@ -20,9 +20,11 @@
              
             <div class="item">
                 <!-- Menu Items -->
-                <a href="#" @onclick="NavigateToGetAllClients" class="menu-item">GetAllClientAndDev</a>
-                <a href="#" @onclick="NavigateToClientProj" class="menu-item">ClientProj</a>
                 <a href="#" @onclick="NavigateToViewClient" class="menu-item">ViewClient</a>
+                <a href="#" @onclick="NavigateToClientRequests" class="menu-item">ClientRequests</a>
+                <a href="#" @onclick="NavigateToViewViewdeveloper" class="menu-item">Viewdeveloper</a>
+                <a href="#" @onclick="NavigateToViewAddSkill" class="menu-item">AddSkill</a>
+                <a href="#" @onclick="NavigateToViewAcceptReject" class="menu-item">AcceptReject</a>
 
                 <!-- Logout Button -->
                 <button class="btn btn-success signup-btn" @onclick="Logout">Logout</button>
@@ -57,19 +59,30 @@
     }
 
     // Navigation methods for the new menu items
-    private void NavigateToGetAllClients()
-    {
-        NavigationManager.NavigateTo("/getAllClientAndDev");
-    }
-
-    private void NavigateToClientProj()
-    {
-        NavigationManager.NavigateTo("/clientProj");
-    }
-
     private void NavigateToViewClient()
     {
-        NavigationManager.NavigateTo("/viewClient");
+        NavigationManager.NavigateTo("/GetClientByAdmin");
+    }
+
+    private void NavigateToClientRequests()
+    {
+        NavigationManager.NavigateTo("/AdminPage");
+    }
+
+    private void NavigateToViewViewdeveloper()
+    {
+        NavigationManager.NavigateTo("/ViewDevelooper");
+    }
+
+    private void NavigateToViewAddSkill()
+    {
+        NavigationManager.NavigateTo("/AddSkillAdmin");
+    }
+
+
+    private void NavigateToViewAcceptReject()
+    {
+        NavigationManager.NavigateTo("/GetAcceptsReject");
     }
 
     [Inject]
