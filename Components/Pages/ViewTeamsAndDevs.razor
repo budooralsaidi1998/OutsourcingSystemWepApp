@@ -34,12 +34,13 @@
                     <MudText Size="Size.Small">Selected Rating: @ratingValue</MudText>
 
                     @* Multi skill selector *@
-                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-Value="_value"  @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
+                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
                         @foreach (var state in GetAvailableSkills())
                         {
                             <MudSelectItem T="string" Value="@state">@state</MudSelectItem>
                         }
                     </MudSelect>
+
 
                     @* Max Price Slider *@
                     <MudText Typo="Typo.subtitle2">Set Max Price</MudText>
@@ -233,7 +234,7 @@
 
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
     private string _value = "Nothing selected";
-    private IEnumerable<string> _options = new HashSet<string> { "Skills: " }; //list of options chosen in skill filter 
+    private IEnumerable<string> _options;
 
 
     // Initialize the list of available skills
@@ -256,6 +257,9 @@
         await LoadAllResults();
         ResourceFound = false;
         var uri = Navigation.Uri;
+        var skill=skillService.GetSkillsByID(SkillID);
+        _options = new List<string> { "Skills: ", skill.Name }; 
+        ApplyFilters();
     }
 
     private async Task LoadAllResults()
@@ -348,56 +352,21 @@
         }
 
         // Filtering by selected skills
-        if (_options.Any() || SkillID != 0)  // Ensure skills have been selected && _options.First() != "Skills: "
+        if (_options.Any())  // Ensure skills have been selected && _options.First() != "Skills: "
         {
-            List<string> SkillNames = new List<string>();
-
-            //checks if default skill ID given 
-            // if (SkillID != 0)
-            // {
-            //     var OGskill = skillService.GetSkillsByID(SkillID);  // Get skill by ID
-
-            //     SkillNames.Add(OGskill.Name);  // Add skill name to the list
-
-            //     if (_options.Count() == 1) //means that only "Skill:" 
-            //     {
-            //         // Filter developers based on selected skills
-            //         SearchResultDevs = SearchResultDevs.Where(dev =>
-            //         {
-            //             var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
-
-            //             // Get the skill names for the developer
-            //             foreach (var devskill in devSkills)
-            //             {
-            //                 var skill = skillService.GetSkillsByID(devskill.SkillID);  // Get skill by ID
-
-            //                 SkillNames.Add(skill.Name);  // Add skill name to the list
-            //             }
-
-            //             // Check if the developer has all the selected skills
-            //             return SkillNames.Contains(OGskill.Name);
-            //         }).ToList();
-            //         SearchResultTeams.Clear();
-
-            //     }
-
-
-
             if (_options.Count() != 1) //means that only "Skill:" so needs to be ignored
             {
                 var selectedSkills = _options.Where(skill => skill != "Skills: ").ToList();
                 //var selectedSkills = _options.ToList();  // Get the list of selected skill
-
                 // Filter developers based on selected skills
                 SearchResultDevs = SearchResultDevs.Where(dev =>
                 {
                     var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
-
-                    // Get the skill names for the developer
+                                                                                       // Get the skill names for the developer
+                    List<string> SkillNames = new List<string>();
                     foreach (var devskill in devSkills)
                     {
                         var skill = skillService.GetSkillsByID(devskill.SkillID);  // Get skill by ID
-
                         SkillNames.Add(skill.Name);  // Add skill name to the list
                     }
 
@@ -406,18 +375,117 @@
                 }).ToList();
                 SearchResultTeams.Clear();
             }
+        }
+        if (ResourceType == "Developers")
+        {
+            SearchResultTeams.Clear();
+        }
 
-            if (ResourceType == "Developers")
-            {
-                SearchResultTeams.Clear();
-            }
-
-            if (ResourceType == "Teams")
-            {
-                SearchResultDevs.Clear();
-            }
+        if (ResourceType == "Teams")
+        {
+            SearchResultDevs.Clear();
         }
     }
+
+
+    // // Apply Filters
+    // private async Task ApplyFilters()
+    // {
+    //     //Filtering by minimum rating
+    //     if (ratingValue != null)
+    //     {
+    //         SearchResultDevs = SearchResultDevs.Where(d => d.CommitmentRating >= ratingValue).ToList();
+    //         SearchResultTeams = SearchResultTeams.Where(d => d.Rating >= ratingValue).ToList();
+    //     }
+
+    //     //Filtering by max  price
+    //     if (maxPrice != null)
+    //     {
+    //         SearchResultDevs = SearchResultDevs.Where(d => d.HourlyRate <= maxPrice).ToList();
+    //         SearchResultTeams = SearchResultTeams.Where(d => d.HourlyRate <= maxPrice).ToList();
+    //     }
+
+    //     //Filtering by availability status [Available]
+    //     if (OnlyAvailableSwitch == true)
+    //     {
+    //         SearchResultDevs = SearchResultDevs.Where(d => d.AvailabilityStatus == true).ToList();
+    //         SearchResultTeams = SearchResultTeams.Where(d => d.IsAvailable == true).ToList();
+    //     }
+
+    //     // Filtering by selected skills
+    //     if (_options.Any() || SkillID != 0)  // Ensure skills have been selected && _options.First() != "Skills: "
+    //     {
+    //         List<string> SkillNames = new List<string>();
+
+    //         //checks if default skill ID given 
+    //         // if (SkillID != 0)
+    //         // {
+    //         //     var OGskill = skillService.GetSkillsByID(SkillID);  // Get skill by ID
+
+    //         //     SkillNames.Add(OGskill.Name);  // Add skill name to the list
+
+    //         //     if (_options.Count() == 1) //means that only "Skill:" 
+    //         //     {
+    //         //         // Filter developers based on selected skills
+    //         //         SearchResultDevs = SearchResultDevs.Where(dev =>
+    //         //         {
+    //         //             var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
+
+    //         //             // Get the skill names for the developer
+    //         //             foreach (var devskill in devSkills)
+    //         //             {
+    //         //                 var skill = skillService.GetSkillsByID(devskill.SkillID);  // Get skill by ID
+
+    //         //                 SkillNames.Add(skill.Name);  // Add skill name to the list
+    //         //             }
+
+    //         //             // Check if the developer has all the selected skills
+    //         //             return SkillNames.Contains(OGskill.Name);
+    //         //         }).ToList();
+    //         //         SearchResultTeams.Clear();
+
+    //         //     }
+
+
+
+    //         if (_options.Count() != 1) //means that only "Skill:" so needs to be ignored
+    //         {
+    //             var selectedSkills = _options.Where(skill => skill != "Skills: ").ToList();
+    //             //var selectedSkills = _options.ToList();  // Get the list of selected skill
+
+
+
+
+    //             // Filter developers based on selected skills
+    //             SearchResultDevs = SearchResultDevs.Where(dev =>
+    //             {
+    //                 var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
+
+    //                 // Get the skill names for the developer
+    //                 foreach (var devskill in devSkills)
+    //                 {
+    //                     var skill = skillService.GetSkillsByID(devskill.SkillID);  // Get skill by ID
+
+    //                     SkillNames.Add(skill.Name);  // Add skill name to the list
+    //                 }
+
+    //                 // Check if the developer has all the selected skills
+    //                 return selectedSkills.All(skill => SkillNames.Contains(skill));
+    //             }).ToList();
+    //             SearchResultTeams.Clear();
+    //         }
+
+    //         if (ResourceType == "Developers")
+    //         {
+    //             SearchResultTeams.Clear();
+    //         }
+
+    //         if (ResourceType == "Teams")
+    //         {
+    //             SearchResultDevs.Clear();
+    //         }
+    //     }
+    // }
 
     // Clear Filters
     private void ClearFilters()
@@ -469,6 +537,7 @@
 
         // Initially render all developers 
         RenderedResultDevs = new List<Developer>(AllDevs); 
+        
     }
 
     private void ViewDevProfile(int DevID)
