@@ -80,6 +80,7 @@ namespace OutsourcingSystemWepApp
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+            builder.Services.AddControllers();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -97,6 +98,10 @@ namespace OutsourcingSystemWepApp
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
+
+
+            app.MapControllers();  // Enable API controllers
+
 
             app.Run();
         }

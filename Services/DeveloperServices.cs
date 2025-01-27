@@ -531,6 +531,13 @@ namespace OutsourcingSystemWepApp.Services
         }
 
 
+        //new for skill 
+        public async Task<Developer> GetDeveloperByID(int developerID)
+        {
+            return await _context.Developer
+                .FirstOrDefaultAsync(d => d.DeveloperID == developerID);
+        }
+
     }
 
 }
