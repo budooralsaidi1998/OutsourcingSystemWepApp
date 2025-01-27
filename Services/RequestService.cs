@@ -221,6 +221,7 @@ namespace OutsourcingSystemWepApp.Services
                 {
                     RequestId = req.RequestID,
                     Type = "Team",
+                    ClientName=req.Client.CompanyName,
                     ClientID = req.ClientID,
                     StartDate = req.StartDate,
                     EndDate = req.EndDate ?? DateTime.MaxValue,
@@ -233,73 +234,74 @@ namespace OutsourcingSystemWepApp.Services
 
 
 
-        public async Task<IEnumerable<PendingRequestDto>> GetAcceptAndReject()
-        {
-            var developerAccept = await _developerRequestRepository.ApprovedRequest();
-            var developerReject = await _developerRequestRepository.RejectedRequest();
+        //    public async Task<IEnumerable<PendingRequestDto>> GetAcceptAndReject()
+        //    {
+        //        var developerAccept = await _developerRequestRepository.ApprovedRequest();
+        //        var developerReject = await _developerRequestRepository.RejectedRequest();
 
 
-            var teamAccept = await _teamRequestRepository.ApprovedRequest();
+        //        var teamAccept = await _teamRequestRepository.ApprovedRequest();
 
-            var teamReject = await _teamRequestRepository.RejectedRequest();
+        //        var teamReject = await _teamRequestRepository.RejectedRequest();
 
 
-            developerAccept = developerAccept ?? new List<ClientRequestDeveloper>();
-            developerReject= developerReject ?? new List<ClientRequestDeveloper>();
+        //        developerAccept = developerAccept ?? new List<ClientRequestDeveloper>();
+        //        developerReject= developerReject ?? new List<ClientRequestDeveloper>();
 
-            teamAccept = teamAccept ?? new List<ClientRequestTeam>();
-            teamReject= teamReject ?? new List<ClientRequestTeam>();
-            var AcceptDeveloperRequests = developerAccept
-                .Where(req => req.Status == "Approved")
-                .Select(req => new PendingRequestDto
-                {
-                    RequestId = req.RequestID,
-                    Type = "Developer",
-                    ClientName = req.Client.CompanyName,
-                    StartDate = req.StartDate,
-                    EndDate = req.EndDate,
-                    Status = req.Status
-                });
-            var RejectDeveloperRequests = developerReject
-           .Where(req => req.Status == "Rejected")
-           .Select(req => new PendingRequestDto
-           {
-               RequestId = req.RequestID,
-               Type = "Developer",
-               ClientName = req.Client.CompanyName,
-               StartDate = req.StartDate,
-               EndDate = req.EndDate,
-               Status = req.Status
-           });
-            var AcceptTeamRequests = teamAccept
-                .Where(req => req.Status == "Approved")
-                .Select(req => new PendingRequestDto
-                {
-                    RequestId = req.RequestID,
-                    Type = "Team",
-                    ClientID = req.ClientID,
-                    StartDate = req.StartDate,
-                    EndDate = req.EndDate ?? DateTime.MaxValue,
-                    Status = req.Status
-                });
-            var RejectTeamRequests = teamReject
-             .Where(req => req.Status == "Rejected")
-             .Select(req => new PendingRequestDto
-             {
-                 RequestId = req.RequestID,
-                 Type = "Team",
-                 ClientID = req.ClientID,
-                 StartDate = req.StartDate,
-                 EndDate = req.EndDate ?? DateTime.MaxValue,
-                 Status = req.Status
-             });
+        //        teamAccept = teamAccept ?? new List<ClientRequestTeam>();
+        //        teamReject= teamReject ?? new List<ClientRequestTeam>();
+        //        var AcceptDeveloperRequests = developerAccept
+        //            .Where(req => req.Status == "Approved")
+        //            .Select(req => new PendingRequestDto
+        //            {
+        //                RequestId = req.RequestID,
+        //                Type = "Developer",
+        //                ClientName = req.Client.CompanyName,
+        //                StartDate = req.StartDate,
+        //                EndDate = req.EndDate,
+        //                Status = req.Status
+        //            });
+        //        var RejectDeveloperRequests = developerReject
+        //       .Where(req => req.Status == "Rejected")
+        //       .Select(req => new PendingRequestDto
+        //       {
+        //           RequestId = req.RequestID,
+        //           Type = "Developer",
+        //           ClientName = req.Client.CompanyName,
+        //           StartDate = req.StartDate,
+        //           EndDate = req.EndDate,
+        //           Status = req.Status
+        //       });
+        //        var AcceptTeamRequests = teamAccept
+        //            .Where(req => req.Status == "Approved")
+        //            .Select(req => new PendingRequestDto
+        //            {
+        //                RequestId = req.RequestID,
+        //                Type = "Team",
+        //                ClientID = req.ClientID,
+        //                StartDate = req.StartDate,
+        //                EndDate = req.EndDate ?? DateTime.MaxValue,
+        //                Status = req.Status
+        //            });
+        //        var RejectTeamRequests = teamReject
+        //         .Where(req => req.Status == "Rejected")
+        //         .Select(req => new PendingRequestDto
+        //         {
+        //             RequestId = req.RequestID,
+        //             Type = "Team",
+        //             ClientID = req.ClientID,
+        //             StartDate = req.StartDate,
+        //             EndDate = req.EndDate ?? DateTime.MaxValue,
+        //             Status = req.Status
+        //         });
 
-            return AcceptDeveloperRequests
-      .Concat(RejectDeveloperRequests)
-      .Concat(AcceptTeamRequests)
-      .Concat(RejectTeamRequests);
-        }
+        //        return AcceptDeveloperRequests
+        //  .Concat(RejectDeveloperRequests)
+        //  .Concat(AcceptTeamRequests)
+        //  .Concat(RejectTeamRequests);
+        //    }
 
+        //}
     }
-    }
+}
 
