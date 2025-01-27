@@ -351,22 +351,23 @@ namespace OutsourcingSystemWepApp.Services
             }
             var ResultDevs = new List<DeveloperOutDTO>();
 
-            //mapping
-            foreach (var dev in devs)
-            {
-                var d = new DeveloperOutDTO
+                //mapping
+                foreach (var dev in devs)
                 {
-                    DevId = dev.DeveloperID,
-                    DeveloperName = dev.DeveloperName,
-                    Specialization = dev.Specialization,
-                    HourlyRate = dev.HourlyRate,
-                    CommitmentRating = dev.CommitmentRating,
-                    AvailabilityStatus = dev.AvailabilityStatus,
-                    CompletedProjects = dev.CompletedProjects,
-                };
-                ResultDevs.Add(d);
-            }
-
+                    var d = new DeveloperOutDTO
+                    {
+                        DevId= dev.DeveloperID,
+                        imagePath = dev.imagePath,
+                        DeveloperName = dev.DeveloperName,
+                        Specialization = dev.Specialization,
+                        HourlyRate = dev.HourlyRate,
+                        CommitmentRating = dev.CommitmentRating,
+                        AvailabilityStatus = dev.AvailabilityStatus,
+                        CompletedProjects = dev.CompletedProjects,
+                    };
+                    ResultDevs.Add(d);
+                }
+            
 
             return ResultDevs;
         }

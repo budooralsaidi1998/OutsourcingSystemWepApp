@@ -1,0 +1,90 @@
+﻿@inherits LayoutComponentBase
+
+@* Required *@
+<MudThemeProvider />
+
+<MudPopoverProvider />
+
+@* Needed for dialogs *@
+<MudDialogProvider />
+
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+
+<div class="page1" style="padding-bottom:2px;">
+    <main>
+        <div class="top-row px-4" style="display: flex; justify-content: space-between; align-items: center; padding-top:12px;">
+            <div style="display: flex; align-items: center;">
+                <img src="images/logo.png" alt="Logo" style="height: 20px; margin-right: 15px;" @onclick="ToHome">
+            </div>
+             
+            <div class="item">
+                <!-- Menu Items -->
+                <a href="#" @onclick="NavigateToViewClient" class="menu-item">ViewClient</a>
+                <a href="#" @onclick="NavigateToClientRequests" class="menu-item">ClientRequests</a>
+                <a href="#" @onclick="NavigateToViewViewdeveloper" class="menu-item">Viewdeveloper</a>
+                <a href="#" @onclick="NavigateToViewAddSkill" class="menu-item">AddSkill</a>
+                <a href="#" @onclick="NavigateToViewAcceptReject" class="menu-item">AcceptReject</a>
+
+                <!-- Logout Button -->
+                <button class="btn btn-success signup-btn" @onclick="Logout">Logout</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<article class="content px-4">
+    @Body
+</article>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code {
+    private void ToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void Logout()
+    {
+        // Clear session or token here if needed
+        // AuthenticationService.Logout();
+
+        // Navigate to login page
+        NavigationManager.NavigateTo("/login");
+    }
+
+    // Navigation methods for the new menu items
+    private void NavigateToViewClient()
+    {
+        NavigationManager.NavigateTo("/GetClientByAdmin");
+    }
+
+    private void NavigateToClientRequests()
+    {
+        NavigationManager.NavigateTo("/AdminPage");
+    }
+
+    private void NavigateToViewViewdeveloper()
+    {
+        NavigationManager.NavigateTo("/ViewDevelooper");
+    }
+
+    private void NavigateToViewAddSkill()
+    {
+        NavigationManager.NavigateTo("/AddSkillAdmin");
+    }
+
+
+    private void NavigateToViewAcceptReject()
+    {
+        NavigationManager.NavigateTo("/GetAcceptsReject");
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+}

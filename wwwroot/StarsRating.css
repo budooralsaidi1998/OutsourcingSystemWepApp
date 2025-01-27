@@ -1,0 +1,24 @@
+﻿<style >
+.star-rating {
+    display: flex;
+    gap: 5px; /* Space between stars */
+    text-align: left;
+    margin: 10px 0; /* Add some spacing */
+}
+
+.star {
+    font-size: 20px; /* Adjust star size */
+    color: #ddd; /* Default color for empty stars */
+}
+
+    .star.filled {
+        color: gold; /* Gold color for filled stars */
+    }
+
+    .star.half-filled {
+        background: linear-gradient(90deg, gold 50%, #ddd 50%);
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+</style >

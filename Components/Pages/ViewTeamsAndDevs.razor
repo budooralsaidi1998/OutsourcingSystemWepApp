@@ -1,4 +1,4 @@
-﻿@page "/ViewTeamsAndDevs"
+﻿@page "/ViewTeamsAndDevs{int SkillID}"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -80,9 +80,35 @@
                         <MudItem xs="12" sm="6" md="4">
                             <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
+                                    @if (!string.IsNullOrEmpty(dev.imagePath))
+                                    {
+                                        <img src="@dev.imagePath" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
+                                    }
+
+                                    else
+                                    {
+                                        <img src="images/DefaultImage.png" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
+                                    }
+
                                     <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                                     <MudText Typo="Typo.body1">@dev.Specialization</MudText>
-                                    <MudText Typo="Typo.body2">Rating: @dev.CommitmentRating</MudText>
+                                    <div class="star-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= (int)dev.CommitmentRating)
+                                            {
+                                                <span class="star filled">&#9733;</span> <!-- Filled star -->
+                                            }
+                                            else if (i - (double)dev.CommitmentRating >= 0.5)
+                                            {
+                                                <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                                            }
+                                            else
+                                            {
+                                                <span class="star">&#9734;</span> <!-- Empty star -->
+                                            }
+                                        }
+                                    </div>
                                     <MudText Typo="Typo.body2">Completed projects: @dev.CompletedProjects</MudText>
 
                                     <!-- Skills section -->
@@ -102,7 +128,7 @@
                                 </MudCardContent>
 
                                 <MudCardActions>
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="ViewDevProfile">View Details </MudButton>
                                 </MudCardActions>
 
                                 <!-- Hourly Rate in top-right corner -->
@@ -129,17 +155,32 @@
                 {
                     @foreach (var team in SearchResultTeams)
                     {
+                        @UpdateNoMembersInTeam(team.TeamID)
+
                         <MudItem xs="12" sm="6" md="4">
                             <MudCard Elevation="8" Class="pa-4" Style="position: relative;">
                                 <MudCardContent>
-                                    @UpdateNoMembersInTeam(team.TeamID)
                                     <MudText Typo="Typo.h6">@team.TeamName</MudText>
                                     <MudText Typo="Typo.body1">@team.Description</MudText>
-                                    <MudText Typo="Typo.body2">Rating: @team.Rating</MudText>
+                                    <div class="star-rating">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= (int)team.Rating)
+                                            {
+                                                <span class="star filled">&#9733;</span> <!-- Filled star -->
+                                            }
+                                            else if (i - (double)team.Rating >= 0.5)
+                                            {
+                                                <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                                            }
+                                            else
+                                            {
+                                                <span class="star">&#9734;</span> <!-- Empty star -->
+                                            }
+                                        }
+                                    </div>
                                     <MudText Typo="Typo.body2">Completed projects: @team.CompletedProjects</MudText>
                                     <MudText Typo="Typo.body2">No. of Members: @NoTeamMembers</MudText>
-
-
                                 </MudCardContent>
 
                                 <MudCardActions>
@@ -165,6 +206,7 @@
 
 @* Shared Code *@
 @code {
+    [Parameter] public int SkillID { get; set; }
     public bool OnlyAvailableSwitch { get; set; } = true; //Used to filter by availability
     private string ResourceType = "Both"; //Used to filter by DevsOnly/TeamsOnly/Both
     private int ratingValue = 2; //Used to filter by minimum rating
@@ -178,7 +220,7 @@
     private string SearchValue; //value inputted to search by
     private bool ResourceFound = false; 
 
-    private int NoTeamMembers; //The number of members in a team
+    private int NoTeamMembers = 0; //The number of members in a team
 
     // Filtered devs and teams
     public List<DeveloperOutDTO> SearchResultDevs = new List<DeveloperOutDTO>();
@@ -373,6 +415,7 @@
     private string UpdateNoMembersInTeam(int TeamID)
     {
         //making sure that number not affected by previous searches 
+        NoTeamMembers = 0;
         var TeamMembers = teamMemberService.GetTeamMemberByTeamID(TeamID);
         NoTeamMembers = TeamMembers.Count();
         return "";
@@ -388,8 +431,13 @@
         AllDevs = developerService.GetAll();
         // Initially render all developers 
         RenderedResultDevs = new List<Developer>(AllDevs); 
-    } 
-    
+    }
+
+    private void ViewDevProfile()
+    {
+        Navigation.NavigateTo("/DeveloperProfile");
+    }
+
     private void ApplyFilter(int? ratingValue)
     {
         if (ratingValue != null)
@@ -401,4 +449,5 @@
             RenderedResultDevs = new List<Developer>(AllDevs); } 
         }
     }
+
  }

@@ -1,4 +1,5 @@
-﻿using OutsourcingSystemWepApp.Data.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystemWepApp.Data.Model;
 
 namespace OutsourcingSystemWepApp.Data.Repository
 {
@@ -31,6 +32,15 @@ namespace OutsourcingSystemWepApp.Data.Repository
         public async Task<IEnumerable<ClientRequestTeam>> GetPendingRequestsAsync()
         {
             return await Task.Run(() => _context.ClientRequestTeam.Where(req => req.Status == "Pending").ToList());
+        }
+        public async Task<IEnumerable<ClientRequestTeam>> ApprovedRequest()
+        {
+            return await Task.Run(() => _context.ClientRequestTeam.Where(req => req.Status == "Approved").Include(S => S.Client).ToList());
+        }
+
+        public async Task<IEnumerable<ClientRequestTeam>> RejectedRequest()
+        {
+            return await Task.Run(() => _context.ClientRequestTeam.Where(req => req.Status == "Rejected").Include(S => S.Client).ToList());
         }
     }
 }

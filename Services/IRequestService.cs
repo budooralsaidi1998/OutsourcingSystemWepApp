@@ -7,5 +7,6 @@ namespace OutsourcingSystemWepApp.Services
         Task<IEnumerable<PendingRequestDto>> GetPendingRequestsAsync();
         Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType);
         Task SubmitRequestAsync(int userid, ProjectRequestInputDto project);
+       // Task<IEnumerable<PendingRequestDto>> GetAcceptAndReject();
     }
 }

@@ -3,6 +3,13 @@
 @inject ISkillService skillService
 @inject IDeveloperSkillService developerSkillService
 @inject IProjectServieces projectService
+@inject IReviewDeveloperService reviewService
+@inject IRequestService requestService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject ISmsService smsService
+
+
 @using Data.Model
 
 <MudContainer>
@@ -16,11 +23,23 @@
     {
         <MudCard>
             <MudCardContent>
+                @if (!string.IsNullOrEmpty(dev.imagePath))
+                {
+                    <img src="@dev.imagePath" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
+                }
+
+                else
+                {
+                    <img src="images/DefaultImage.png" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
+                }
                 <MudText Typo="Typo.h6">@dev.DeveloperName</MudText>
                 <MudText>Specialization: @dev.Specialization</MudText>
                 <MudText>Availability: @dev.AvailabilityStatus</MudText>
                 <MudText>Average Rating: @dev.CommitmentRating</MudText>
-                <MudText>Hourly Rate: @dev.HourlyRate</MudText>
+                <MudText>Hourly Rate: $@dev.HourlyRate</MudText>
+                <MudLink Href="@dev.DocumentLink" Color="Color.Primary">
+                    DocumentLink
+                </MudLink>
 
                 @GetDevSkills(dev.DeveloperID)
 
@@ -48,17 +67,55 @@
         <MudCard>
             @if (projects != null)
             {
-                <MudText Typo="Typo.h6">Projects</MudText>
+                <MudCardContent>
 
-                @foreach (var project in projects)
-                {
-                    <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
-                    <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
-                    <MudText Typo="Typo.body1">Client rating: </MudText>
+                    <MudText Typo="Typo.h6">Projects</MudText>
 
+                    @foreach (var project in projects)
+                    {
+                        <MudText Typo="Typo.body1">Project name: @project.ProjectName</MudText>
+                        <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
+                        <MudText Typo="Typo.body1">Client rating: </MudText>
+                    }
+                </MudCardContent>
 
-                }
             }
+        </MudCard>
+
+        <MudCard>
+            @if (reviews != null)
+            {
+                <MudCardContent>
+
+                    <MudText Typo="Typo.h6">Reviews</MudText>
+
+                    @foreach (var review in reviews)
+                    {
+                        <MudText Typo="Typo.body1">Rating: @review.Rating</MudText>
+                        <MudText Typo="Typo.body1">Date: @review.Date</MudText>
+                        <MudText Typo="Typo.body1">Comment: @review.Comment </MudText>
+                    }
+                </MudCardContent>
+
+            }
+        </MudCard>
+
+        //Adding request for this client 
+        <MudCard>
+            <MudCardContent>
+
+                <MudText Typo="Typo.h6">Request developer</MudText>
+
+                <MudForm @ref="form" Valid="@isValid" OnValidSubmit="HandleValidSubmit">
+                    <MudTextField Label="Project Name" @bind-Value="newProject.ProjectName" Required="true" Color="Color.Primary" />
+                    <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" />
+                    <MudNumericField Label="Hours Needed" @bind-Value="newProject.HoursNeeded" Min="1" Max="1000" Required="true" Color="Color.Primary" />
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit">
+                        Submit
+                    </MudButton>
+                </MudForm>
+            </MudCardContent>
         </MudCard>
     }
     else if (!string.IsNullOrEmpty(errorMessage))
@@ -74,6 +131,7 @@
     private string errorMessage = string.Empty;
 
     private List<Project> projects = new List<Project>();
+    private List<ClientReviewDeveloper> reviews = null;
     public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer
 
 
@@ -83,7 +141,9 @@
         if (int.TryParse(devIDString, out int devID) && devID > 0)
         {
             dev = developerService.GetById(devID); // Get the developer details based on ID
-            projects = projectService.GetProjectsByDevID(dev.DeveloperID);
+                                                   //projects =
+            projectService.GetProjectsByDevID(dev.DeveloperID);
+            reviews = reviewService.GetAllDevReviews(0, int.MaxValue, null, dev.DeveloperID);
 
 
             if (dev == null)
@@ -99,6 +159,7 @@
         {
             errorMessage = "Please enter a valid provider ID.";
         }
+        SendMessage();
     }
 
     private string GetDevSkills(int DevID)
@@ -114,6 +175,51 @@
             DevSkills.Add(skillName.Name);
         }
         return "";
+    }
+
+
+    private MudForm form;
+    private bool isValid = false;
+
+    // Project model to bind form fields
+    private Project newProject = new Project();
+
+    // Handle the form submission
+    private async Task HandleValidSubmit()
+    {
+
+        Console.WriteLine($"Project Name: {newProject.ProjectName}");
+        Console.WriteLine($"Description: {newProject.Description}");
+        Console.WriteLine($"Hours Needed: {newProject.HoursNeeded}");
+
+        ClientRequestDeveloper req = new ClientRequestDeveloper
+        {
+
+        };
+
+        //
+        //   requestService.SubmitRequestAsync(6, req); //hard coded userID for now just to test will make it automated 
+
+        // Alert when submission sent 
+        Snackbar.Add("Booking request was successfully sent!", Severity.Success); 
+
+    }
+
+    // Project model class
+    public class Project
+    {
+        public string ProjectName { get; set; }
+        public string Description { get; set; }
+        public int HoursNeeded { get; set; }
+    }
+
+    public async Task<IEnumerable<string>> SendMessage()
+    {
+        string message = "Confirming search for developer - shahad :)";
+        string toPhoneNo = "+96893983414";
+        await smsService.SendSmsAsync(toPhoneNo, message);
+
+        return new string[0];
     }
     
 }

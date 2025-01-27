@@ -24,10 +24,7 @@
     </PackageReference>
     <PackageReference Include="MudBlazor" Version="8.0.0" />
     <PackageReference Include="Syncfusion.Blazor.Inputs" Version="28.1.41" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\images\" />
+    <PackageReference Include="Twilio" Version="7.8.2" />
   </ItemGroup>
 
 </Project>

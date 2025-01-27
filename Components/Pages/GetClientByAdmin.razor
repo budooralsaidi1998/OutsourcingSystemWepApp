@@ -1,0 +1,115 @@
+﻿@page "/GetClientByAdmin"
+@layout Layout.AdminLayout
+@inject ISnackbar Snackbar
+@inject IClientService ClientService
+
+<MudContainer MaxWidth="MaxWidth.Large" Style="height: 100vh; display: flex; flex-direction: column; align-items: center;">
+    <MudCard Elevation="4" Style="width: 100%; max-width: 1200px;">
+        <MudCardContent>
+            <MudText Typo="Typo.h5" Align="Align.Center">Clients List</MudText>
+
+            <!-- Filters Section -->
+            <MudGrid>
+                <MudItem xs="12" sm="4">
+                    <MudTextField Label="Company Name" @bind-Value="filter.CompanyName" OnInput="ApplyFilter" FullWidth />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <MudTextField Label="Industry" @bind-Value="filter.Industry" OnInput="ApplyFilter" FullWidth />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <MudTextField Label="Min Rating" @bind-Value="filter.Rating" OnInput="ApplyFilter" FullWidth />
+                </MudItem>
+            </MudGrid>
+
+            <!-- Table Section -->
+            <MudTable Items="filteredClients" Hover="true" Bordered="true" Striped="true">
+                <HeaderContent>
+                    <MudTh>Company Name</MudTh>
+                    <MudTh>Industry</MudTh>
+                    <MudTh>Rating</MudTh>
+                    <MudTh>Created At</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Company Name">@context.CompanyName</MudTd>
+                    <MudTd DataLabel="Industry">@context.Industry</MudTd>
+                    <MudTd DataLabel="Rating">@context.Rating</MudTd>
+                    <MudTd DataLabel="Created At">@context.CreatedAt.ToString("yyyy-MM-dd")</MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick=@(() => SoftDeleteClient(context.userid)) StartIcon="Icons.Material.Filled.Delete">
+                            Soft Delete
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="LoadClients" FullWidth Style="margin-top: 20px;">Load Clients</MudButton>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private List<ClientDTO> clients = new List<ClientDTO>();
+    private List<ClientDTO> filteredClients = new List<ClientDTO>();
+
+    private ClientFilter filter = new ClientFilter();
+
+    protected override void OnInitialized()
+    {
+        LoadClients();
+    }
+
+    private void LoadClients()
+    {
+        try
+        {
+            // Fetch all clients from the service with initial filters (empty)
+            var allClients = ClientService.GetAllClients(filter.CompanyName, filter.Industry, filter.Rating, 1, 10);
+
+            // Store the full list
+            clients = allClients.ToList();
+
+            // Apply filters after loading data
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading clients: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        // Apply filters to the list of clients based on current filter values
+        filteredClients = clients.Where(client =>
+            (string.IsNullOrEmpty(filter.CompanyName) || client.CompanyName.Contains(filter.CompanyName, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(filter.Industry) || client.Industry.Contains(filter.Industry, StringComparison.OrdinalIgnoreCase)) &&
+            (!filter.Rating.HasValue || client.Rating >= filter.Rating.Value)
+        ).ToList();
+    }
+
+    private void SoftDeleteClient(int clientId)
+    {
+        try
+        {
+            // Perform the soft delete operation without awaiting it (not recommended)
+            ClientService.SoftDeleteClient(clientId);
+
+            // Refresh the client list after soft-deletion
+            LoadClients();
+
+            Snackbar.Add("Client soft-deleted successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting client: {ex.Message}", Severity.Error);
+        }
+    }
+
+    public class ClientFilter
+    {
+        public string CompanyName { get; set; }
+        public string Industry { get; set; }
+        public decimal? Rating { get; set; }
+    }
+}

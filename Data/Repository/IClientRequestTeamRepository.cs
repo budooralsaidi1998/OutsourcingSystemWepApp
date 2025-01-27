@@ -8,5 +8,7 @@ namespace OutsourcingSystemWepApp.Data.Repository
         Task<IEnumerable<ClientRequestTeam>> GetPendingRequestsAsync();
         Task<ClientRequestTeam> GetRequestByIdAsync(int requestId);
         Task UpdateRequestAsync(ClientRequestTeam request);
+        Task<IEnumerable<ClientRequestTeam>> ApprovedRequest();
+        Task<IEnumerable<ClientRequestTeam>> RejectedRequest();
     }
 }
