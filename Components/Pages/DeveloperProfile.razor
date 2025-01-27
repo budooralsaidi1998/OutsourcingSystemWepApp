@@ -1,4 +1,4 @@
-﻿@page "/DeveloperProfile"
+﻿@page "/DeveloperProfile/{DevID:int}"
 @inject IDeveloperServices developerService
 @inject ISkillService skillService
 @inject IDeveloperSkillService developerSkillService
@@ -13,13 +13,7 @@
 @using Data.Model
 
 <MudContainer>
-    <MudTextField @bind-Value="devIDString" Label="Enter provider ID" Variant="Variant.Filled" FullWidth="true" />
-
-    <MudButton OnClick="GetProviderDetails" Color="Color.Success" Variant="Variant.Filled" FullWidth="true">
-        Get Details
-    </MudButton>
-
-    @if (dev != null)
+    @if (DevID != null)
     {
         <MudCard>
             <MudCardContent>
@@ -111,6 +105,14 @@
                     <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" />
                     <MudNumericField Label="Hours Needed" @bind-Value="newProject.HoursNeeded" Min="1" Max="1000" Required="true" Color="Color.Primary" />
 
+                    <MudStack AlignItems="AlignItems.Center" Style="width:650px; height:450px">
+                        <MudDateRangePicker PickerVariant="@_variant" @bind-DateRange="@_dateRange" Margin="Margin.Dense" />
+                        <MudSpacer />
+                        <MudToggleGroup T="PickerVariant" SelectionMode="SelectionMode.SingleSelection" Value="@_variant" ValueChanged="@OnValueChanged"
+                                        Color="Color.Success" CheckMark="true" FixedContent="true">
+                        </MudToggleGroup>
+                    </MudStack>
+
                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit">
                         Submit
                     </MudButton>
@@ -126,6 +128,8 @@
 
 @code
 {
+    [Parameter] public int DevID { get; set; }
+
     private string devIDString = string.Empty;
     private Developer dev = null;
     private string errorMessage = string.Empty;
@@ -135,12 +139,19 @@
     public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer
 
 
-    private void GetProviderDetails()
+    protected override void OnInitialized()
+    {
+        GetProductDetails(DevID);
+    }
+
+
+    private void GetProductDetails(int DevID)
     {
         // Convert string input to integer
-        if (int.TryParse(devIDString, out int devID) && devID > 0)
-        {
-            dev = developerService.GetById(devID); // Get the developer details based on ID
+        // if (int.TryParse(devIDString, out int devID) && devID > 0)
+        // {
+
+            dev = developerService.GetById(DevID); // Get the developer details based on ID
                                                    //projects =
             projectService.GetProjectsByDevID(dev.DeveloperID);
             reviews = reviewService.GetAllDevReviews(0, int.MaxValue, null, dev.DeveloperID);
@@ -154,11 +165,11 @@
             {
                 errorMessage = string.Empty; // Clear error message if developer found
             }
-        }
-        else
-        {
-            errorMessage = "Please enter a valid provider ID.";
-        }
+       // }
+       // else
+        // {
+        //     errorMessage = "Please enter a valid provider ID.";
+        // }
         SendMessage();
     }
 
@@ -220,6 +231,15 @@
         await smsService.SendSmsAsync(toPhoneNo, message);
 
         return new string[0];
+    }
+
+    private PickerVariant _variant = PickerVariant.Dialog;
+    private DateRange _dateRange { get; set; }
+
+    private void OnValueChanged(PickerVariant variant)
+    {
+        _dateRange = null;
+        _variant = variant;
     }
     
 }
