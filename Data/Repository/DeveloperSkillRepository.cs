@@ -1,4 +1,6 @@
-﻿using OutsourcingSystemWepApp.Data.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystemWepApp.Data.DTOs;
+using OutsourcingSystemWepApp.Data.Model;
 
 namespace OutsourcingSystemWepApp.Data.Repository
 {
@@ -16,7 +18,7 @@ namespace OutsourcingSystemWepApp.Data.Repository
         {
             _context.DeveloperSkill.Add(developerSkill);
             _context.SaveChanges();
-            return ($"Skill " + developerSkill.SkillID + " added to developer " + developerSkill.DeveloperID);
+           return ($"Skill " + developerSkill.SkillID + " added to developer " + developerSkill.DeveloperID);
         }
 
         //No update because only two values > it would be like adding a new one so just delete and add
@@ -84,5 +86,101 @@ namespace OutsourcingSystemWepApp.Data.Repository
 
             _context.SaveChanges();
         }
+
+        //new 
+
+        public void RemoveDeveloperSkill(int developerID, int skillID)
+        {
+            var skill = _context.DeveloperSkill.FirstOrDefault(d => d.DeveloperID == developerID && d.SkillID == skillID);
+
+            if (skill != null)
+            {
+                _context.DeveloperSkill.Remove(skill);
+                _context.SaveChanges();
+            }
+        }
+
+
+        public List<DeveloperSkill> GetSkillsByDeveloperId(int developerID)
+        {
+            return _context.DeveloperSkill.Where(ds => ds.DeveloperID == developerID).ToList();
+        }
+
+
+
+
+
+
+        //new to fex erro
+
+
+        public void AddDeveloperSkilll(DeveloperSkill developerSkill)
+        {
+            var existingSkill = _context.DeveloperSkill
+                .FirstOrDefault(ds => ds.DeveloperID == developerSkill.DeveloperID && ds.SkillID == developerSkill.SkillID);
+
+            if (existingSkill == null)
+            {
+                _context.DeveloperSkill.Add(developerSkill);
+                _context.SaveChanges();
+            }
+        }
+
+
+
+        public void UpdateDeveloperSkill(DeveloperSkill developerSkill)
+        {
+            var existingSkill = _context.DeveloperSkill
+                .FirstOrDefault(ds => ds.DeveloperID == developerSkill.DeveloperID && ds.SkillID == developerSkill.SkillID);
+
+            if (existingSkill != null)
+            {
+                existingSkill.Proficiency = developerSkill.Proficiency;
+                _context.SaveChanges();
+            }
+        }
+
+        public void DeleteDeveloperSkilll(int developerID, int skillID)
+        {
+            var skill = _context.DeveloperSkill
+                .FirstOrDefault(d => d.DeveloperID == developerID && d.SkillID == skillID);
+
+            if (skill != null)
+            {
+                _context.DeveloperSkill.Remove(skill);
+                _context.SaveChanges();
+            }
+        }
+
+
+
+        public List<DeveloperSkillDTO> GetDeveloperSkills(int developerID)
+        {
+            return _context.DeveloperSkill
+                .Where(ds => ds.DeveloperID == developerID)
+                .Select(ds => new
+                {
+                    ds.DeveloperID,
+                    ds.SkillID,
+                    Skill = _context.Skills.FirstOrDefault(s => s.SkillID == ds.SkillID)
+                })
+                .AsEnumerable()
+                .Select(ds => new DeveloperSkillDTO
+                {
+                    DeveloperID = ds.DeveloperID,
+                    SkillID = ds.SkillID,
+                    SkillName = ds.Skill != null ? ds.Skill.Name : "Unknown Skill",
+                    Proficiency = ds.SkillID
+                })
+                .ToList();
+        }
+
+
+        public string GetSkillName(int skillID)
+        {
+            return _context.Skills.FirstOrDefault(s => s.SkillID == skillID)?.Name ?? "Unknown Skill";
+        }
+
+
     }
 }

@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @using OutsourcingSystemWepApp.Data
 @using OutsourcingSystemWepApp.Services
 @using System.IdentityModel.Tokens.Jwt
@@ -168,7 +168,7 @@
             switch (userRole)
             {
                 case "Developer":
-                    Navigation.NavigateTo("/DeveloperProfile");
+                    Navigation.NavigateTo("/DeveloperPortal");
                     break;
                 case "Client":
                     Navigation.NavigateTo("/ClientProfile");

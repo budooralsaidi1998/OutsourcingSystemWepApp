@@ -20,5 +20,9 @@ namespace OutsourcingSystemWepApp.Data.DTOs
 
         [Required(ErrorMessage = "Industry is required")]
         public string Industry { get; set; } = string.Empty;
+        [StringLength(8, ErrorMessage = "Phone number must be 8 digits.")]
+        public string PhoneNumber { get; set; }
+
+
     }
 }

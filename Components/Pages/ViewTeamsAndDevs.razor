@@ -1,4 +1,4 @@
-﻿@page "/ViewTeamsAndDevs"
+﻿@page "/ViewTeamsAndDevs{int SkillID}"
 @using MudBlazor
 @using Data.Model
 @using Data.DTOs
@@ -128,7 +128,7 @@
                                 </MudCardContent>
 
                                 <MudCardActions>
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="ViewDevProfile">View Details </MudButton>
                                 </MudCardActions>
 
                                 <!-- Hourly Rate in top-right corner -->
@@ -206,6 +206,7 @@
 
 @* Shared Code *@
 @code {
+    [Parameter] public int SkillID { get; set; }
     public bool OnlyAvailableSwitch { get; set; } = true; //Used to filter by availability
     private string ResourceType = "Both"; //Used to filter by DevsOnly/TeamsOnly/Both
     private int ratingValue = 2; //Used to filter by minimum rating
@@ -430,8 +431,13 @@
         AllDevs = developerService.GetAll();
         // Initially render all developers 
         RenderedResultDevs = new List<Developer>(AllDevs); 
-    } 
-    
+    }
+
+    private void ViewDevProfile()
+    {
+        Navigation.NavigateTo("/DeveloperProfile");
+    }
+
     private void ApplyFilter(int? ratingValue)
     {
         if (ratingValue != null)
@@ -443,4 +449,5 @@
             RenderedResultDevs = new List<Developer>(AllDevs); } 
         }
     }
+
  }
