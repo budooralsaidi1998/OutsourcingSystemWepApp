@@ -113,7 +113,7 @@ namespace OutsourcingSystemWepApp
                 .AddInteractiveServerRenderMode();
 
 
-            app.MapControllers();  // Enable API controllers
+            /*app.MapControllers();*/  // Enable API controllers
 
 
             app.Run();
