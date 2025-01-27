@@ -140,6 +140,7 @@ namespace OutsourcingSystemWepApp.Services
 
                 Industry = clientDto.Industry,
                 Notes = string.Empty,
+                PhoneNumber = clientDto.PhoneNumber,
                 CreatedAt = DateTime.UtcNow
             };
 

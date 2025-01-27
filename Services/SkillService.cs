@@ -117,8 +117,23 @@ namespace OutsourcingSystemWepApp.Services
         }
 
         public Skill GetSkillsByID(int SkillID)
-        { 
+        {
             return _skillRepository.GetSkillByID(SkillID);
         }
+
+        public int GetSkillIDByName(string name)
+        {
+            return _skillRepository.GetSkillByName(name);
+        }
+
+
+        //new 
+
+        public List<Skill> GetAllSkills()
+        {
+            return _skillRepository.GetAllSkills();
+        }
+
+
     }
 }

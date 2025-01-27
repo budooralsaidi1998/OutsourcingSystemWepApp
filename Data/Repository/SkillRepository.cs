@@ -56,5 +56,12 @@ namespace OutsourcingSystemWepApp.Data.Repository
                 .Select(x => (x.Skill, x.DeveloperCount))
                 .ToList();
         }
+
+        public int GetSkillByName(string name)
+        {
+            return _context.Skills.FirstOrDefault(s => s.Name == name).SkillID;
+        }
+
+
     }
 }

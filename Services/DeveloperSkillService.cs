@@ -128,5 +128,68 @@ namespace OutsourcingSystemWepApp.Services
 
             await Task.CompletedTask;
         }
+
+
+
+        //new 
+
+
+
+
+
+
+
+
+        //new to fex error 
+        public DeveloperSkillDTO AddDeveloperSkilll(int skillID, int developerID, int proficiency)
+        {
+            var devSkillExists = _DeveloperSkillRepository.GetDeveloperSkillByIDs(developerID, skillID);
+
+            if (devSkillExists == null)
+            {
+                var devSkill = new DeveloperSkill
+                {
+                    DeveloperID = developerID,
+                    SkillID = skillID,
+                    Proficiency = proficiency
+                };
+
+                _DeveloperSkillRepository.AddDeveloperSkilll(devSkill);
+
+                return new DeveloperSkillDTO
+                {
+                    DeveloperID = devSkill.DeveloperID,
+                    SkillID = devSkill.SkillID,
+                    SkillName = _DeveloperSkillRepository.GetSkillName(skillID),
+                    Proficiency = devSkill.Proficiency
+                };
+            }
+
+            return null;
+        }
+
+        public void UpdateDeveloperSkill(int developerID, int skillID, int proficiency)
+        {
+            var devSkill = _DeveloperSkillRepository.GetDeveloperSkillByIDs(developerID, skillID);
+
+            if (devSkill != null)
+            {
+                devSkill.Proficiency = proficiency;
+                _DeveloperSkillRepository.UpdateDeveloperSkill(devSkill);
+            }
+        }
+
+        public void RemoveDeveloperSkill(int developerID, int skillID)
+        {
+            _DeveloperSkillRepository.DeleteDeveloperSkill(developerID, skillID);
+        }
+
+        public List<DeveloperSkill> GetDeveloperSkills(int developerID)
+        {
+            return _DeveloperSkillRepository.GetSkillsByDeveloperId(developerID);
+        }
+
+
+
     }
 }

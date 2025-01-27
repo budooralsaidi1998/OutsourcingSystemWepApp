@@ -46,7 +46,7 @@ namespace OutsourcingSystemWepApp.Data.Model
         [Url(ErrorMessage = "Invalid URL format.")]
         public string DocumentLink { get; set; }
 
-        public string imagePath { get; set; }
+        public string? imagePath { get; set; }
 
         public virtual ICollection<DeveloperSkill> DeveloperSkills { get; set; }
 

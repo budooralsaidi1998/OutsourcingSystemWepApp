@@ -25,6 +25,7 @@
         <InputText @bind-Value="registerModel.Password" class="form-control" type="password" required />
     </div>
 
+
     <div>
         <label>Company Name:</label>
         <InputText @bind-Value="registerModel.CompanyName" class="form-control" required />
@@ -33,6 +34,11 @@
     <div>
         <label>Industry:</label>
         <InputText @bind-Value="registerModel.Industry" class="form-control" required />
+    </div>
+ 
+    <div>
+        <label>Phone:</label>
+        <InputText @bind-Value="registerModel.PhoneNumber" class="form-control" required />
     </div>
 
     <button type="submit" class="btn btn-primary">Register</button>
@@ -103,7 +109,8 @@
                     Email = registerModel.Email,
                     Password = registerModel.Password,
                     CompanyName = registerModel.CompanyName,
-                    Industry = registerModel.Industry
+                    Industry = registerModel.Industry,
+                    PhoneNumber = registerModel.PhoneNumber
                 };
 
             await ClientService.RegisterClient(clientData);

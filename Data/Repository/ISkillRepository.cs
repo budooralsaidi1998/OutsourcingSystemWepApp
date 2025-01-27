@@ -7,8 +7,9 @@ namespace OutsourcingSystemWepApp.Data.Repository
         int AddSkill(Skill skill);
         void DeleteSkill(Skill skill);
         List<Skill> GetAllSkills();
-        Skill GetSkillByID(int ID);
-        void UpdateSkill(Skill skill);
         List<(Skill skill, int DeveloperCount)> GetAllSkillsWithDeveloperCount();
+        Skill GetSkillByID(int ID);
+        int GetSkillByName(string name);
+        void UpdateSkill(Skill skill);
     }
 }

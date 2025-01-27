@@ -112,6 +112,10 @@ namespace OutsourcingSystemWepApp
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
 
+
+            /*app.MapControllers();*/  // Enable API controllers
+
+
             app.Run();
         }
     }

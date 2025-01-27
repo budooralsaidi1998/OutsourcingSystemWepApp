@@ -88,5 +88,17 @@ namespace OutsourcingSystemWepApp.Services
         {
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", token);
         }
+
+        public async Task Logout()
+        {
+            // Remove the token from localStorage
+             _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
+
+            // Notify AuthenticationStateProvider about the logout
+            if (_authenticationStateProvider is CustomAuthenticationStateProvider customAuthStateProvider)
+            {
+                 customAuthStateProvider.MarkUserAsLoggedOut();
+            }
+        }
     }
 }

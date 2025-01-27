@@ -1,6 +1,5 @@
-﻿ @page "/ViewDevelooper"
- @layout Layout.AdminLayout
- @*
+﻿@page "/ViewDevelooper"
+@layout Layout.AdminLayout
 
 @inject ISnackbar Snackbar
 @inject IDeveloperServices DeveloperView
@@ -24,26 +23,33 @@
             </MudGrid>
 
             <!-- Table Section -->
-            <MudTable Items="filteredDevelopers" Hover="true" Bordered="true" Striped="true">
-                <HeaderContent >
-                    <MudTh>Developer Name</MudTh>
-                    <MudTh>Specialization</MudTh>
-                    <MudTh>Rating</MudTh>
-                    <MudTh>Availability Status</MudTh>
-                    <MudTh>Actions</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Developer Name">@context.DeveloperName</MudTd>
-                    <MudTd DataLabel="Specialization">@context.Specialization</MudTd>
-                    <MudTd DataLabel="Rating">@context.CommitmentRating</MudTd>
-                    <MudTd DataLabel="Availability Status">@context.AvailabilityStatus ? "Available" : "Not Available"</MudTd>
-                    <MudTd DataLabel="Actions">
-                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="@(() => SoftDeleteDeveloper(context.DeveloperID))" StartIcon="Icons.Material.Filled.Delete">
-                            Soft Delete
-                        </MudButton> 
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
+            <div class="custom-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Developer Name</th>
+                            <th>Specialization</th>
+                            <th>Rating</th>
+                            <th>Availability Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var developer in filteredDevelopers)
+                        {
+                            <tr>
+                                <td>@developer.DeveloperName</td>
+                                <td>@developer.Specialization</td>
+                                <td>@developer.CommitmentRating</td>
+                                <td>@developer.AvailabilityStatus ? "Available" : "Not Available"</td>
+                                <td>
+                                    @* <button class="delete-btn" @onclick="() => SoftDeleteDeveloper(developer.)">Soft Delete</button> *@
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 
             <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="LoadDevelopers" FullWidth Style="margin-top: 20px;">Load Developers</MudButton>
         </MudCardContent>
@@ -66,7 +72,7 @@
         try
         {
             // Fetch all developers from the service with initial filters (empty)
-            var allDevelopers =  DeveloperView.GetAlldeveloper(filter.Name, filter.Specialization, filter.Rating, null, 1, 10);
+            var allDevelopers = DeveloperView.GetAlldeveloper(filter.Name, filter.Specialization, filter.Rating, null, 1, 10);
 
             // Store the full list
             developers = allDevelopers.ToList();
@@ -115,4 +121,3 @@
         public decimal? Rating { get; set; }
     }
 }
- *@
