@@ -186,7 +186,7 @@
                                 </MudCardContent>
 
                                 <MudCardActions>
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="() => ViewTeamProfile(team.TeamID)">View Details</MudButton>
                                 </MudCardActions>
 
                                 <!-- Hourly Rate in top-right corner -->
@@ -451,6 +451,12 @@
     {
         Navigation.NavigateTo($"/DeveloperProfile/{DevID}");
     }
+
+    private void ViewTeamProfile(int TeamID)
+    {
+        Navigation.NavigateTo($"/TeamProfile/{TeamID}");
+    }
+    
 
     private void ApplyFilter(int? ratingValue)
     {
