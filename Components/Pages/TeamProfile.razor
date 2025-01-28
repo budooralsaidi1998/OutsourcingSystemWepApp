@@ -1,5 +1,5 @@
-﻿@page "/DeveloperProfile/{DevID:int}"
-@inject IDeveloperServices developerService
+﻿@page "/TeamProfile/{TeamID:int}"
+@inject ITeamService teamService
 @inject ISkillService skillService
 @inject IDeveloperSkillService developerSkillService
 @inject IProjectServieces projectService
@@ -12,32 +12,20 @@
 @using Data.Model
 
 <MudContainer>
-    @if (DevID != null)
+    @if (TeamID != null)
     {
         <!-- Developer Profile Card -->
         <MudCard Class="profile-card">
             <MudCardContent>
-                <div class="profile-image-container">
-                    @if (!string.IsNullOrEmpty(dev.imagePath))
-                    {
-                        <img src="@dev.imagePath" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
-                    }
 
-                    else
-                    {
-                        <img src="images/DefaultImage.png" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
-                    }
-                </div>
-
-                <MudText Typo="Typo.h5" Class="developer-name">@dev.DeveloperName</MudText>
-                <MudText Typo="Typo.subtitle1">Specialization: @dev.Specialization</MudText>
+                <MudText Typo="Typo.h5" Class="developer-name">@team.TeamName</MudText>
 
                 <!--Displaying availability-->
                 @* Written like this to ensure that all text appears on the same line *@
                 <MudText Typo="Typo.subtitle2">
                     Availability:
-                    <span style="font-weight: bold; color: @(dev.AvailabilityStatus ? "green" : "red");">
-                        @(dev.AvailabilityStatus ? "Available" : "Unavailable")
+                    <span style="font-weight: bold; color: @(team.IsAvailable ? "green" : "red");">
+                        @(team.IsAvailable ? "Available" : "Unavailable")
                     </span>
                 </MudText>
 
@@ -46,11 +34,11 @@
                 <div class="star-rating">
                     @for (int i = 1; i <= 5; i++)
                     {
-                        if (i <= (int)dev.CommitmentRating)
+                        if (i <= (int)team.Rating)
                         {
                             <span class="star filled">&#9733;</span> <!-- Filled star -->
                         }
-                        else if (i - (double)dev.CommitmentRating >= 0.5)
+                        else if (i - (double)team.Rating >= 0.5)
                         {
                             <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
                         }
@@ -60,33 +48,16 @@
                         }
                     }
                 </div>
-                <MudText Typo="Typo.body2">Hourly Rate: $@dev.HourlyRate</MudText>
-                <MudLink Href="@dev.DocumentLink" Color="Color.Primary">
-                    View Documents
-                </MudLink>
+                <MudText Typo="Typo.body2">Hourly Rate: $@team.HourlyRate</MudText>
 
-                @GetDevSkills(dev.DeveloperID)
-
-                <!-- Developer Skills -->
-                @if (DevSkills != null)
-                {
-                    <MudChipGroup Class="skills-chips">
-                        @foreach (var skill in DevSkills)
-                        {
-                            <MudChip T="string" Color="Color.Transparent" Class="skill-chip">
-                                @skill
-                            </MudChip>
-                        }
-                    </MudChipGroup>
-                }
             </MudCardContent>
         </MudCard>
 
         <!-- Career Summary -->
         <MudCard Class="summary-card">
             <MudCardContent>
-                <MudText Typo="Typo.h6">Career Summary</MudText>
-                <MudText>@dev.CareerSummary</MudText>
+                <MudText Typo="Typo.h6">Team description</MudText>
+                <MudText>@team.Description</MudText>
             </MudCardContent>
         </MudCard>
 
@@ -168,30 +139,29 @@
 
 @code
 {
-    [Parameter] public int DevID { get; set; }
+    [Parameter] public int TeamID { get; set; }
     private int userID = 5; //Id of a valid client used for testing 
-    private Developer dev = null;
+    private Team team = null;
     private string errorMessage = string.Empty;
 
     private List<Data.Model.Project> projects = new List<Data.Model.Project>();
     private List<ClientReviewDeveloper> reviews = null;
-    public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer
 
     private PickerVariant _variant = PickerVariant.Dialog;
     private DateRange dateRange { get; set; }
 
     protected override void OnInitialized()
     {
-        GetProductDetails(DevID);
+        GetTeamDetails(TeamID);
     }
 
-    private void GetProductDetails(int DevID)
+    private void GetTeamDetails(int TeamID)
     {
-        dev = developerService.GetById(DevID);
-        projects = projectService.GetProjectsByDevID(dev.DeveloperID);
-        reviews = reviewService.GetAllDevReviews(0, int.MaxValue, null, dev.DeveloperID);
+        team = teamService.GetTeamByID(TeamID);
+        projects = projectService.GetProjectsByTeamID(TeamID);
+        reviews = reviewService.GetAllDevReviews(0, int.MaxValue, null, TeamID);
 
-        if (dev == null)
+        if (team == null)
         {
             errorMessage = "Developer not found.";
         }
@@ -199,19 +169,6 @@
         {
             errorMessage = string.Empty; // Clear error message if developer found
         }
-    }
-
-    private string GetDevSkills(int DevID)
-    {
-        var devSkills = developerSkillService.GetSkillByDevID(DevID);
-        DevSkills.Clear();
-
-        foreach (var skill in devSkills)
-        {
-            var skillName = skillService.GetSkillsByID(skill.SkillID);
-            DevSkills.Add(skillName.Name);
-        }
-        return "";
     }
 
     private MudForm form;
@@ -234,14 +191,14 @@
 
         ProjectRequestInputDto req = new ProjectRequestInputDto
         {
-            Teamid = 7, //dummy team that is used as a filler 
+            Teamid = TeamID,
             Name = newProject.ProjectName,
             Description = newProject.Description,
             StartAt = startDate,
             EndAt = dateRange.End,
-            Developerid = DevID,
+            Developerid = 9, //dummy dev that is used as a filler 
             DailyHoursNeeded = newProject.HoursNeeded,
-            RequestType = "Developer"
+            RequestType = "Team"
         };
 
         //Validating hour input
