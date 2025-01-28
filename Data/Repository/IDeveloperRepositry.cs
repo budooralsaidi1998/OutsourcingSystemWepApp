@@ -5,7 +5,7 @@ namespace OutsourcingSystemWepApp.Data.Repository
     public interface IDeveloperRepositry
     {
         Task AddAsync(Developer developer);
-        bool Delete(Developer deve);
+        void Delete(Developer deve);
         IEnumerable<Developer> GetAll();
         IEnumerable<Developer> Getavailibilty(bool availibilty);
         Developer GetById(int id);
