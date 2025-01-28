@@ -265,7 +265,8 @@ namespace OutsourcingSystemWepApp.Services
                     CompanyName = client.CompanyName,
                     Industry = client.Industry,
                     Rating = client.CommitmentRating,
-                    CreatedAt = client.CreatedAt
+                    CreatedAt = client.CreatedAt,
+                    PhoneNumber = client.PhoneNumber
                 };
             }
             catch (ArgumentException ex)

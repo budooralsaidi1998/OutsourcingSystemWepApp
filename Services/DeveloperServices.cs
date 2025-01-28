@@ -392,29 +392,7 @@ namespace OutsourcingSystemWepApp.Services
 
 
 
-        //public async Task<DeveloperDTOForProfile> GetDeveloperProfile(int developerId)
-        //{
-        //    var developer = await _context.Developer
-        //        .Include(d => d.User)
-        //        .Where(d => d.DeveloperID == developerId)
-        //        .Select(d => new DeveloperDTOForProfile
-        //        {
-        //            DeveloperID = d.DeveloperID,
-        //            Name = d.User.Name,
-        //            Email = d.User.Email,
-        //            Specialization = d.Specialization,
-        //            YearsOfExperience = d.YearsOfExperience,
-        //            Age = d.Age,
-        //            HourlyRate = d.HourlyRate,
-        //            CareerSummary = d.CareerSummary,
-        //            CompletedProjects = d.CompletedProjects,
-        //            imagePath = d.imagePath,
-        //            DocumentLink = d.DocumentLink
-        //        })
-        //        .FirstOrDefaultAsync();
 
-        //    return developer ?? throw new Exception("Developer not found");
-        //}
 
 
         public async Task UpdateDeveloperProfile(DeveloperDTOForProfile developerDto)
@@ -431,9 +409,14 @@ namespace OutsourcingSystemWepApp.Services
             developer.CompletedProjects = developerDto.CompletedProjects;
             // developer.CurrentProject = developerDto.CurrentProject;
             developer.DocumentLink = developerDto.DocumentLink;
-
-            await _context.SaveChangesAsync();
+            developer.imagePath = developerDto.imagePath;
+            _developerRepositry.Update(developer);
+           
         }
+
+        
+
+
 
         public async Task<string> UploadDocument(IBrowserFile file)
         {

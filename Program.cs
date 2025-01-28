@@ -85,11 +85,8 @@ namespace OutsourcingSystemWepApp
                 .AddInteractiveServerComponents();
 
             var accountSid = "ACa48342e4ed9dc5a00eb075e3fe536cce";
-            var authToken = "c66bd98d87d10b84809d908110db64b3";
+            var authToken = "cc7bc571645367707246daf041c1b95c";
             var phoneNumber = "+14346866400";
-           // TwilioClient.Init(accountSid, authToken);
-            //var messageOptions = new CreateMessageOptions(
-              //new PhoneNumber("+96893983414"));
 
 
             builder.Services.AddSingleton<ISmsService>(new SMSService(accountSid, authToken, phoneNumber));
