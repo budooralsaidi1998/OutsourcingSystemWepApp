@@ -57,7 +57,7 @@ namespace OutsourcingSystemWepApp
             builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IDeveloperServices, DeveloperServices>();
-
+            builder.Services.AddScoped<ILoginLogService, LoginLogService>();
             builder.Services.AddScoped<IRequestService, RequestService>();
             builder.Services.AddScoped<IClientRequestDeveloperRepository, ClientRequestDeveloperRepository>();
             builder.Services.AddScoped<IClientRequestTeamRepository, ClientRequestTeamRepository>();

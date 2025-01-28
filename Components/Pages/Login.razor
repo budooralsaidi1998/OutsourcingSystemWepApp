@@ -1,6 +1,7 @@
 ﻿@layout Layout.LoginLayout
 @page "/Login"
-
+@layout Layout.LoginLayout
+@inject ILoginLogService LoginLogService
 @using OutsourcingSystemWepApp.Data
 @using OutsourcingSystemWepApp.Services
 @using System.IdentityModel.Tokens.Jwt
@@ -45,10 +46,10 @@
     }
 
     .profile-img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        margin-bottom: 15px;
+        width: 50%;
+        height: 50%;
+
+       margin-bottom: 30px;
     }
 
     .login-title {
@@ -58,18 +59,23 @@
     }
 
     .input-group {
+        display: flex; /* Use flexbox to align items */
+        justify-content: center; /* Horizontally center the content */
+        align-items: center; /* Vertically center the content */
         margin-bottom: 20px;
-        text-align: left;
         position: relative;
+        width:100%;
     }
 
-    .input-group input {
-        width: 100%;
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 18px;
-    }
+        /* Style the input field itself */
+        .input-group input {
+            width: 100%; /* Adjust width to fit the container */
+            padding-right: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 18px;
+            text-align: center; /* Center the text inside the input */
+        }
 
     .input-group input:focus {
         border-color: #14a800;
@@ -124,8 +130,8 @@
 
 <div class="container">
     <div class="login-box">
-        <img src="/images/user-avatar.webp" alt="User Avatar" class="profile-img" />
-        <h3 class="login-title">Login</h3>
+        <img src="images/logoOutsourcing.jpg" alt="logo" class="profile-img" />
+      @*  // <h3 class="login-title">Login</h3> *@
 
         <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
@@ -160,7 +166,7 @@
     </div>
 </div>
 
-@code {
+@* @code {
     private LoginDto loginModel = new LoginDto();
     private string ErrorMessage;
     private bool isLoading = false;
@@ -179,7 +185,9 @@
         }
         else
         {
+
             var userRole = ParseRoleFromToken(token);
+            await LoginLogService.LogLoginAsync(loginModel.Email, userRole);
             switch (userRole)
             {
                 case "Developer":
@@ -189,13 +197,83 @@
                     Navigation.NavigateTo("/ClientProfile");
                     break;
                 case "Admin":
-                    Navigation.NavigateTo("/Admin/Home");
+                    Navigation.NavigateTo("/AdminPage");
+                    break;
+                default:
+                    Navigation.NavigateTo("/Home");
+                    break;
+            }
+           
+        }
+    }
+
+    private string ParseRoleFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        return roleClaim?.Value ?? "client";
+    }
+
+
+} *@
+
+@code {
+    private LoginDto loginModel = new LoginDto();
+    private string ErrorMessage;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        ErrorMessage = null;
+
+        var failedAttempts = await LoginLogService.GetFailedAttemptsAsync(loginModel.Email);
+
+        // If user has failed 3 times, show a message and prevent further login attempts
+        if (failedAttempts >= 3)
+        {
+            ErrorMessage = "You have failed to log in 3 times. Please try again later.";
+            isLoading = false;
+            return;
+        }
+
+        // Assuming you have an authentication service to validate user credentials
+        var token = await AuthService.Login(loginModel.Email, loginModel.Password);
+        var isSuccess = token != null;
+
+        if (isSuccess)
+        {
+            var userRole = ParseRoleFromToken(token);
+            await LoginLogService.LogLoginAsync(loginModel.Email, userRole, isSuccess);
+            await LoginLogService.ResetFailedAttemptsAsync(loginModel.Email);  // Reset failed attempts after successful login
+
+            // Navigate based on role
+            switch (userRole)
+            {
+                case "Developer":
+                    Navigation.NavigateTo("/DeveloperPortal");
+                    break;
+                case "Client":
+                    Navigation.NavigateTo("/ClientProfile");
+                    break;
+                case "Admin":
+                    Navigation.NavigateTo("/AdminPage");
                     break;
                 default:
                     Navigation.NavigateTo("/Home");
                     break;
             }
         }
+        else
+        {
+            await LoginLogService.LogLoginAsync(loginModel.Email, "Unknown", isSuccess);
+            await LoginLogService.IncrementFailedAttemptsAsync(loginModel.Email);  // Increment failed attempt count
+
+            ErrorMessage = "Invalid email or password!";
+        }
+
+        isLoading = false;
     }
 
     private string ParseRoleFromToken(string token)

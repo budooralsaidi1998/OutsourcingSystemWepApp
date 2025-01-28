@@ -22,9 +22,9 @@
                 <ValidationMessage For="@(() => newSkill.Description)" />
             </div>
 
-            <div class="input-group">
+            <div class="active">
                 <label for="activeStatusCheckbox">Active</label>
-                <InputCheckbox id="activeStatusCheckbox" @bind-Value="newSkill.Active" />
+                <label><InputCheckbox id="activeStatusCheckbox" @bind-Value="newSkill.Active" /></label>
             </div>
 
             <button type="submit" class="submit-button">Add Skill</button>

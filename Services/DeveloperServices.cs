@@ -431,8 +431,9 @@ namespace OutsourcingSystemWepApp.Services
             developer.CompletedProjects = developerDto.CompletedProjects;
             // developer.CurrentProject = developerDto.CurrentProject;
             developer.DocumentLink = developerDto.DocumentLink;
-
-            await _context.SaveChangesAsync();
+            developer.imagePath = developerDto.imagePath;
+            _developerRepositry.Update(developer);
+           
         }
 
         public async Task<string> UploadDocument(IBrowserFile file)
