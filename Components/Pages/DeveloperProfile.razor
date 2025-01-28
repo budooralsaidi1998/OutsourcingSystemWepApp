@@ -167,19 +167,18 @@
         var user = authState.User;
         //userID = user.Identity;
 
-        //we want to get the the  user using email 
-        userID = userService.GetUserByEmail(user.Identity.Name).UID;
-
         // Check if the user is authenticated
         isAuthenticated = user.Identity.IsAuthenticated;
 
         if (!isAuthenticated)
         {
             // Redirect to login page if not authenticated
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("/Login");
         }
         else
         {
+            //we want to get the the  user using email
+            userID = userService.GetUserByEmail(user.Identity.Name).UID;
             GetProductDetails(DevID);
         }
     }
