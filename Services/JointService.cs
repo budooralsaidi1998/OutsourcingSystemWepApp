@@ -176,7 +176,7 @@ namespace OutsourcingSystemWepApp.Services
         public string DeleteDeveloperReview(int ClientID, int DevID)
         {
             //check that client is team relation exists 
-            bool exists = _reviewDevService.CheckReviewByDevIDandTeamID(ClientID, DevID);
+            bool exists = _reviewDevService.CheckReviewByDevIDandClientID(ClientID, DevID);
 
             //Delete 
             if (exists)

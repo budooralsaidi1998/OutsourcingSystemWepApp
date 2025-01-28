@@ -70,10 +70,10 @@
                     </div>
 
                     <div>
-                    <MudText Typo="Typo.body2">Hourly Rate: $@dev.HourlyRate</MudText>
-                    <MudLink Href="@dev.DocumentLink" Color="Color.Primary">
-                        View Documents
-                    </MudLink>
+                        <MudText Typo="Typo.body2">Hourly Rate: $@dev.HourlyRate</MudText>
+                        <MudLink Href="@dev.DocumentLink" Color="Color.Primary">
+                            View Documents
+                        </MudLink>
                     </div>
 
                     @GetDevSkills(dev.DeveloperID)
@@ -111,7 +111,6 @@
                         {
                             <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
                             <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
-                            <MudText Typo="Typo.body1">Client rating: </MudText>
                         }
                     </MudCardContent>
                 </MudCard>
@@ -280,6 +279,8 @@
     {
         Navigation.NavigateTo($"/DeveloperRequest/{DevID}");
     }
+
+
 }
 
 <style>

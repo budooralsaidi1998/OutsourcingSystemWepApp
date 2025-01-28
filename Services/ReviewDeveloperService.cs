@@ -42,7 +42,7 @@ namespace OutsourcingSystemWepApp.Services
             return review != null ? true : false; //if team found return true if not found return false
         }
 
-        public bool CheckReviewByDevIDandTeamID(int ClientID, int DevID)
+        public bool CheckReviewByDevIDandClientID(int ClientID, int DevID)
         {
             var review = _reviewDevRepository.GetReviewByClientAndTeamIDs(ClientID, DevID);
             return review != null ? true : false; //if team found return true if not found return false
@@ -128,6 +128,6 @@ namespace OutsourcingSystemWepApp.Services
             return reviewTeams.OrderByDescending(t => t.Rating).Skip(number).Take(PageSize).ToList();
         }
 
-       
+
     }
-    }
+}
