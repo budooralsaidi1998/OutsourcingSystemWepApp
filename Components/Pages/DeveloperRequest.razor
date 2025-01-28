@@ -6,44 +6,45 @@
 @inject IReviewDeveloperService reviewService
 @inject IRequestService requestService
 @inject IUserServices userService
+@inject IClientService clientService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject ISmsService smsService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 
- <MudCard Class="request-card">
-                <MudCardContent>
-                    <MudText Typo="Typo.h6">Request Developer</MudText>
+<MudCard Class="request-card">
+    <MudCardContent>
+        <MudText Typo="Typo.h6">Request Developer</MudText>
 
-                    <MudForm @ref="form" Valid="@isValid">
-                        <MudTextField Label="Project Name" @bind-Value="newProject.ProjectName" Required="true" Color="Color.Primary" />
-                        <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" /> 
+        <MudForm @ref="form" Valid="@isValid">
+            <MudTextField Label="Project Name" @bind-Value="newProject.ProjectName" Required="true" Color="Color.Primary" />
+            <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" /> 
 
-                        <MudStack AlignItems="AlignItems.Center" Style="width:650px;">
-                            <MudGrid>
-                                <MudItem xs="6" Style="margin-top: 30px;">
-                                    <MudDateRangePicker PickerVariant="@_variant" @bind-DateRange="@dateRange" Margin="Margin.Dense" />
-                                    @if (dateRange == null)
-                                    {
-                                        <MudText Color="Color.Error" Typo="Typo.caption">Date range is required.</MudText>
-                                    }
-                                </MudItem>
-                                <MudItem xs="6" Style="margin-top: 15px;">
-                                    <MudNumericField Label="Hours Needed" @bind-Value="newProject.HoursNeeded" Min="1" Max="1000" Required="true" Color="Color.Primary" />
-                                </MudItem>
-                            </MudGrid>
-                            <MudSpacer />
-                            <MudToggleGroup T="PickerVariant" SelectionMode="SelectionMode.SingleSelection" Value="@_variant" ValueChanged="@OnValueChanged"
-                            Color="Color.Success" CheckMark="true" FixedContent="true" />
-                        </MudStack>
+            <MudStack AlignItems="AlignItems.Center" Style="width:650px;">
+                <MudGrid>
+                    <MudItem xs="6" Style="margin-top: 30px;">
+                        <MudDateRangePicker PickerVariant="@_variant" @bind-DateRange="@dateRange" Margin="Margin.Dense" />
+                        @if (dateRange == null)
+                        {
+                            <MudText Color="Color.Error" Typo="Typo.caption">Date range is required.</MudText>
+                        }
+                    </MudItem>
+                    <MudItem xs="6" Style="margin-top: 15px;">
+                        <MudNumericField Label="Hours Needed" @bind-Value="newProject.HoursNeeded" Min="1" Max="1000" Required="true" Color="Color.Primary" />
+                    </MudItem>
+                </MudGrid>
+                <MudSpacer />
+                <MudToggleGroup T="PickerVariant" SelectionMode="SelectionMode.SingleSelection" Value="@_variant" ValueChanged="@OnValueChanged"
+                Color="Color.Success" CheckMark="true" FixedContent="true" />
+            </MudStack>
 
-                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit" @onclick="HandleValidSubmit">
-                            Submit
-                        </MudButton>
-                    </MudForm>
-                </MudCardContent>
-            </MudCard> 
+            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit" @onclick="HandleValidSubmit">
+                Submit
+            </MudButton>
+        </MudForm>
+    </MudCardContent>
+</MudCard> 
 
 @code
 {
@@ -61,6 +62,8 @@
 
     private bool isAuthenticated = false;
 
+    private User User;
+
     protected override async Task OnInitializedAsync()
     {
         // Get authentication state
@@ -69,7 +72,8 @@
         //userID = user.Identity;
 
         //we want to get the the  user using email
-        userID = userService.GetUserByEmail(user.Identity.Name).UID;
+        User = userService.GetUserByEmail(user.Identity.Name);
+        userID = User.UID;
 
         // Check if the user is authenticated
         isAuthenticated = user.Identity.IsAuthenticated;
@@ -150,10 +154,12 @@
             Snackbar.Add("Please select a valid number of hours per day.", Severity.Error);
             return;
         }
+
         try
         {
-            await requestService.SubmitRequestAsync(userID, req);
-            Snackbar.Add("Booking request was successfully sent!", Severity.Success);
+            await requestService.SubmitRequestAsync(userID, req); //email sent here 
+            Snackbar.Add("Booking request was successfully sent!", Severity.Success); // UI notification
+            SendMessage(); //message sent here 
             Navigation.NavigateTo($"/DeveloperProfile/{DevID}");
         }
         catch (InvalidOperationException ex)
@@ -176,4 +182,17 @@
         _variant = variant;
     }
 
+    //Sending SMS updates
+    public async Task<IEnumerable<string>> SendMessage()
+    {
+        string message = $"Confirming request submission for project ID-{dev.DeveloperName}  {newProject.ProjectName} from {dateRange.Start} - {dateRange.End}. An admin will review your request and send you a confirmation within 3-5 business days.";
+        //string toPhoneNo = "+96893983414";
+
+        //getting phone number from client table 
+        var client = clientService.GetClientById(User.UID); //gets client by user id
+        string PhoneNo = $"+968 {client.PhoneNumber}";
+
+        await smsService.SendSmsAsync(PhoneNo, message);
+        return new string[0];
+    }
 }

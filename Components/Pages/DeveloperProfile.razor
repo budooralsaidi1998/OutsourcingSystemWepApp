@@ -49,27 +49,32 @@
                     </MudText>
 
                     <!-- Displaying rating in stars-->
-                    <div class="star-rating">
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            if (i <= (int)dev.CommitmentRating)
+                    <div class="star-rating-container">
+                        <div class="star-rating">
+                            @for (int i = 1; i <= 5; i++)
                             {
-                                <span class="star filled">&#9733;</span> <!-- Filled star -->
+                                if (i <= (int)dev.CommitmentRating)
+                                {
+                                    <span class="star filled">&#9733;</span> <!-- Filled star -->
+                                }
+                                else if (i - (double)dev.CommitmentRating >= 0.5)
+                                {
+                                    <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                                }
+                                else
+                                {
+                                    <span class="star">&#9734;</span> <!-- Empty star -->
+                                }
                             }
-                            else if (i - (double)dev.CommitmentRating >= 0.5)
-                            {
-                                <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
-                            }
-                            else
-                            {
-                                <span class="star">&#9734;</span> <!-- Empty star -->
-                            }
-                        }
+                        </div>
                     </div>
+
+                    <div>
                     <MudText Typo="Typo.body2">Hourly Rate: $@dev.HourlyRate</MudText>
                     <MudLink Href="@dev.DocumentLink" Color="Color.Primary">
                         View Documents
                     </MudLink>
+                    </div>
 
                     @GetDevSkills(dev.DeveloperID)
 
@@ -130,7 +135,7 @@
 
             <!-- Request Developer -->
             <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Book Developer" @onclick="GoToDevReq">
-                Submit
+                Book Developer
             </MudButton>
         }
     }
@@ -276,3 +281,14 @@
         Navigation.NavigateTo($"/DeveloperRequest/{DevID}");
     }
 }
+
+<style>
+.star-rating-container {
+    text-align: center; /* Centers the content horizontally */
+}
+
+.star-rating {
+    display: inline-block; /* Makes the star-rating block inline for centering */
+    font-size: 1.5rem; /* Optional: adjust the size of the stars */
+}
+</style>
