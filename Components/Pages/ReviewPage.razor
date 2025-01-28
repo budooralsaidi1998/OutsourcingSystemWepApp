@@ -1,0 +1,74 @@
+﻿@page "/developer-review"
+@inject IReviewDeveloperService ReviewDeveloperService
+@inject IJointService Join
+
+
+@using OutsourcingSystemWepApp.Data.DTOs
+@using MudBlazor
+
+<PageTitle>Developer Review</PageTitle>
+
+<MudText Typo="Typo.h4">Developer Review</MudText>
+
+<MudForm @ref="reviewForm" OnValidSubmit="HandleValidSubmit">
+    <!-- Multi-Select for Developers -->
+    <MudSelect T="int" Label="Select Developers" MultiSelection="true" @bind-Value="selectedDeveloperIds" Required="true">
+        @foreach (var developer in developers)
+        {
+            <MudSelectItem T="int" Value="@developer.DeveloperID">@developer.Name - @developer.Specialization</MudSelectItem>
+        }
+    </MudSelect>
+
+    <!-- Rating Input -->
+    <MudTextField T="int" Label="Rating (1-5)" @bind-Value="rating" Required="true" Min="1" Max="5" />
+
+    <!-- Comment Input -->
+    <MudTextField T="string" Label="Comment" @bind-Value="comment" MaxLength="1000" Multiline="true" Rows="4" />
+
+    <!-- Submit Button -->
+    <MudButton Type="Submit" Variant="Variant.Filled" Color="Color.Primary">Submit Review</MudButton>
+</MudForm>
+
+@code {
+    private List<DeveloperDTOForProfile> developers = new List<DeveloperDTOForProfile>();
+    private List<int> selectedDeveloperIds = new List<int>();
+    private int rating;
+    private string comment;
+    private MudForm reviewForm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load developers that the client has worked with and approved
+        var clientID = 1; // Set the client ID based on your app context
+        developers =  RequestService.DeveploerReview(clientID); // Fetch detailed developer profiles
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Create a review for each selected developer
+        var reviewInput = new ClientReviewInDTO
+            {
+                ClientID = 1, // Set the client ID based on your app context
+                SelectedDevelopers = selectedDeveloperIds,
+                Rating = rating,
+                Comment = comment
+            };
+
+        foreach (var developerID in selectedDeveloperIds)
+        {
+            var review = new ClientReviewDeveloper
+                {
+                    ClientID = reviewInput.ClientID,
+                    DeveloperID = developerID,
+                    Rating = reviewInput.Rating,
+                    Comment = reviewInput.Comment,
+                    Date = DateTime.Now
+                };
+
+            await ReviewDeveloperService.AddReviewDev(reviewInput.ClientID, review);
+        }
+
+        // Show a success message
+        Snackbar.Add("Review submitted successfully!", Severity.Success);
+    }
+}

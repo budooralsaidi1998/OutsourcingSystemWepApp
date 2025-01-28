@@ -10,5 +10,6 @@ namespace OutsourcingSystemWepApp.Data.Repository
         Task UpdateRequestAsync(ClientRequestDeveloper request);
         Task<IEnumerable<ClientRequestDeveloper>> ApprovedRequest();
         Task<IEnumerable<ClientRequestDeveloper>> RejectedRequest();
+        List<ClientRequestDeveloper> GetDeveloperReview(int clientid, int developerid);
     }
 }

@@ -231,7 +231,10 @@ namespace OutsourcingSystemWepApp.Services
             return pendingDeveloperRequests.Concat(pendingTeamRequests);
         }
 
-
+        public List<ClientRequestDeveloper> GetDeveloperApprove (int cid,int devid)
+        {
+          return  _developerRequestRepository.GetDeveloperReview(cid, devid);
+        }
 
 
         //    public async Task<IEnumerable<PendingRequestDto>> GetAcceptAndReject()

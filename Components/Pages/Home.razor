@@ -103,6 +103,24 @@
 		}
 	}
 
+	private void MovLeftt()
+	{
+		if (currentTeamPage > 1)
+		{
+			currentTeamPage--;
+			StateHasChanged();
+		}
+	}
+
+	private void MovRightt()
+	{
+		if (currentTeamPage < (teamReviews.Count + ItemsPerPage - 1) / ItemsPerPage)
+		{
+			currentTeamPage++;
+			StateHasChanged();
+		}
+	}
+
 	// private void OnDeveloperPageChanged(int page)
 	// {
 	// 	currentDeveloperPage = page;
@@ -242,6 +260,7 @@
             }
         </div>
         //<div class="arroww right" @onclick="MovRight">&gt;</div>
+
         <div class="pagination">
             <button class="page-button" @onclick="MovLeft">&lt;</button>
        @* <span>Page @currentDeveloperPage of @(Math.Ceiling((double)reviews.Count / ItemsPerPage))</span> *@
@@ -289,9 +308,9 @@
      </div>
         //<div class="arroww right" @onclick="MovRight">&gt;</div>
         <div class="pagination">
-            <button class="page-button" @onclick="MovLeft">&lt;</button>
+            <button class="page-button" @onclick="MovLeftt">&lt;</button>
        @* <span>Page @currentDeveloperPage of @(Math.Ceiling((double)reviews.Count / ItemsPerPage))</span> *@
-            <button class="page-button" @onclick="MovRight">&gt;</button>
+            <button class="page-button" @onclick="MovRightt">&gt;</button>
         </div>
     }
     else

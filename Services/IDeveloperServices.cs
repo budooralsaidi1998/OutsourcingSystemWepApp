@@ -19,6 +19,7 @@ namespace OutsourcingSystemWepApp.Services
         Task<bool> RegisterDeveloper(RegisterDeveloperDto developerDto);
         void SoftDeleteClient(int id);
         void UpdateDeveloper(int id, UpdateDeveInput updateDeveloper);
+        Task<bool> UpdateDeveloperImage(int id, string imagePath);
         Task UpdateDeveloperProfile(DeveloperDTOForProfile developerDto);
         Task<string> UploadDocument(IBrowserFile file);
     }

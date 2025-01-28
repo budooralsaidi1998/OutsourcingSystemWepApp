@@ -127,19 +127,7 @@
     private LoginDto loginModel = new LoginDto();
     private string ErrorMessage;
 
-    // private async Task HandleLogin()
-    // {
-    //     var token = await AuthService.Login(loginModel.Email, loginModel.Password);
-    //     if (token == null)
-    //     {
-    //         ErrorMessage = "Invalid email or password!";
-    //     }
-    //     else
-    //     {
-    //         var userRole = ParseRoleFromToken(token);
-    //         Navigation.NavigateTo($"/{userRole.ToLower()}/client-profile");
-    //     }
-    // }
+
 
 
     private async Task HandleLogin()
@@ -152,45 +140,23 @@
         else
         {
             var userRole = ParseRoleFromToken(token);
-            // if (userRole.Equals("Client", StringComparison.OrdinalIgnoreCase))
-            // {
-            //     Navigation.NavigateTo("/ClientProfile");
-            // }
-            // else
-            // {
-            //     Navigation.NavigateTo($"/{userRole.ToLower()}");
-            // }
-
-
-
-
 
             switch (userRole)
             {
                 case "Developer":
-                    Navigation.NavigateTo("/DeveloperPortal");
+                    Navigation.NavigateTo("/DeveloperProfile");
                     break;
                 case "Client":
                     Navigation.NavigateTo("/ClientProfile");
                     break;
                 case "Admin":
-                    Navigation.NavigateTo("/AdminPage");
+                    Navigation.NavigateTo("/Admin/Home");
                     break;
                 default:
                     Navigation.NavigateTo("/Home");
                     break;
             }
         }
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -206,3 +172,599 @@
 
 
 
+ *@
+
+@* @page "/"
+@using OutsourcingSystemWepApp.Data
+@using OutsourcingSystemWepApp.Services
+@using System.IdentityModel.Tokens.Jwt
+@using System.Security.Claims
+@using OutsourcingSystemWepApp.Data.DTOs
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<style>
+    body {
+        background: #f0f8ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .login-container {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0, 0, 255, 0.2);
+        text-align: center;
+        width: 380px;
+        position: relative;
+    }
+
+    .profile-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+
+    .login-title {
+        font-size: 24px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+        text-align: left;
+        position: relative;
+    }
+
+        .input-group i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #007bff;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 40px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+    .login-button {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 10px;
+    }
+
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+
+    .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+        .remember-forgot a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+            .remember-forgot a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+<div class="login-container">
+    <img src="/images/user-avatar.webp" alt="User Avatar" class="profile-img" />
+    <h3 class="login-title">Login</h3>
+
+    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="Username" />
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <InputText @bind-Value="loginModel.Password" class="form-control" type="password" placeholder="Password" />
+        </div>
+
+        <button type="submit" class="btn login-button" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span>Logging in...</span>
+            }
+            else
+            {
+                <span>Login</span>
+            }
+        </button>
+    </EditForm>
+
+    <div class="remember-forgot">
+        <label><input type="checkbox" /> Remember me</label>
+        <a href="/forgot-password">Forgot password?</a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+</div>
+
+@code {
+    private LoginDto loginModel = new LoginDto();
+    private string ErrorMessage;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        ErrorMessage = null;
+
+        var token = await AuthService.Login(loginModel.Email, loginModel.Password);
+        isLoading = false;
+
+        if (token == null)
+        {
+            ErrorMessage = "Invalid email or password!";
+        }
+        else
+        {
+            var userRole = ParseRoleFromToken(token);
+            switch (userRole)
+            {
+                case "Developer":
+                    Navigation.NavigateTo("/DeveloperProfile");
+                    break;
+                case "Client":
+                    Navigation.NavigateTo("/ClientProfile");
+                    break;
+                case "Admin":
+                    Navigation.NavigateTo("/AdminPage");
+                    break;
+                default:
+                    Navigation.NavigateTo("/Home");
+                    break;
+            }
+        }
+    }
+
+    private string ParseRoleFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        return roleClaim?.Value ?? "client";
+    }
+
+    //.webp
+} *@
+
+@* @layout Layout.LoginLayout
+@page "/"
+
+@using OutsourcingSystemWepApp.Data
+@using OutsourcingSystemWepApp.Services
+@using System.IdentityModel.Tokens.Jwt
+@using System.Security.Claims
+@using OutsourcingSystemWepApp.Data.DTOs
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<style>
+    body {
+        background: #eaf2ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 150%;
+        max-width: 1200px;
+    }
+
+    .login-box {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 500px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .login-box:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+    .profile-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+
+    .login-title {
+        font-size: 22px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+        text-align: left;
+        position: relative;
+    }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+            .input-group input:focus {
+                border-color: #14a800;
+                outline: none;
+                box-shadow: 0 0 5px rgba(20, 168, 0, 0.5);
+            }
+
+    .login-button {
+        width: 100%;
+        padding: 12px;
+        background-color: #14a800;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+        .login-button:hover {
+            background-color: #108d00;
+        }
+
+    .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+        .remember-forgot a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+            .remember-forgot a:hover {
+                text-decoration: underline;
+            }
+</style>
+
+<div class="container">
+    <div class="login-box">
+        <img src="/images/user-avatar.webp" alt="User Avatar" class="profile-img" />
+        <h3 class="login-title">Login</h3>
+
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="input-group">
+                <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="Username" />
+            </div>
+
+            <div class="input-group">
+                <InputText @bind-Value="loginModel.Password" class="form-control" type="password" placeholder="Password" />
+            </div>
+
+            <button type="submit" class="btn login-button" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span>Logging in...</span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </button>
+        </EditForm>
+
+
+        <p class="signup-text">Don't have an Upwork account? <a href="/choose-role" class="signup-link">Sign Up</a></p>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger">@ErrorMessage</div>
+        }
+    </div>
+</div>
+
+@code {
+    private LoginDto loginModel = new LoginDto();
+    private string ErrorMessage;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        ErrorMessage = null;
+
+        var token = await AuthService.Login(loginModel.Email, loginModel.Password);
+        isLoading = false;
+
+        if (token == null)
+        {
+            ErrorMessage = "Invalid email or password!";
+        }
+        else
+        {
+            var userRole = ParseRoleFromToken(token);
+            switch (userRole)
+            {
+                case "Developer":
+                    Navigation.NavigateTo("/DeveloperProfile");
+                    break;
+                case "Client":
+                    Navigation.NavigateTo("/ClientProfile");
+                    break;
+                case "Admin":
+                    Navigation.NavigateTo("/Admin/Home");
+                    break;
+                default:
+                    Navigation.NavigateTo("/Home");
+                    break;
+            }
+        }
+    }
+
+    private string ParseRoleFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        return roleClaim?.Value ?? "client";
+    }
+} *@
+@layout Layout.LoginLayout
+@page "/"
+
+@using OutsourcingSystemWepApp.Data
+@using OutsourcingSystemWepApp.Services
+@using System.IdentityModel.Tokens.Jwt
+@using System.Security.Claims
+@using OutsourcingSystemWepApp.Data.DTOs
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<style>
+    body {
+        background: #eaf2ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 1400px;
+    }
+
+    .login-box {
+        background: white;
+        padding: 50px; /* Increased padding */
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 600px; /* Increased width */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-box:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+    }
+
+    .login-title {
+        font-size: 26px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+        text-align: left;
+        position: relative;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 18px;
+    }
+
+    .input-group input:focus {
+        border-color: #14a800;
+        outline: none;
+        box-shadow: 0 0 5px rgba(20, 168, 0, 0.5);
+    }
+
+    .login-button {
+        width: 100%;
+        padding: 15px;
+        background-color: #14a800;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 20px;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+    }
+
+    .login-button:hover {
+        background-color: #108d00;
+    }
+
+    .signup-text {
+        margin-top: 20px;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .signup-link {
+        color: #14a800;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .signup-link:hover {
+        text-decoration: underline;
+    }
+
+    body {
+        background: url('/images/image.png') no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+    }
+</style>
+
+<div class="container">
+    <div class="login-box">
+        <img src="/images/user-avatar.webp" alt="User Avatar" class="profile-img" />
+        <h3 class="login-title">Login</h3>
+
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="input-group">
+                <InputText @bind-Value="loginModel.Email" class="form-control" placeholder="Username" />
+            </div>
+
+            <div class="input-group">
+                <InputText @bind-Value="loginModel.Password" class="form-control" type="password" placeholder="Password" />
+            </div>
+
+            <button type="submit" class="btn login-button" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span>Logging in...</span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </button>
+        </EditForm>
+
+        <p class="signup-text">Don't have an outsourcing  account? <a href="/choose-role" class="signup-link">Sign Up</a></p>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger">@ErrorMessage</div>
+        }
+    </div>
+</div>
+
+@code {
+    private LoginDto loginModel = new LoginDto();
+    private string ErrorMessage;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        ErrorMessage = null;
+
+        var token = await AuthService.Login(loginModel.Email, loginModel.Password);
+        isLoading = false;
+
+        if (token == null)
+        {
+            ErrorMessage = "Invalid email or password!";
+        }
+        else
+        {
+            var userRole = ParseRoleFromToken(token);
+            switch (userRole)
+            {
+                case "Developer":
+                    Navigation.NavigateTo("/DeveloperPortal");
+                    break;
+                case "Client":
+                    Navigation.NavigateTo("/ClientProfile");
+                    break;
+                case "Admin":
+                    Navigation.NavigateTo("/Admin/Home");
+                    break;
+                default:
+                    Navigation.NavigateTo("/Home");
+                    break;
+            }
+        }
+    }
+
+    private string ParseRoleFromToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        return roleClaim?.Value ?? "client";
+    }
+}

@@ -29,5 +29,6 @@ namespace OutsourcingSystemWepApp.Data.DTOs
 
         [Url(ErrorMessage = "Invalid URL format.")]
         public string DocumentLink { get; set; }
+        public string ImagePath { get; set; }
     }
 }

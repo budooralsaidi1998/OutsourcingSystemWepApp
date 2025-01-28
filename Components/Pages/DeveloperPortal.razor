@@ -1,4 +1,4 @@
-﻿@page "/DeveloperPortal"
+﻿@* @page "/DeveloperPortal"
 @using MudBlazor
 @using OutsourcingSystemWepApp.Data.DTOs
 @using OutsourcingSystemWepApp.Services
@@ -25,16 +25,17 @@
             <MudTextField Label="Completed Projects" @bind-Value="developer.CompletedProjects" Type="number" />
 
 
+            <div>
+                <img src="@developer.imagePath" alt="Profile Image" style="width:150px;height:150px;border-radius:50%;" />
+                <br />
+                <InputFile OnChange="UploadImage" />
+                <br />
+                <button @onclick="SaveChanges">Save Changes</button>
+            </div>
 
-@* 
 
-            <MudText Typo="Typo.h5">Download a File</MudText>
 
-            <MudLink Href="@($"/api/files/{developer.DocumentLink}")" Target="_blank">Download CV</MudLink>
 
-            <MudTextField Label="Enter File Name" @bind-Value="developer.DocumentLink" />
-            <MudButton OnClick="DownloadFile">Download</MudButton>
- *@
            
 
 
@@ -78,9 +79,130 @@
             </MudList>
         </MudCardContent>
     </MudCard>
+</MudContainer> *@
+
+@page "/DeveloperPortal"
+@using MudBlazor
+@using OutsourcingSystemWepApp.Data.DTOs
+@using OutsourcingSystemWepApp.Services
+@inject IDeveloperServices DeveloperService
+@inject IDeveloperSkillService DeveloperSkillService
+@inject ISkillService SkillService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISnackbar Snackbar
+
+<MudContainer Style="max-width: 800px;" Class="mt-5">
+
+    <MudCard Elevation="6" Class="p-4">
+        <MudCardContent>
+            <MudText Typo="Typo.h4" Class="mb-3">👨‍💻 Developer Profile</MudText>
+
+            <MudGrid Spacing="3">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="Name" @bind-Value="developer.Name" Disabled="true" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="Email" @bind-Value="developer.Email" Disabled="true" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="Specialization" @bind-Value="developer.Specialization" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="Years of Experience" @bind-Value="developer.YearsOfExperience" Type="number" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="Age" @bind-Value="developer.Age" Type="number" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="Hourly Rate" @bind-Value="developer.HourlyRate" Type="number" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="Career Summary" @bind-Value="developer.CareerSummary" Multiline="true" Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.h5" Class="mb-3">📷 Profile Image</MudText>
+            <div class="d-flex align-center">
+                <img src="@developer.imagePath" alt="Profile Image" style="width:120px;height:120px;border-radius:50%;border:2px solid #ccc;" />
+                <div class="ml-3">
+                    <InputFile OnChange="UploadImage" />
+                </div>
+            </div>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.h5" Class="mb-3">📂 Upload CV</MudText>
+            <InputFile OnChange="HandleFileSelected" />
+            @if (!string.IsNullOrEmpty(developer.DocumentLink))
+            {
+                <MudButton Href="@developer.DocumentLink" Target="_blank" Color="Color.Primary">
+                    <MudIcon Icon="mdi-download" />
+                    Download CV
+                </MudButton>
+            }
+
+            <MudDivider Class="my-4" />
+
+            <MudButton OnClick="UpdateProfile" Color="Color.Success" Variant="Variant.Filled" Class="w-100">
+                <MudIcon Icon="mdi-content-save" />
+                Update Profile
+            </MudButton>
+        </MudCardContent>
+    </MudCard>
 </MudContainer>
 
 
+
+
+<MudContainer Style="max-width: 800px;" Class="mt-5">
+    <MudCard Elevation="6" Class="p-4">
+        <MudCardContent>
+            <MudText Typo="Typo.h5" Class="mb-3">🛠 Manage Skills</MudText>
+
+            <MudGrid Spacing="3">
+                <MudItem xs="8">
+                    <MudSelect @bind-Value="selectedSkill" Label="Select Skill" Variant="Variant.Outlined">
+                        @foreach (var skill in skillsList)
+                        {
+                            <MudSelectItem Value="@skill.SkillID">@skill.SkillName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudSlider @bind-Value="skillProficiency" Min="1" Max="10" Step="1" Label="Proficiency" FullWidth="true" />
+                </MudItem>
+            </MudGrid>
+
+            <MudButton OnClick="AddDeveloperSkilll" Color="Color.Primary" Class="mt-3">
+                <MudIcon Icon="mdi-plus-circle" />
+                Add Skill
+            </MudButton>
+
+            <MudDivider Class="my-4" />
+
+@*             <MudList T="string" Class="mt-4">
+                @if (developerSkills != null && developerSkills.Any())
+                {
+                    @foreach (var skill in developerSkills)
+                    {
+                        <MudListItem>
+                            <MudText>@skill.SkillName - Level: @skill.Proficiency</MudText>
+                            <MudButton OnClick="() => RemoveSkillFromDeveloper(skill.SkillID)" Color="Color.Error" Class="ml-auto">
+                                <MudIcon Icon="mdi-delete" />
+                            </MudButton>
+                        </MudListItem>
+                    }
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1" Color="Color.Warning">No skills added yet.</MudText>
+                }
+            </MudList> *@
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
 
 @code {
     private DeveloperDTOForProfile developer = new DeveloperDTOForProfile();
@@ -88,7 +210,7 @@
 
 
 
-
+    private string newImagePath = string.Empty;
 
    // private DeveloperDTOForProfile devProfile = new DeveloperDTOForProfile();
     private List<SkillDTO> skillsList = new List<SkillDTO>();
@@ -235,6 +357,50 @@
     {
         FileUrl = $"/api/files/{developer.DocumentLink}";
     }
+
+
+    //THIS FUNCTION FOR IMAGE
+
+    private async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var filePath = await SaveFileAsync(file);
+            bool updated = await DeveloperService.UpdateDeveloperImage(developer.DeveloperID, filePath);
+            if (updated)
+            {
+                developer.imagePath= filePath;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task<string> SaveFileAsync(IBrowserFile file)
+    {
+        var path = $"uploads/{developer.DeveloperID}_{file.Name}";
+        var fileStream = new FileStream(Path.Combine("wwwroot", path), FileMode.Create);
+        await file.OpenReadStream().CopyToAsync(fileStream);
+        fileStream.Close();
+        return $"/{path}";
+    }
+
+    private async Task SaveChanges()
+    {
+        if (!string.IsNullOrEmpty(newImagePath))
+        {
+            bool updated = await DeveloperService.UpdateDeveloperImage(developer.DeveloperID, newImagePath);
+            if (updated)
+            {
+                developer.imagePath = newImagePath;
+                StateHasChanged();
+            }
+        }
+    }
+
+
+
+
 
 }
 

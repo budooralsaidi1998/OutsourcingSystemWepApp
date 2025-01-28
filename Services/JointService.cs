@@ -12,10 +12,11 @@ namespace OutsourcingSystemWepApp.Services
         private readonly IFeedBackOnClientService _feedbackService;
         private readonly IDeveloperServices _developerService;
         private readonly IProjectServieces _projectService;
+        private readonly IRequestService _requestService;
         public JointService(ITeamService teamService, ITeamMemberService teamMemberService,
             IReviewTeamService reviewteamservice, IReviewDeveloperService reviewDeveloperService,
             IFeedBackOnClientService feedback, IDeveloperServices developerServices,
-            IProjectServieces projectServieces)
+            IProjectServieces projectServieces,IRequestService requestService)
         {
             _teamMemberService = teamMemberService;
             _teamService = teamService;
@@ -24,6 +25,7 @@ namespace OutsourcingSystemWepApp.Services
             _feedbackService = feedback;
             _developerService = developerServices;
             _projectService = projectServieces;
+            _requestService = requestService;
         }
 
         public string AddTeamMemberToTeam(int developerID, int teamID)
@@ -211,6 +213,11 @@ namespace OutsourcingSystemWepApp.Services
         public List<FeedbackOnClient> GetClientFeedback(int Page, int PageSize, int? Rating, int? ClientID)
         {
             return _feedbackService.GetAllFeedbacks(Page, PageSize, Rating, ClientID);
+        }
+
+        public List<ClientRequestDeveloper> DeveploerReview(int DevID, int clientID)
+        {
+            return _reviewDevService.(DevID, clientID);
         }
 
 

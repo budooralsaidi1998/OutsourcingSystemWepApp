@@ -1,0 +1,136 @@
+﻿body {
+    /* تحسين تخطيط الصفحة */
+    .page-container
+
+{
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* تصميم بطاقة ملف العميل */
+.profile-card {
+    padding: 30px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f9f9f9, #ffffff);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* تحسين صورة البروفايل */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #4CAF50;
+}
+
+/* تحسين العناوين */
+.title {
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+}
+
+/* تحسين الأزرار */
+.update-button {
+    background: #4CAF50;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    transition: background 0.3s ease;
+}
+
+    .update-button:hover {
+        background: #45a049;
+    }
+
+/* تحسين تصميم الأقسام */
+.projects-container {
+    margin-top: 20px;
+}
+
+.projects-card {
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* أيقونات المشاريع */
+.project-icon {
+    color: #4CAF50;
+}
+
+/* تحسين الوضع الليلي */
+.dark-mode .profile-card,
+.dark-mode .projects-card {
+    background: #333;
+    color: #fff;
+}
+
+.dark-mode .update-button {
+    background: #66bb6a;
+}
+
+    .dark-mode .update-button:hover {
+        background: #5aaf5f;
+    }
+.custom-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #4CAF50;
+    object-fit: cover;
+}
+
+
+
+
+.green-text {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.rounded-button {
+    border-radius: 8px;
+    padding: 12px 24px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+    .rounded-button:hover {
+        background: #45a049;
+        transform: scale(1.05);
+    }
+
+.projects-card {
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.profile-card {
+    padding: 30px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f9f9f9, #ffffff);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: box-shadow 0.3s ease;
+}
+
+    .profile-card:hover {
+        box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+    }
+
+
+
+}

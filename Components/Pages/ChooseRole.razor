@@ -1,4 +1,4 @@
-﻿@page "/choose-role"
+﻿@* @page "/choose-role"
 @inject NavigationManager NavigationManager
 
 <style>
@@ -73,6 +73,183 @@
     .error-message {
         color: red;
         margin-top: 10px;
+    }
+</style>
+
+<div class="role-selection-container">
+    <div class="role-box">
+        <h3 class="role-title">Join as a Client, Developer, or Admin</h3>
+
+        <div class="role-options">
+            <div class="role-option @(selectedRole == "Client" ? "selected" : "")" @onclick='() => SelectRole("Client")'>
+                I'm a Client, hiring for a project
+            </div>
+            <div class="role-option @(selectedRole == "Developer" ? "selected" : "")" @onclick='() => SelectRole("Developer")'>
+                I'm a Developer, looking for work
+            </div>
+            <div class="role-option @(selectedRole == "Admin" ? "selected" : "")" @onclick='() => SelectRole("Admin")'>
+                I'm an Admin, managing the system
+            </div>
+        </div>
+
+        <button class="continue-button" @onclick="NavigateToRegistration" disabled="@(!IsRoleSelected)">Continue</button>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <p class="error-message">@errorMessage</p>
+        }
+
+        <p class="signup-text">Already have an account? <a href="/" class="signup-link">Log In</a></p>
+    </div>
+</div>
+
+@code {
+    private string selectedRole;
+    private string errorMessage = "";
+    private bool IsRoleSelected => !string.IsNullOrEmpty(selectedRole);
+
+    private void SelectRole(string role)
+    {
+        selectedRole = role;
+        errorMessage = "";
+    }
+
+    private void NavigateToRegistration()
+    {
+        if (string.IsNullOrEmpty(selectedRole))
+        {
+            errorMessage = "Please select a role before continuing.";
+            return;
+        }
+
+        if (selectedRole == "Developer")
+        {
+            NavigationManager.NavigateTo("/RegisterDeveloper");
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/register-{selectedRole.ToLower()}");
+        }
+    }
+} *@
+ @layout Layout.LoginLayout
+@page "/choose-role"
+@inject NavigationManager NavigationManager
+
+<style>
+  
+    body {
+        background: url('/images/image.png') no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+    }
+
+    .role-selection-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+   
+    .role-box {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 420px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .role-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #14a800;
+        margin-bottom: 20px;
+    }
+
+    .role-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+    }
+
+ 
+    .role-option {
+        padding: 15px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        background: white;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .role-option:hover, .role-option.selected {
+            background: linear-gradient(90deg, #14a800 0%, #0e7a00 100%);
+            color: white;
+            border-color: #14a800;
+            transform: scale(1.05);
+        }
+
+ 
+    .continue-button {
+        margin-top: 20px;
+        width: 100%;
+        height: 50px;
+        background: linear-gradient(90deg, #14a800 0%, #0e7a00 100%);
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+        .continue-button:hover {
+            transform: scale(1.05);
+        }
+
+        .continue-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+    .signup-text {
+        margin-top: 15px;
+        font-size: 16px;
+    }
+
+    .signup-link {
+        color: #14a800;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+
+    .error-message {
+        color: red;
+        margin-top: 10px;
+        font-size: 16px;
     }
 </style>
 
