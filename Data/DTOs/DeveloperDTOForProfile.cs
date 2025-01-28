@@ -14,6 +14,8 @@
         public string CurrentProject { get; set; }
         public string DocumentLink { get; set; }
 
+        public string imagePath { get; set; }
+
         public List<DeveloperSkillDTO> Skills { get; set; } = new List<DeveloperSkillDTO>();
     }
 }

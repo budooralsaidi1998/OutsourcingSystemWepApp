@@ -143,5 +143,72 @@ namespace OutsourcingSystemWepApp.Data.Repository
             }
         }
 
+
+
+        //new
+
+        //public async Task<Developer> GetDeveloperById(int id)
+        //{
+        //    return await _context.Developer.FindAsync(id);
+        //}
+
+        //public async Task<bool> UpdateDeveloperImage(int id, string imagePath)
+        //{
+        //    var developer = await _context.Developer.FindAsync(id);
+        //    if (developer == null) return false;
+
+        //    developer.imagePath = imagePath;
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
+
+
+
+        public Developer GetDveById(int id)
+        {
+            try
+            {
+                return _context.Developer
+                    .Where(c => c.DeveloperID == id && !c.IsDelete)
+                    .Select(c => new Developer
+                    {
+                        DeveloperID = c.DeveloperID,
+                        DeveloperName = c.DeveloperName,
+                        UserID = c.UserID,
+                        Specialization = c.Specialization,
+                        YearsOfExperience = c.YearsOfExperience,
+                        Age = c.Age,
+                        HourlyRate = c.HourlyRate,
+                        CareerSummary = c.CareerSummary,
+                        CompletedProjects = c.CompletedProjects,
+
+                        DocumentLink = c.DocumentLink,
+                        imagePath = c.imagePath // ✅ دعم `imagePath`
+                    })
+                    .FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error happened while retrieving the Developer with ID {id}.", ex);
+            }
+        }
+
+        public async Task<bool> UpdateDeveloperImage(int id, string imagePath)
+        {
+            try
+            {
+                var developer = await _context.Developer.FirstOrDefaultAsync(c => c.DeveloperID == id && !c.IsDelete);
+                if (developer == null) return false;
+
+                developer.imagePath = imagePath;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error happened while updating the image for Developer with ID {id}.", ex);
+            }
+        }
+
     }
 }
