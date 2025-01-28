@@ -23,9 +23,10 @@
         }
         else
         {
-            <!-- Developer Profile Card -->
-            <MudCard Class="profile-card">
+            <!-- First Section -->
+            <MudCard Class="profile-card" Style="max-width: 800px; margin: 20px auto;">
                 <MudCardContent>
+                    <!-- Developer Profile Image and Basic Info -->
                     <div class="profile-image-container">
                         @if (!string.IsNullOrEmpty(dev.imagePath))
                         {
@@ -40,7 +41,7 @@
                     <MudText Typo="Typo.h5" Class="developer-name">@dev.DeveloperName</MudText>
                     <MudText Typo="Typo.subtitle1">Specialization: @dev.Specialization</MudText>
 
-                    <!--Displaying availability-->
+                    <!-- Availability -->
                     <MudText Typo="Typo.subtitle2">
                         Availability:
                         <span style="font-weight: bold; color: @(dev.AvailabilityStatus ? "green" : "red");">
@@ -48,7 +49,7 @@
                         </span>
                     </MudText>
 
-                    <!-- Displaying rating in stars-->
+                    <!-- Rating -->
                     <div class="star-rating-container">
                         <div class="star-rating">
                             @for (int i = 1; i <= 5; i++)
@@ -76,9 +77,8 @@
                         </MudLink>
                     </div>
 
-                    @GetDevSkills(dev.DeveloperID)
-
                     <!-- Developer Skills -->
+                    @GetDevSkills(dev.DeveloperID)
                     @if (DevSkills != null)
                     {
                         <MudChipGroup Class="skills-chips">
@@ -93,49 +93,77 @@
                 </MudCardContent>
             </MudCard>
 
-            <!-- Career Summary -->
-            <MudCard Class="summary-card">
-                <MudCardContent>
-                    <MudText Typo="Typo.h6">Career Summary</MudText>
-                    <MudText>@dev.CareerSummary</MudText>
-                </MudCardContent>
-            </MudCard>
 
-            <!-- Projects -->
-            @if (projects != null && projects.Any())
-            {
-                <MudCard Class="projects-card">
-                    <MudCardContent>
-                        <MudText Typo="Typo.h6">Projects</MudText>
+            <MudCard Class="projects-card" Style="max-width: 800px; margin: 20px auto;">
+                <MudCardContent>
+                    <!-- Career Summary -->
+                    <MudText Typo="Typo.h6" Style="color: green;">Career Summary</MudText>
+                    <MudText>@dev.CareerSummary</MudText>
+
+
+                    <div class="section-spacer"></div>
+
+                    <!-- Projects Section -->
+                    @if (projects != null && projects.Any())
+                    {
+                        <MudText Typo="Typo.h6" Style="color: green;">Projects</MudText>
                         @foreach (var project in projects)
                         {
-                            <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
-                            <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
+                            <MudCard Class="project-section">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6">@project.Name</MudText>
+                                    <MudText Typo="Typo.body1">@project.Description</MudText>
+                                </MudCardContent>
+                            </MudCard>
                         }
-                    </MudCardContent>
-                </MudCard>
-            }
+                    }
 
-            <!-- Reviews -->
-            @if (reviews != null && reviews.Any())
-            {
-                <MudCard Class="reviews-card">
-                    <MudCardContent>
-                        <MudText Typo="Typo.h6">Reviews</MudText>
-                        @foreach (var review in reviews)
-                        {
-                            <MudText Typo="Typo.body1">Rating: @review.Rating</MudText>
-                            <MudText Typo="Typo.body1">Date: @review.Date</MudText>
-                            <MudText Typo="Typo.body1">Comment: @review.Comment </MudText>
-                        }
-                    </MudCardContent>
-                </MudCard>
-            }
+                    
+                    <div class="section-spacer"></div>
+                    <div style="margin-top: 80px;"></div>
 
-            <!-- Request Developer -->
-            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Book Developer" @onclick="GoToDevReq">
-                Book Developer
-            </MudButton>
+                    <!-- Reviews Section -->
+                @if (reviews != null && reviews.Any())
+                {
+                        <MudText Typo="Typo.h6" Style="color: green; margin-bottom: 0px;">Reviews</MudText> 
+                    @foreach (var review in reviews)
+                    {
+                        <MudExpansionPanel Expanded="true">
+                            <MudExpansionPanelSummary>
+                                <MudText Typo="Typo.h6">Rating: @review.Rating</MudText>
+                                <div class="star-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= (int)review.Rating)
+                                        {
+                                            <span class="star filled">&#9733;</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="star">&#9734;</span>
+                                        }
+                                    }
+                                </div>
+                            </MudExpansionPanelSummary>
+
+                            <MudExpansionPanelDetails>
+                                <MudText Typo="Typo.body1">Comment: @review.Comment</MudText>
+                                <MudText Typo="Typo.body2">Date: @review.Date.ToString("dd/MM/yyyy")</MudText>
+                            </MudExpansionPanelDetails>
+                        </MudExpansionPanel>
+                    }
+                }
+
+
+                   
+                    <div class="section-spacer"></div>
+
+                    <!-- Request Developer Button -->
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Book Developer" @onclick="GoToDevReq" Style="margin-top: 20px;">
+                        Book Developer
+                    </MudButton>
+                </MudCardContent>
+            </MudCard>
         }
     }
     else if (!string.IsNullOrEmpty(errorMessage))
@@ -165,7 +193,6 @@
         // Get authentication state
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        //userID = user.Identity;
 
         // Check if the user is authenticated
         isAuthenticated = user.Identity.IsAuthenticated;
@@ -177,7 +204,7 @@
         }
         else
         {
-            //we want to get the the  user using email
+            // Get the user using email
             userID = userService.GetUserByEmail(user.Identity.Name).UID;
             GetProductDetails(DevID);
         }
@@ -212,74 +239,10 @@
         return "";
     }
 
-    private MudForm form;
-    private bool isValid = false;
-
-    // Project model to bind form fields
-    private Project newProject = new Project();
-
-    // Handle the form submission
-    private async Task HandleValidSubmit()
-    {
-        // Validating date 
-        if (dateRange == null || dateRange.Start == null || dateRange.End == null)
-        {
-            Snackbar.Add("Please select a valid date range.", Severity.Error);
-            return;
-        }
-
-        DateTime startDate = dateRange.Start ?? DateTime.Now;
-
-        ProjectRequestInputDto req = new ProjectRequestInputDto
-        {
-            Teamid = 7, //dummy team that is used as a filler 
-            Name = newProject.ProjectName,
-            Description = newProject.Description,
-            StartAt = startDate,
-            EndAt = dateRange.End,
-            Developerid = DevID,
-            DailyHoursNeeded = newProject.HoursNeeded,
-            RequestType = "Developer"
-        };
-
-        //Validating hour input
-        if (req.DailyHoursNeeded == null || req.DailyHoursNeeded <= 0 || req.DailyHoursNeeded > 24)
-        {
-            Snackbar.Add("Please select a valid number of hours per day.", Severity.Error);
-            return;
-        }
-        try
-        {
-            await requestService.SubmitRequestAsync(userID, req);
-            Snackbar.Add("Booking request was successfully sent!", Severity.Success);
-        }
-        catch (InvalidOperationException ex)
-        {
-            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
-            Console.Error.WriteLine(ex);
-        }
-    }
-
-    public class Project
-    {
-        public string ProjectName { get; set; }
-        public string Description { get; set; }
-        public int HoursNeeded { get; set; }
-    }
-
-    private void OnValueChanged(PickerVariant variant)
-    {
-        dateRange = null;
-        _variant = variant;
-    }
-
-
     private void GoToDevReq()
     {
         Navigation.NavigateTo($"/DeveloperRequest/{DevID}");
     }
-
-
 }
 
 <style>
@@ -290,5 +253,30 @@
 .star-rating {
     display: inline-block; /* Makes the star-rating block inline for centering */
     font-size: 1.5rem; /* Optional: adjust the size of the stars */
+}
+
+.star-rating {
+    font-size: 1.2rem;
+    color: gold;
+}
+
+.star {
+    font-size: 1.2rem;
+}
+
+.star.filled {
+    color: gold;
+}
+
+/* Additional styling for the unified card */
+.profile-card, .projects-card {
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Custom spacer (margins) between sections */
+.section-spacer {
+    margin-top: 20px;
 }
 </style>
