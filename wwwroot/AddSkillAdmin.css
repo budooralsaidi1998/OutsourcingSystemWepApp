@@ -59,3 +59,15 @@
     .submit-button:hover {
         background-color: #218838; /* Darker green for hover effect */
     }
+
+.checkbox-spacing {
+  
+
+    padding-left:12%;
+
+}
+.active {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
