@@ -54,6 +54,19 @@ namespace OutsourcingSystemWepApp.Services
             }
         }
 
+        public User GetUserByEmail(string Email)
+        {
+            try
+            {
+                return _userrepo.GetUserByEmail(Email);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                // Handle any other unexpected exceptions
+                throw new Exception($"An unexpected error occurred: {ex.Message}");
+            }
+        }
+
         public bool DeleteUser(int userIdFromToken)
         {
             try
