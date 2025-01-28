@@ -22,5 +22,6 @@ namespace OutsourcingSystemWepApp.Data.DTOs
      
         public DateTime Date { get; set; }
         public bool IsDeveloperReview { get; set; }
+        public List<int> SelectedDevelopers { get; set; } = new List<int>();
     }
 }

@@ -243,6 +243,10 @@ namespace OutsourcingSystemWepApp.Services
                     throw new KeyNotFoundException($"developer with ID {id} not found.");
 
                 // Mark the client as soft-deleted in the repository
+                developer.IsDelete = true;
+
+                _developerRepositry.Update(developer);
+
                 _developerRepositry.Delete(developer);
 
 
@@ -295,6 +299,7 @@ namespace OutsourcingSystemWepApp.Services
                     .Take(pageSize)
                     .Select(c => new filtrationDeveloperdto        // Map the Client entity to ClientDTO
                     {
+                        DeveloperId=c.UserID,
                         DeveloperName = c.DeveloperName,
                         Specialization = c.Specialization,
                         CommitmentRating = c.CommitmentRating,

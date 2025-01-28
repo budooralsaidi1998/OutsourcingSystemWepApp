@@ -58,5 +58,9 @@ namespace OutsourcingSystemWepApp.Data.Repository
         {
             return await Task.Run(() => _context.ClientRequestDeveloper.Where(req => req.Status == "Rejected").Include(S => S.Client).ToList());
         }
+        public List<ClientRequestDeveloper> GetDeveloperReview(int clientid , int  developerid)
+        {
+           return _context.ClientRequestDeveloper.Where(d => d.Status=="Approved" && d.ClientID==clientid&& d.DeveloperID==developerid).ToList();
+        }
     }
 }

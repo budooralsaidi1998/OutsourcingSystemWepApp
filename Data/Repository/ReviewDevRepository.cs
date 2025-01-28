@@ -49,7 +49,7 @@ namespace OutsourcingSystemWepApp.Data.Repository
         {
             return _context.ClientReviewDeveloper.FirstOrDefault(r => r.DeveloperID == DevID && r.ClientID == ClientID);
         }
-
+       
         public List<ClientReviewDeveloper> GetAllDevReviewsnames()
         {
             return _context.ClientReviewDeveloper

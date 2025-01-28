@@ -75,16 +75,15 @@ namespace OutsourcingSystemWepApp.Data.Repository
 
         public IEnumerable<Developer> GetAll()
         {
-            return _context.Developer.ToList();
+            return _context.Developer.Where(c => !c.IsDelete).ToList();
         }
 
         // Marks a client as deleted (soft delete) 
-        public bool Delete(Developer deve)
+        public void Delete(Developer deve)
         {
 
-            _context.Developer.Remove(deve);
             _context.SaveChanges();
-            return true;
+            
         }
         public Developer GetUserById(int userId)
         {
@@ -143,5 +142,6 @@ namespace OutsourcingSystemWepApp.Data.Repository
             }
         }
 
+       
     }
 }

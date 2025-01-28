@@ -18,5 +18,7 @@ namespace OutsourcingSystemWepApp.Data.DTOs
         [Range(0, int.MaxValue, ErrorMessage = "Completed projects must be a non-negative number.")]
         public int CompletedProjects { get; set; } = 0;
 
+        public int DeveloperId { get; set; }
+
     }
 }

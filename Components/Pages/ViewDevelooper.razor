@@ -41,9 +41,9 @@
                                 <td>@developer.DeveloperName</td>
                                 <td>@developer.Specialization</td>
                                 <td>@developer.CommitmentRating</td>
-                                <td>@developer.AvailabilityStatus ? "Available" : "Not Available"</td>
+                                <td>@developer.AvailabilityStatus</td>
                                 <td>
-                                    @* <button class="delete-btn" @onclick="() => SoftDeleteDeveloper(developer.)">Soft Delete</button> *@
+                                    <button class="delete-btn" @onclick="() => SoftDeleteDeveloper(developer.DeveloperId)">Soft Delete</button>
                                 </td>
                             </tr>
                         }
@@ -55,6 +55,7 @@
         </MudCardContent>
     </MudCard>
 </MudContainer>
+
 
 @code {
     private List<filtrationDeveloperdto> developers = new List<filtrationDeveloperdto>();
