@@ -215,10 +215,10 @@ namespace OutsourcingSystemWepApp.Services
             return _feedbackService.GetAllFeedbacks(Page, PageSize, Rating, ClientID);
         }
 
-        public List<ClientRequestDeveloper> DeveploerReview(int DevID, int clientID)
-        {
-            return _reviewDevService.(DevID, clientID);
-        }
+        //public List<ClientRequestDeveloper> DeveploerReview(int DevID, int clientID)
+        //{
+        //    //return _reviewDevService.(DevID, clientID);
+        //}
 
 
     }
