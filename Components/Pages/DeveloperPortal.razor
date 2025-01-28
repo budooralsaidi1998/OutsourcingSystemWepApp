@@ -1,87 +1,4 @@
-﻿@* @page "/DeveloperPortal"
-@using MudBlazor
-@using OutsourcingSystemWepApp.Data.DTOs
-@using OutsourcingSystemWepApp.Services
-@inject IDeveloperServices DeveloperService
-@inject IDeveloperSkillService DeveloperSkillService
-@inject ISkillService SkillService
-@inject AuthenticationStateProvider AuthenticationStateProvider
-
-
-
-<MudContainer>
-    <MudCard>
-        <MudCardContent>
-            <MudText Typo="Typo.h4">Developer Profile</MudText>
-
-            <MudTextField Label="Name" @bind-Value="developer.Name" Disabled="true" />
-            <MudTextField Label="Email" @bind-Value="developer.Email" Disabled="true" />
-            <MudTextField Label="Specialization" @bind-Value="developer.Specialization" />
-            <MudTextField Label="Years of Experience" @bind-Value="developer.YearsOfExperience" Type="number" />
-            <MudTextField Label="Age" @bind-Value="developer.Age" Type="number" />
-            <MudTextField Label="Hourly Rate" @bind-Value="developer.HourlyRate" Type="number" />
-            <MudTextField Label="Career Summary" @bind-Value="developer.CareerSummary" Multiline="true" />
-            <MudTextField Label="Current Project" @bind-Value="developer.CurrentProject" />
-            <MudTextField Label="Completed Projects" @bind-Value="developer.CompletedProjects" Type="number" />
-
-
-            <div>
-                <img src="@developer.imagePath" alt="Profile Image" style="width:150px;height:150px;border-radius:50%;" />
-                <br />
-                <InputFile OnChange="UploadImage" />
-                <br />
-                <button @onclick="SaveChanges">Save Changes</button>
-            </div>
-
-
-
-
-           
-
-
-            <label>Upload Your CV:</label>
-            <InputFile OnChange="HandleFileSelected" />
-
-
-
-
-            <MudButton OnClick="UpdateProfile" Color="Color.Primary">Update Profile</MudButton>
-
-
-        </MudCardContent>
-    </MudCard>
-</MudContainer>
-
-<MudContainer>
-    <MudCard>
-        <MudCardContent>
-
-            
-            <MudText Typo="Typo.h6">Manage Skills</MudText>
-            <MudSelect @bind-Value="selectedSkill" Label="Select Skill">
-                @foreach (var skill in skillsList)
-                {
-                    <MudSelectItem Value="@skill.SkillID">@skill.SkillName</MudSelectItem>
-                }
-            </MudSelect>
-            
-            <MudSlider @bind-Value="skillProficiency" Min="1" Max="10" Step="1" Label="Skill Proficiency" FullWidth="true" />
-            <MudButton OnClick="AddDeveloperSkilll" Color="Color.Primary">Add Skill</MudButton>
-            
-            <MudList T="string">
-                @foreach (var skill in developerSkills)
-                {
-                    <MudListItem>
-                        @skill.SkillName - Level: @skill.Proficiency
-                        <MudButton OnClick="() => RemoveSkillFromDeveloper(skill.SkillID)" Color="Color.Error">Remove</MudButton>
-                    </MudListItem>
-                }
-            </MudList>
-        </MudCardContent>
-    </MudCard>
-</MudContainer> *@
-
-@page "/DeveloperPortal"
+﻿@page "/DeveloperPortal"
 @using MudBlazor
 @using OutsourcingSystemWepApp.Data.DTOs
 @using OutsourcingSystemWepApp.Services
@@ -99,20 +16,9 @@
     <MudCard Elevation="6" Class="p-4">
         <MudCardContent>
 
-            
-@*             <MudGrid Spacing="3" AlignItems="Center">
-                <MudItem xs="3">
-                    <img src="@developer.imagePath" alt="Profile Image" style="width:100px;height:100px;border-radius:50%;border:2px solid #ccc;" />
-                    <InputFile OnChange="UploadImage" />
-                </MudItem>
-                <MudItem xs="9">
-                    <MudText Typo="Typo.h4" Class="mb-3">👨‍💻 Developer Profile</MudText>
-                </MudItem>
-            </MudGrid> *@
-
-   
 
 
+ 
             <MudText Typo="Typo.h4" Class="mb-3 text-center w-100" Color="Color.Success">
                 <MudIcon Icon="mdi-account-circle" Class="mr-2" /> Developer Profile
             </MudText>
@@ -148,28 +54,7 @@
             <MudDivider Class="my-4" />
 
             <MudGrid Spacing="3">
-@*                 <MudItem xs="12" sm="6" Class="mb-2">
-                    <MudTextField Label="Name" @bind-Value="developer.Name" Disabled="true" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" sm="6" Class="mb-2">
-                    <MudTextField Label="Email" @bind-Value="developer.Email" Disabled="true" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" sm="6" Class="mb-2">
-                    <MudTextField Label="Specialization" @bind-Value="developer.Specialization" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" sm="6" Class="mb-2">
-                    <MudTextField Label="Years of Experience" @bind-Value="developer.YearsOfExperience" Type="number" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" sm="6" Class="mb-2">
-                    <MudTextField Label="Age" @bind-Value="developer.Age" Type="number" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" sm="6" Class="mb-2">
-                    <MudTextField Label="Hourly Rate" @bind-Value="developer.HourlyRate" Type="number" Variant="Variant.Outlined" />
-                </MudItem>
-                <MudItem xs="12" Class="mb-2">
-                    <MudTextField Label="Career Summary" @bind-Value="developer.CareerSummary" Multiline="true" Variant="Variant.Outlined" />
-                </MudItem> *@
-                <!-- Full Name -->
+
                 <MudItem xs="12" sm="6" Class="mb-2">
                     <MudText Typo="Typo.h6" FontWeight="FontWeight.Bold" Margin="Margin.Bottom">
                         Full Name
@@ -279,48 +164,73 @@
 <MudContainer Style="max-width: 800px;" Class="mt-5">
     <MudCard Elevation="6" Class="p-4">
         <MudCardContent>
-            <MudText Typo="Typo.h5" Class="mb-3">🛠 Manage Skills</MudText>
+          
+            <MudText Typo="Typo.h4" Class="mb-3 text-center w-100" Color="Color.Success">
+              
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
+                <MudIcon Icon="mdi-account-circle" Class="mr-2" /> Add Skills
 
+            </MudText>
             <MudGrid Spacing="3">
-                <MudItem xs="8">
+@*                 <MudItem xs="8">
                     <MudSelect @bind-Value="selectedSkill" Label="Select Skill" Variant="Variant.Outlined">
                         @foreach (var skill in skillsList)
                         {
                             <MudSelectItem Value="@skill.SkillID">@skill.SkillName</MudSelectItem>
                         }
                     </MudSelect>
+                </MudItem> *@
+                <MudItem xs="8">
+                
+                    <MudText Typo="Typo.h6" FontWeight="FontWeight.Bold" Color="Color.Dark" Margin="Margin.Bottom">
+                        Choose a Skill
+                    </MudText>
+
+                  
+                    <MudSelect @bind-Value="selectedSkill"  Variant="Variant.Outlined" Dense="true">
+                        @foreach (var skill in skillsList)
+                        {
+                            <MudSelectItem Value="@skill.SkillID">@skill.SkillName</MudSelectItem>
+                        }
+                    </MudSelect>
                 </MudItem>
+
+
+
+
                 <MudItem xs="4">
-                    <MudSlider @bind-Value="skillProficiency" Min="1" Max="10" Step="1" Label="Proficiency" FullWidth="true" />
+                    <MudText Typo="Typo.h6" FontWeight="FontWeight.Bold" Margin="Margin.Bottom" Color="Color.Dark">
+                        Skill Proficiency
+                    </MudText>
+                    <MudSlider @bind-Value="skillProficiency" Min="1" Max="5" Step="1" Label="Proficiency"
+                               FullWidth="true" Color="Color.Success" TrackColor="Color.Success" />
                 </MudItem>
+
             </MudGrid>
 
+
+
+@* 
             <MudButton OnClick="AddDeveloperSkilll" Color="Color.Primary" Class="mt-3">
                 <MudIcon Icon="mdi-plus-circle" />
                 Add Skill
+            </MudButton> *@
+            <MudButton OnClick="AddDeveloperSkilll"
+                       Color="Color.Success"
+                       Variant="Variant.Filled"
+                       Class="mt-3"
+                       FullWidth="true"
+                       Elevation="4">
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
+                <MudText Typo="Typo.h6" FontWeight="FontWeight.Bold">Add Skill</MudText>
             </MudButton>
+
+
 
             <MudDivider Class="my-4" />
 
-@*             <MudList T="string" Class="mt-4">
-                @if (developerSkills != null && developerSkills.Any())
-                {
-                    @foreach (var skill in developerSkills)
-                    {
-                        <MudListItem>
-                            <MudText>@skill.SkillName - Level: @skill.Proficiency</MudText>
-                            <MudButton OnClick="() => RemoveSkillFromDeveloper(skill.SkillID)" Color="Color.Error" Class="ml-auto">
-                                <MudIcon Icon="mdi-delete" />
-                            </MudButton>
-                        </MudListItem>
-                    }
-                }
-                else
-                {
-                    <MudText Typo="Typo.body1" Color="Color.Warning">No skills added yet.</MudText>
-                }
-            </MudList>
- *@
+
+ 
 
             <MudList T="string">
                 @foreach (var skill in developerSkills)
@@ -338,6 +248,7 @@
   
 
 </MudContainer>
+
 
 
 @code {
