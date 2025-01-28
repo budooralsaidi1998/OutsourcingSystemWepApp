@@ -84,8 +84,23 @@
     {
         try
         {
+            var req = pendingDeveloperRequests.FirstOrDefault(s=>s.RequestId==requestId);
+            if(req.Type=="Developer")
+            {
+                await _requestService.ProcessRequestAsync(requestId, true, "Developer");
+            }
+            else if(req.Type == "Team")
+            {
+                await _requestService.ProcessRequestAsync(requestId, true, "Team");
+            }
+            else
+            {
+                Console.WriteLine($"Error  request ");
+            }
+
             // Call backend to process the request as accepted
-            await _requestService.ProcessRequestAsync(requestId, true, "Developer");
+         
+            
 
             // Optionally, update the UI here after processing the request
             await LoadPendingRequests();
