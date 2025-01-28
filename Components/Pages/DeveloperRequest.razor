@@ -1,0 +1,179 @@
+﻿@page "/DeveloperRequest/{DevID:int}"
+@inject IDeveloperServices developerService
+@inject ISkillService skillService
+@inject IDeveloperSkillService developerSkillService
+@inject IProjectServieces projectService
+@inject IReviewDeveloperService reviewService
+@inject IRequestService requestService
+@inject IUserServices userService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject ISmsService smsService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+ <MudCard Class="request-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Request Developer</MudText>
+
+                    <MudForm @ref="form" Valid="@isValid">
+                        <MudTextField Label="Project Name" @bind-Value="newProject.ProjectName" Required="true" Color="Color.Primary" />
+                        <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" /> 
+
+                        <MudStack AlignItems="AlignItems.Center" Style="width:650px;">
+                            <MudGrid>
+                                <MudItem xs="6" Style="margin-top: 30px;">
+                                    <MudDateRangePicker PickerVariant="@_variant" @bind-DateRange="@dateRange" Margin="Margin.Dense" />
+                                    @if (dateRange == null)
+                                    {
+                                        <MudText Color="Color.Error" Typo="Typo.caption">Date range is required.</MudText>
+                                    }
+                                </MudItem>
+                                <MudItem xs="6" Style="margin-top: 15px;">
+                                    <MudNumericField Label="Hours Needed" @bind-Value="newProject.HoursNeeded" Min="1" Max="1000" Required="true" Color="Color.Primary" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudSpacer />
+                            <MudToggleGroup T="PickerVariant" SelectionMode="SelectionMode.SingleSelection" Value="@_variant" ValueChanged="@OnValueChanged"
+                            Color="Color.Success" CheckMark="true" FixedContent="true" />
+                        </MudStack>
+
+                        <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit" @onclick="HandleValidSubmit">
+                            Submit
+                        </MudButton>
+                    </MudForm>
+                </MudCardContent>
+            </MudCard> 
+
+@code
+{
+    [Parameter] public int DevID { get; set; }
+    private int userID = 0;
+    private Developer dev = null;
+    private string errorMessage = string.Empty;
+
+    private List<Data.Model.Project> projects = new List<Data.Model.Project>();
+    private List<ClientReviewDeveloper> reviews = null;
+    public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer
+
+    private PickerVariant _variant = PickerVariant.Dialog;
+    private DateRange dateRange { get; set; }
+
+    private bool isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        //userID = user.Identity;
+
+        //we want to get the the  user using email
+        userID = userService.GetUserByEmail(user.Identity.Name).UID;
+
+        // Check if the user is authenticated
+        isAuthenticated = user.Identity.IsAuthenticated;
+
+        if (!isAuthenticated)
+        {
+            // Redirect to login page if not authenticated
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            GetProductDetails(DevID);
+        }
+    }
+
+    private void GetProductDetails(int DevID)
+    {
+        dev = developerService.GetById(DevID);
+        projects = projectService.GetProjectsByDevID(dev.DeveloperID);
+        reviews = reviewService.GetAllDevReviews(0, int.MaxValue, null, dev.DeveloperID);
+
+        if (dev == null)
+        {
+            errorMessage = "Developer not found.";
+        }
+        else
+        {
+            errorMessage = string.Empty; // Clear error message if developer found
+        }
+    }
+
+    private string GetDevSkills(int DevID)
+    {
+        var devSkills = developerSkillService.GetSkillByDevID(DevID);
+        DevSkills.Clear();
+
+        foreach (var skill in devSkills)
+        {
+            var skillName = skillService.GetSkillsByID(skill.SkillID);
+            DevSkills.Add(skillName.Name);
+        }
+        return "";
+    }
+
+    private MudForm form;
+    private bool isValid = false;
+
+    // Project model to bind form fields
+    private Project newProject = new Project();
+
+    // Handle the form submission
+    private async Task HandleValidSubmit()
+    {
+        // Validating date
+        if (dateRange == null || dateRange.Start == null || dateRange.End == null)
+        {
+            Snackbar.Add("Please select a valid date range.", Severity.Error);
+            return;
+        }
+
+        DateTime startDate = dateRange.Start ?? DateTime.Now;
+
+        ProjectRequestInputDto req = new ProjectRequestInputDto
+            {
+                Teamid = 7, //dummy team that is used as a filler
+                Name = newProject.ProjectName,
+                Description = newProject.Description,
+                StartAt = startDate,
+                EndAt = dateRange.End,
+                Developerid = DevID,
+                DailyHoursNeeded = newProject.HoursNeeded,
+                RequestType = "Developer"
+            };
+
+        //Validating hour input
+        if (req.DailyHoursNeeded == null || req.DailyHoursNeeded <= 0 || req.DailyHoursNeeded > 24)
+        {
+            Snackbar.Add("Please select a valid number of hours per day.", Severity.Error);
+            return;
+        }
+        try
+        {
+            await requestService.SubmitRequestAsync(userID, req);
+            Snackbar.Add("Booking request was successfully sent!", Severity.Success);
+            Navigation.NavigateTo($"/DeveloperProfile/{DevID}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+            Console.Error.WriteLine(ex);
+        }
+    }
+
+    public class Project
+    {
+        public string ProjectName { get; set; }
+        public string Description { get; set; }
+        public int HoursNeeded { get; set; }
+    }
+
+    private void OnValueChanged(PickerVariant variant)
+    {
+        dateRange = null;
+        _variant = variant;
+    }
+
+}

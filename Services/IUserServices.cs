@@ -14,5 +14,6 @@ namespace OutsourcingSystemWepApp.Services
         User Login(string email, string password);
         bool UpdateUser(int userIdFromToken, UserUpdateDto updateRequest);
         bool UserExists(int userId);
+        User GetUserByEmail(string Email);
     }
 }

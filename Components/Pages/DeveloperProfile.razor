@@ -1,164 +1,138 @@
-﻿@page "/DeveloperProfile/{DevID:int}"
+﻿@page "/DeveloperProfile/{DevID:int}" 
 @inject IDeveloperServices developerService
 @inject ISkillService skillService
 @inject IDeveloperSkillService developerSkillService
 @inject IProjectServieces projectService
 @inject IReviewDeveloperService reviewService
 @inject IRequestService requestService
+@inject IUserServices userService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject ISmsService smsService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @using Data.Model
 
 <MudContainer>
     @if (DevID != null)
     {
-        <!-- Developer Profile Card -->
-        <MudCard Class="profile-card">
-            <MudCardContent>
-                <div class="profile-image-container">
-                    @if (!string.IsNullOrEmpty(dev.imagePath))
-                    {
-                        <img src="@dev.imagePath" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
-                    }
-
-                    else
-                    {
-                        <img src="images/DefaultImage.png" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
-                    }
-                </div>
-
-                <MudText Typo="Typo.h5" Class="developer-name">@dev.DeveloperName</MudText>
-                <MudText Typo="Typo.subtitle1">Specialization: @dev.Specialization</MudText>
-
-                <!--Displaying availability-->
-                @* Written like this to ensure that all text appears on the same line *@
-                <MudText Typo="Typo.subtitle2">
-                    Availability:
-                    <span style="font-weight: bold; color: @(dev.AvailabilityStatus ? "green" : "red");">
-                        @(dev.AvailabilityStatus ? "Available" : "Unavailable")
-                    </span>
-                </MudText>
-
-
-                <!-- Displaying rating in stars-->
-                <div class="star-rating">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        if (i <= (int)dev.CommitmentRating)
+        @* Check if the user is authenticated *@
+        @if (!isAuthenticated)
+        {
+            <MudAlert Severity="Severity.Error">You are not authenticated. Please log in.</MudAlert>
+        }
+        else
+        {
+            <!-- Developer Profile Card -->
+            <MudCard Class="profile-card">
+                <MudCardContent>
+                    <div class="profile-image-container">
+                        @if (!string.IsNullOrEmpty(dev.imagePath))
                         {
-                            <span class="star filled">&#9733;</span> <!-- Filled star -->
-                        }
-                        else if (i - (double)dev.CommitmentRating >= 0.5)
-                        {
-                            <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                            <img src="@dev.imagePath" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
                         }
                         else
                         {
-                            <span class="star">&#9734;</span> <!-- Empty star -->
+                            <img src="images/DefaultImage.png" alt="Developer Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
                         }
-                    }
-                </div>
-                <MudText Typo="Typo.body2">Hourly Rate: $@dev.HourlyRate</MudText>
-                <MudLink Href="@dev.DocumentLink" Color="Color.Primary">
-                    View Documents
-                </MudLink>
+                    </div>
 
-                @GetDevSkills(dev.DeveloperID)
+                    <MudText Typo="Typo.h5" Class="developer-name">@dev.DeveloperName</MudText>
+                    <MudText Typo="Typo.subtitle1">Specialization: @dev.Specialization</MudText>
 
-                <!-- Developer Skills -->
-                @if (DevSkills != null)
-                {
-                    <MudChipGroup Class="skills-chips">
-                        @foreach (var skill in DevSkills)
+                    <!--Displaying availability-->
+                    <MudText Typo="Typo.subtitle2">
+                        Availability:
+                        <span style="font-weight: bold; color: @(dev.AvailabilityStatus ? "green" : "red");">
+                            @(dev.AvailabilityStatus ? "Available" : "Unavailable")
+                        </span>
+                    </MudText>
+
+                    <!-- Displaying rating in stars-->
+                    <div class="star-rating">
+                        @for (int i = 1; i <= 5; i++)
                         {
-                            <MudChip T="string" Color="Color.Transparent" Class="skill-chip">
-                                @skill
-                            </MudChip>
+                            if (i <= (int)dev.CommitmentRating)
+                            {
+                                <span class="star filled">&#9733;</span> <!-- Filled star -->
+                            }
+                            else if (i - (double)dev.CommitmentRating >= 0.5)
+                            {
+                                <span class="star half-filled">&#9733;</span> <!-- Half-filled star -->
+                            }
+                            else
+                            {
+                                <span class="star">&#9734;</span> <!-- Empty star -->
+                            }
                         }
-                    </MudChipGroup>
-                }
-            </MudCardContent>
-        </MudCard>
+                    </div>
+                    <MudText Typo="Typo.body2">Hourly Rate: $@dev.HourlyRate</MudText>
+                    <MudLink Href="@dev.DocumentLink" Color="Color.Primary">
+                        View Documents
+                    </MudLink>
 
-        <!-- Career Summary -->
-        <MudCard Class="summary-card">
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Career Summary</MudText>
-                <MudText>@dev.CareerSummary</MudText>
-            </MudCardContent>
-        </MudCard>
+                    @GetDevSkills(dev.DeveloperID)
 
-        <!-- Projects -->
-        @if (projects != null && projects.Any())
-    {
-        <MudCard Class="projects-card">
-
-                <MudCardContent>
-                    <MudText Typo="Typo.h6">Projects</MudText>
-                    @foreach (var project in projects)
+                    <!-- Developer Skills -->
+                    @if (DevSkills != null)
                     {
-                        <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
-                        <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
-                        <MudText Typo="Typo.body1">Client rating: </MudText>
+                        <MudChipGroup Class="skills-chips">
+                            @foreach (var skill in DevSkills)
+                            {
+                                <MudChip T="string" Color="Color.Transparent" Class="skill-chip">
+                                    @skill
+                                </MudChip>
+                            }
+                        </MudChipGroup>
                     }
                 </MudCardContent>
-            
-        </MudCard>
-        }
+            </MudCard>
 
-        <!-- Reviews -->
-        @if (reviews != null && reviews.Any())
-    {
-        <MudCard Class="reviews-card">
-
+            <!-- Career Summary -->
+            <MudCard Class="summary-card">
                 <MudCardContent>
-                    <MudText Typo="Typo.h6">Reviews</MudText>
-                    @foreach (var review in reviews)
-                    {
-                        <MudText Typo="Typo.body1">Rating: @review.Rating</MudText>
-                        <MudText Typo="Typo.body1">Date: @review.Date</MudText>
-                        <MudText Typo="Typo.body1">Comment: @review.Comment </MudText>
-                    }
+                    <MudText Typo="Typo.h6">Career Summary</MudText>
+                    <MudText>@dev.CareerSummary</MudText>
                 </MudCardContent>
-            
-        </MudCard>
+            </MudCard>
+
+            <!-- Projects -->
+            @if (projects != null && projects.Any())
+            {
+                <MudCard Class="projects-card">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">Projects</MudText>
+                        @foreach (var project in projects)
+                        {
+                            <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
+                            <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
+                            <MudText Typo="Typo.body1">Client rating: </MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            }
+
+            <!-- Reviews -->
+            @if (reviews != null && reviews.Any())
+            {
+                <MudCard Class="reviews-card">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">Reviews</MudText>
+                        @foreach (var review in reviews)
+                        {
+                            <MudText Typo="Typo.body1">Rating: @review.Rating</MudText>
+                            <MudText Typo="Typo.body1">Date: @review.Date</MudText>
+                            <MudText Typo="Typo.body1">Comment: @review.Comment </MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            }
+
+            <!-- Request Developer -->
+            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Book Developer" @onclick="GoToDevReq">
+                Submit
+            </MudButton>
         }
-
-        <!-- Request Developer -->
-        <MudCard Class="request-card">
-            <MudCardContent>
-                <MudText Typo="Typo.h6">Request Developer</MudText>
-
-                <MudForm @ref="form" Valid="@isValid">
-                    <MudTextField Label="Project Name" @bind-Value="newProject.ProjectName" Required="true" Color="Color.Primary" />
-                    <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" /> 
-
-                    <MudStack AlignItems="AlignItems.Center" Style="width:650px;">
-                        <MudGrid>
-                                <MudItem xs="6" Style="margin-top: 30px;">
-                                <MudDateRangePicker PickerVariant="@_variant" @bind-DateRange="@dateRange" Margin="Margin.Dense" />
-                                @if (dateRange == null)
-                                {
-                                    <MudText Color="Color.Error" Typo="Typo.caption">Date range is required.</MudText>
-                                }
-                            </MudItem>
-                            <MudItem xs="6" Style="margin-top: 15px;">
-                                <MudNumericField Label="Hours Needed" @bind-Value="newProject.HoursNeeded" Min="1" Max="1000" Required="true" Color="Color.Primary" />
-                            </MudItem>
-                        </MudGrid>
-                        <MudSpacer />
-                        <MudToggleGroup T="PickerVariant" SelectionMode="SelectionMode.SingleSelection" Value="@_variant" ValueChanged="@OnValueChanged"
-                                        Color="Color.Success" CheckMark="true" FixedContent="true" />
-                    </MudStack>
-
-                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit" @onclick="HandleValidSubmit">
-                        Submit
-                    </MudButton>
-                </MudForm>
-            </MudCardContent>
-        </MudCard>
     }
     else if (!string.IsNullOrEmpty(errorMessage))
     {
@@ -169,7 +143,7 @@
 @code
 {
     [Parameter] public int DevID { get; set; }
-    private int userID = 5; //Id of a valid client used for testing 
+    private int userID = 0; 
     private Developer dev = null;
     private string errorMessage = string.Empty;
 
@@ -180,9 +154,30 @@
     private PickerVariant _variant = PickerVariant.Dialog;
     private DateRange dateRange { get; set; }
 
-    protected override void OnInitialized()
+    private bool isAuthenticated = false;
+
+    protected override async Task OnInitializedAsync()
     {
-        GetProductDetails(DevID);
+        // Get authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        //userID = user.Identity;
+
+        //we want to get the the  user using email 
+        userID = userService.GetUserByEmail(user.Identity.Name).UID;
+
+        // Check if the user is authenticated
+        isAuthenticated = user.Identity.IsAuthenticated;
+
+        if (!isAuthenticated)
+        {
+            // Redirect to login page if not authenticated
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            GetProductDetails(DevID);
+        }
     }
 
     private void GetProductDetails(int DevID)
@@ -274,53 +269,10 @@
         dateRange = null;
         _variant = variant;
     }
+
+
+    private void GoToDevReq()
+    {
+        Navigation.NavigateTo($"/DeveloperRequest/{DevID}");
+    }
 }
-
-<style>
-    /* Profile Image Container */
-    .profile-image-container {
-        position: relative;
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        overflow: hidden;
-    }
-    .profile-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Card Hover Effects */
-    .mud-card:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        transform: scale(1.02);
-        transition: all 0.3s ease-in-out;
-    }
-
-    /* Skills Chip Styles */
-    .skills-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-    }
-    .skill-chip {
-        cursor: pointer;
-        transition: transform 0.2s ease;
-    }
-    .skill-chip:hover {
-        transform: scale(1.1);
-    }
-
-    /* Developer Name Style */
-    .developer-name {
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    /* Card Styling */
-    .profile-card, .summary-card, .projects-card, .reviews-card, .request-card {
-        margin-bottom: 20px;
-    }
-</style>
