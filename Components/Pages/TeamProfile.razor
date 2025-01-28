@@ -1,6 +1,8 @@
 ﻿@page "/TeamProfile/{TeamID:int}"
 @inject ITeamService teamService
 @inject ISkillService skillService
+@inject IUserServices userService
+@inject IClientService clientService
 @inject IDeveloperSkillService developerSkillService
 @inject IProjectServieces projectService
 @inject IReviewDeveloperService reviewService
@@ -8,12 +10,21 @@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject ISmsService smsService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 @using Data.Model
 
 <MudContainer>
     @if (TeamID != null)
     {
+        @if (!isAuthenticated)
+        {
+            <MudAlert Severity="Severity.Error">You are not authenticated. Please log in.</MudAlert>
+        }
+
+        else
+        {
         <!-- Developer Profile Card -->
         <MudCard Class="profile-card">
             <MudCardContent>
@@ -31,6 +42,7 @@
 
 
                 <!-- Displaying rating in stars-->
+                <div class="star-rating-container">
                 <div class="star-rating">
                     @for (int i = 1; i <= 5; i++)
                     {
@@ -48,6 +60,7 @@
                         }
                     }
                 </div>
+                </div>
                 <MudText Typo="Typo.body2">Hourly Rate: $@team.HourlyRate</MudText>
 
             </MudCardContent>
@@ -63,8 +76,8 @@
 
         <!-- Projects -->
         @if (projects != null && projects.Any())
-    {
-        <MudCard Class="projects-card">
+        {
+            <MudCard Class="projects-card">
 
                 <MudCardContent>
                     <MudText Typo="Typo.h6">Projects</MudText>
@@ -75,14 +88,14 @@
                         <MudText Typo="Typo.body1">Client rating: </MudText>
                     }
                 </MudCardContent>
-            
-        </MudCard>
+
+            </MudCard>
         }
 
         <!-- Reviews -->
         @if (reviews != null && reviews.Any())
-    {
-        <MudCard Class="reviews-card">
+        {
+            <MudCard Class="reviews-card">
 
                 <MudCardContent>
                     <MudText Typo="Typo.h6">Reviews</MudText>
@@ -93,8 +106,8 @@
                         <MudText Typo="Typo.body1">Comment: @review.Comment </MudText>
                     }
                 </MudCardContent>
-            
-        </MudCard>
+
+            </MudCard>
         }
 
         <!-- Request Developer -->
@@ -108,7 +121,7 @@
 
                     <MudStack AlignItems="AlignItems.Center" Style="width:650px;">
                         <MudGrid>
-                                <MudItem xs="6" Style="margin-top: 30px;">
+                            <MudItem xs="6" Style="margin-top: 30px;">
                                 <MudDateRangePicker PickerVariant="@_variant" @bind-DateRange="@dateRange" Margin="Margin.Dense" />
                                 @if (dateRange == null)
                                 {
@@ -121,7 +134,7 @@
                         </MudGrid>
                         <MudSpacer />
                         <MudToggleGroup T="PickerVariant" SelectionMode="SelectionMode.SingleSelection" Value="@_variant" ValueChanged="@OnValueChanged"
-                                        Color="Color.Success" CheckMark="true" FixedContent="true" />
+                        Color="Color.Success" CheckMark="true" FixedContent="true" />
                     </MudStack>
 
                     <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit" @onclick="HandleValidSubmit">
@@ -130,6 +143,7 @@
                 </MudForm>
             </MudCardContent>
         </MudCard>
+        }
     }
     else if (!string.IsNullOrEmpty(errorMessage))
     {
@@ -140,7 +154,7 @@
 @code
 {
     [Parameter] public int TeamID { get; set; }
-    private int userID = 5; //Id of a valid client used for testing 
+    private int userID = 0; //Id of a valid client used for testing 
     private Team team = null;
     private string errorMessage = string.Empty;
 
@@ -150,9 +164,33 @@
     private PickerVariant _variant = PickerVariant.Dialog;
     private DateRange dateRange { get; set; }
 
-    protected override void OnInitialized()
+    private bool isAuthenticated = false;
+
+
+    protected override async Task OnInitializedAsync()
     {
-        GetTeamDetails(TeamID);
+        // Get authentication state
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        //userID = user.Identity;
+
+        //we want to get the the  user using email
+        userID = userService.GetUserByEmail(user.Identity.Name).UID;
+
+        // Check if the user is authenticated
+        isAuthenticated = user.Identity.IsAuthenticated;
+
+        if (!isAuthenticated)
+        {
+            // Redirect to login page if not authenticated
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            GetTeamDetails(TeamID);
+            userID = userService.GetUserByEmail(user.Identity.Name).UID;
+        }
+
     }
 
     private void GetTeamDetails(int TeamID)
@@ -211,6 +249,8 @@
         {
             await requestService.SubmitRequestAsync(userID, req);
             Snackbar.Add("Booking request was successfully sent!", Severity.Success);
+            SendMessage(); //message sent here
+
         }
         catch (InvalidOperationException ex)
         {
@@ -230,6 +270,18 @@
     {
         dateRange = null;
         _variant = variant;
+    }
+
+    //Sending SMS updates
+    public async Task<IEnumerable<string>> SendMessage()
+    {
+        string message = $"Confirming request submission for team {team.TeamID} for project {newProject.ProjectName} from {dateRange.Start} - {dateRange.End}. An admin will review your request and send you a confirmation within 3-5 business days.";
+
+        //getting phone number from client table
+        var client = clientService.GetClientById(userID); //gets client by user id
+        string PhoneNo = $"+968 {client.PhoneNumber}";
+        await smsService.SendSmsAsync(PhoneNo, message);
+        return new string[0];
     }
 }
 
@@ -279,5 +331,14 @@
     /* Card Styling */
     .profile-card, .summary-card, .projects-card, .reviews-card, .request-card {
         margin-bottom: 20px;
+    }
+
+    .star-rating-container {
+        text-align: center; /* Centers the content horizontally */
+    }
+
+    .star-rating {
+        display: inline-block; /* Makes the star-rating block inline for centering */
+        font-size: 1.5rem; /* Optional: adjust the size of the stars */
     }
 </style>
