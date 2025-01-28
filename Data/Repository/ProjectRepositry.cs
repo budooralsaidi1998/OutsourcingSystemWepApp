@@ -60,6 +60,20 @@ namespace OutsourcingSystemWepApp.Data.Repository
             }
         }
 
+        public List<Project> GetProjectsByTeamID(int TeamID)
+        {
+            try
+            {
+                return _context.Project.Where(p => p.TeamID == TeamID).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred : {ex.Message}");
+                // Optionally, you could throw the exception to be handled by a higher level
+                throw new Exception("An error occurred .", ex);
+            }
+        }
+
         //get project by id project 
         public Project GetProjectByIDClient(int clientid)
         {

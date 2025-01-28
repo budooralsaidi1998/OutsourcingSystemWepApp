@@ -81,8 +81,30 @@ namespace OutsourcingSystemWepApp.Services
 
 
         }
-        
 
+        public List<Project> GetProjectsByTeamID(int TeamID)
+        {
+            try
+            {
+                if (TeamID == null)
+
+                    throw new UnauthorizedAccessException("it null id  .");
+
+                var projects = _projectRepositry.GetProjectsByTeamID(TeamID);
+                if (projects == null)
+                {
+                    throw new UnauthorizedAccessException("it null project  .");
+                }
+
+                return projects;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An unexpected error occurred: {ex.Message}");
+            }
+
+
+        }
         public Project GetProjectByClientId(int id)
         {
             try

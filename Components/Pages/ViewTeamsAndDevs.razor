@@ -1,5 +1,4 @@
-﻿@page "/ViewTeamsAndDevs{int SkillID}"
-@using MudBlazor
+﻿@page "/ViewTeamsAndDevs/{SkillID:int}"
 @using Data.Model
 @using Data.DTOs
 @inject ISkillService skillService
@@ -35,12 +34,13 @@
                     <MudText Size="Size.Small">Selected Rating: @ratingValue</MudText>
 
                     @* Multi skill selector *@
-                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-Value="_value"  @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
+                    <MudSelect T="string" Label="Skills" MultiSelection="true" @bind-SelectedValues="_options" Dense="true" Size="Size.Small" Color="Color.Success" Class="custom-focus-style">
                         @foreach (var state in GetAvailableSkills())
                         {
                             <MudSelectItem T="string" Value="@state">@state</MudSelectItem>
                         }
                     </MudSelect>
+
 
                     @* Max Price Slider *@
                     <MudText Typo="Typo.subtitle2">Set Max Price</MudText>
@@ -128,7 +128,9 @@
                                 </MudCardContent>
 
                                 <MudCardActions>
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="ViewDevProfile">View Details </MudButton>
+                                    @* <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="ViewDevProfile(dev.DevId)">View Details </MudButton> *@
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="() => ViewDevProfile(dev.DevId)">View Details</MudButton>
+
                                 </MudCardActions>
 
                                 <!-- Hourly Rate in top-right corner -->
@@ -184,7 +186,7 @@
                                 </MudCardContent>
 
                                 <MudCardActions>
-                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true">View Details</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" OnClick="() => ViewTeamProfile(team.TeamID)">View Details</MudButton>
                                 </MudCardActions>
 
                                 <!-- Hourly Rate in top-right corner -->
@@ -207,9 +209,10 @@
 @* Shared Code *@
 @code {
     [Parameter] public int SkillID { get; set; }
+
     public bool OnlyAvailableSwitch { get; set; } = true; //Used to filter by availability
     private string ResourceType = "Both"; //Used to filter by DevsOnly/TeamsOnly/Both
-    private int ratingValue = 2; //Used to filter by minimum rating
+    private int ratingValue = 1; //Used to filter by minimum rating
     private int maxPrice = 500; //Used to filter by max price 
 
     //Used for searching
@@ -231,7 +234,7 @@
 
     private List<Skill> filteredProducts { get; set; } = new List<Skill>();
     private string _value = "Nothing selected";
-    private IEnumerable<string> _options = new HashSet<string> { "Skills: " }; //list of options chosen in skill filter 
+    private IEnumerable<string> _options;
 
 
     // Initialize the list of available skills
@@ -254,6 +257,15 @@
         await LoadAllResults();
         ResourceFound = false;
         var uri = Navigation.Uri;
+        var skill=skillService.GetSkillsByID(SkillID);
+        if (SkillID == 0)
+        { _options = new List<string> { "Skills: " }; }
+        else
+        {
+            _options = new List<string> { "Skills: ", skill.Name };
+           
+        }
+        ApplyFilters();
     }
 
     private async Task LoadAllResults()
@@ -346,19 +358,17 @@
         }
 
         // Filtering by selected skills
-        if (_options.Any() )  // Ensure skills have been selected && _options.First() != "Skills: "
+        if (_options.Any())  // Ensure skills have been selected && _options.First() != "Skills: "
         {
             if (_options.Count() != 1) //means that only "Skill:" so needs to be ignored
             {
                 var selectedSkills = _options.Where(skill => skill != "Skills: ").ToList();
                 //var selectedSkills = _options.ToList();  // Get the list of selected skill
-
                 // Filter developers based on selected skills
                 SearchResultDevs = SearchResultDevs.Where(dev =>
                 {
                     var devSkills = developerSkillService.GetSkillByDevID(dev.DevId);  // Get the list of skills for the developer
-
-                    // Get the skill names for the developer
+                                                                                       // Get the skill names for the developer
                     List<string> SkillNames = new List<string>();
                     foreach (var devskill in devSkills)
                     {
@@ -393,7 +403,9 @@
         _value = "Nothing selected";
         _options = new HashSet<string> { "Skills: " };
         maxPrice = 500;
-        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        SkillID = 0;
+        Navigation.NavigateTo("https://localhost:7025/ViewTeamsAndDevs/0", forceLoad: true);
+
     }
 
 
@@ -429,14 +441,22 @@
     protected override void OnInitialized()
     { // Initialize AllDevs with all developers 
         AllDevs = developerService.GetAll();
+
         // Initially render all developers 
         RenderedResultDevs = new List<Developer>(AllDevs); 
+        
     }
 
-    private void ViewDevProfile()
+    private void ViewDevProfile(int DevID)
     {
-        Navigation.NavigateTo("/DeveloperProfile");
+        Navigation.NavigateTo($"/DeveloperProfile/{DevID}");
     }
+
+    private void ViewTeamProfile(int TeamID)
+    {
+        Navigation.NavigateTo($"/TeamProfile/{TeamID}");
+    }
+    
 
     private void ApplyFilter(int? ratingValue)
     {
