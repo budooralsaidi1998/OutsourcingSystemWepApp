@@ -19,7 +19,7 @@
 
         <MudForm @ref="form" Valid="@isValid">
             <MudTextField Label="Project Name" @bind-Value="newProject.ProjectName" Required="true" Color="Color.Primary" />
-            <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" /> 
+            <MudTextField Label="Description" @bind-Value="newProject.Description" Multiline="true" Lines="4" Required="true" Color="Color.Primary" />
 
             <MudStack AlignItems="AlignItems.Center" Style="width:650px;">
                 <MudGrid>
@@ -36,18 +36,18 @@
                 </MudGrid>
                 <MudSpacer />
                 <MudToggleGroup T="PickerVariant" SelectionMode="SelectionMode.SingleSelection" Value="@_variant" ValueChanged="@OnValueChanged"
-                Color="Color.Success" CheckMark="true" FixedContent="true" />
+                                Color="Color.Success" CheckMark="true" FixedContent="true" />
             </MudStack>
 
             <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true" Type="Submit" @onclick="HandleValidSubmit">
                 Submit
             </MudButton>
         </MudForm>
-    </MudCardContent>
-</MudCard> 
 
-@code
-{
+    </MudCardContent>
+</MudCard>
+
+@code {
     [Parameter] public int DevID { get; set; }
     private int userID = 0;
     private Developer dev = null;
@@ -55,7 +55,7 @@
 
     private List<Data.Model.Project> projects = new List<Data.Model.Project>();
     private List<ClientReviewDeveloper> reviews = null;
-    public List<string> DevSkills = new List<string>(); //get a list of all the skill names per developer
+    public List<string> DevSkills = new List<string>();
 
     private PickerVariant _variant = PickerVariant.Dialog;
     private DateRange dateRange { get; set; }
@@ -66,21 +66,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Get authentication state
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        //userID = user.Identity;
 
-        //we want to get the the  user using email
         User = userService.GetUserByEmail(user.Identity.Name);
         userID = User.UID;
 
-        // Check if the user is authenticated
         isAuthenticated = user.Identity.IsAuthenticated;
 
         if (!isAuthenticated)
         {
-            // Redirect to login page if not authenticated
             Navigation.NavigateTo("/login");
         }
         else
@@ -101,44 +96,33 @@
         }
         else
         {
-            errorMessage = string.Empty; // Clear error message if developer found
+            errorMessage = string.Empty;
         }
-    }
-
-    private string GetDevSkills(int DevID)
-    {
-        var devSkills = developerSkillService.GetSkillByDevID(DevID);
-        DevSkills.Clear();
-
-        foreach (var skill in devSkills)
-        {
-            var skillName = skillService.GetSkillsByID(skill.SkillID);
-            DevSkills.Add(skillName.Name);
-        }
-        return "";
     }
 
     private MudForm form;
     private bool isValid = false;
-
-    // Project model to bind form fields
     private Project newProject = new Project();
 
-    // Handle the form submission
     private async Task HandleValidSubmit()
     {
-        // Validating date
+        // Show hourglass by setting isSubmitting to true
+        isSubmitting = true;
+
+        // Validate date range
         if (dateRange == null || dateRange.Start == null || dateRange.End == null)
         {
             Snackbar.Add("Please select a valid date range.", Severity.Error);
+            isSubmitting = false; // Hide hourglass if validation fails
             return;
         }
 
         DateTime startDate = dateRange.Start ?? DateTime.Now;
 
+        // Create the request object
         ProjectRequestInputDto req = new ProjectRequestInputDto
             {
-                Teamid = 7, //dummy team that is used as a filler
+                Teamid = 7,
                 Name = newProject.ProjectName,
                 Description = newProject.Description,
                 StartAt = startDate,
@@ -148,24 +132,34 @@
                 RequestType = "Developer"
             };
 
-        //Validating hour input
+        // Validate daily hours
         if (req.DailyHoursNeeded == null || req.DailyHoursNeeded <= 0 || req.DailyHoursNeeded > 24)
         {
             Snackbar.Add("Please select a valid number of hours per day.", Severity.Error);
+            isSubmitting = false; // Hide hourglass if validation fails
             return;
         }
 
+        // Navigate to the Processing page
+        Navigation.NavigateTo("/Processing");
+
         try
         {
-            await requestService.SubmitRequestAsync(userID, req); //email sent here 
-            Snackbar.Add("Booking request was successfully sent!", Severity.Success); // UI notification
-            SendMessage(); //message sent here 
+            // Submit the request
+            await requestService.SubmitRequestAsync(userID, req);
+            Snackbar.Add("Booking request was successfully sent!", Severity.Success);
+            await SendMessage();
             Navigation.NavigateTo($"/DeveloperProfile/{DevID}");
         }
         catch (InvalidOperationException ex)
         {
             Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
             Console.Error.WriteLine(ex);
+        }
+        finally
+        {
+            // Hide hourglass when submission is done
+            isSubmitting = false;
         }
     }
 
@@ -182,17 +176,15 @@
         _variant = variant;
     }
 
-    //Sending SMS updates
     public async Task<IEnumerable<string>> SendMessage()
     {
         string message = $"Confirming request submission for project ID-{dev.DeveloperName}  {newProject.ProjectName} from {dateRange.Start} - {dateRange.End}. An admin will review your request and send you a confirmation within 3-5 business days.";
-        //string toPhoneNo = "+96893983414";
-
-        //getting phone number from client table 
-        var client = clientService.GetClientById(User.UID); //gets client by user id
+        var client = clientService.GetClientById(User.UID);
         string PhoneNo = $"+968 {client.PhoneNumber}";
 
         await smsService.SendSmsAsync(PhoneNo, message);
         return new string[0];
     }
+
+    private bool isSubmitting = false;  // Added to track submission state
 }
