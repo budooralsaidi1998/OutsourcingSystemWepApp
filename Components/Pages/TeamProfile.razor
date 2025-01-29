@@ -69,28 +69,28 @@
         <!-- Career Summary -->
         <MudCard Class="summary-card">
             <MudCardContent>
-                <MudText Typo="Typo.h6">Team description</MudText>
+                    <MudText Typo="Typo.h6" Style="color: green;">Team description</MudText>
                 <MudText>@team.Description</MudText>
             </MudCardContent>
         </MudCard>
 
         <!-- Projects -->
-        @if (projects != null && projects.Any())
-        {
-            <MudCard Class="projects-card">
+            @if (projects != null && projects.Any())
+            {
+                <MudText Typo="Typo.h6" Style="color: green;">Projects</MudText>
+                @foreach (var project in projects)
+                {
+                    <MudCard Class="project-section">
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@project.Name</MudText>
+                            <MudText Typo="Typo.body1">@project.Description</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            }
 
-                <MudCardContent>
-                    <MudText Typo="Typo.h6">Projects</MudText>
-                    @foreach (var project in projects)
-                    {
-                        <MudText Typo="Typo.body1">Project name: @project.Name</MudText>
-                        <MudText Typo="Typo.body1">Project description: @project.Description</MudText>
-                        <MudText Typo="Typo.body1">Client rating: </MudText>
-                    }
-                </MudCardContent>
+            <div style="margin-top: 40px;"></div>
 
-            </MudCard>
-        }
 
         <!-- Reviews -->
         @if (reviews != null && reviews.Any())
@@ -98,7 +98,7 @@
             <MudCard Class="reviews-card">
 
                 <MudCardContent>
-                    <MudText Typo="Typo.h6">Reviews</MudText>
+                        <MudText Typo="Typo.h6" Style="color: green;">Reviews</MudText>
                     @foreach (var review in reviews)
                     {
                         <MudText Typo="Typo.body1">Rating: @review.Rating</MudText>
@@ -113,7 +113,7 @@
         <!-- Request Developer -->
         <MudCard Class="request-card">
             <MudCardContent>
-                <MudText Typo="Typo.h6">Request Team</MudText>
+                    <MudText Typo="Typo.h6" Style="color: green;">Request Team</MudText>
 
                 <MudForm @ref="form" Valid="@isValid">
                     <MudTextField Label="Project Name" @bind-Value="newProject.ProjectName" Required="true" Color="Color.Primary" />
